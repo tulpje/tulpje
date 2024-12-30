@@ -141,7 +141,7 @@ pub async fn cmd_stats(ctx: CommandContext) -> Result<(), Error> {
         // .field(EmbedFieldBuilder::new("CPU Usage", "?? %").inline()) // TODO
         // .field(EmbedFieldBuilder::new("Memory Usage", "?? MiB").inline()) // TODO
         .footer(EmbedFooterBuilder::new(
-            "Tulpje • https://github.com/tulpje/tulpje-next • Last Restarted:",
+            "Tulpje • https://github.com/tulpje/tulpje • Last Restarted:",
         ))
         .timestamp(
             Timestamp::from_secs(
