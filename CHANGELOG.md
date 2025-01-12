@@ -6,6 +6,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.12.1] - 2026-10-04
+
+### Changed
+
+ - Don't use \`cross\` for compiling to x86_64-unknown-linux-musl
+
+### Fixed
+
+ - Exit when we receive an empty message from the shard
+ - Fix should_release not being taken into account when releasing
+ - Version bump didn't take `cargo semver-checks` into account
+ - Create_changelog_update accepts Iterable[CrateInfo]
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * fix(gateway): exit when we receive an empty message from the shard ([`550098a`](https://github.com/tulpje/tulpje/commit/550098a64b2c63cbc9eb67b7a1a19cf382ecaea4))
+ * build: don't use \`cross\` for compiling to x86_64-unknown-linux-musl ([`741f569`](https://github.com/tulpje/tulpje/commit/741f5696700721f680f503b2396754c8ea14776c))
+ * fix(build): fix should_release not being taken into account when releasing ([`06fda35`](https://github.com/tulpje/tulpje/commit/06fda353c1e83d520ff602fdbaa77974e7eaf342))
+ * fix(build): version bump didn't take `cargo semver-checks` into account ([`2187e40`](https://github.com/tulpje/tulpje/commit/2187e40e747fb4b0e127db234a65a1f60724830f))
+ * fix(build): create_changelog_update accepts Iterable[CrateInfo] ([`bfe4a5d`](https://github.com/tulpje/tulpje/commit/bfe4a5d971b8a8c59b70bfb1115c9a0e9f308baf))
+</details>
+
 ## [0.12.0] - 2026-10-04
 
 ### Breaking Changes
