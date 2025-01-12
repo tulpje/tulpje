@@ -6,6 +6,36 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.13.0] - 2026-10-04
+
+### Breaking Changes
+
+ - Use subcommands and subcommand groups
+ - Added support for subcommands and subcommand groups
+
+### Changed
+
+ - Specify GitHub release title
+
+### Fixed
+
+ - Reset minor/patch levels when bumping versions
+
+### Removed
+
+ - Remove unused file module/module.rs
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * fix(build): reset minor/patch levels when bumping versions ([`96bd60c`](https://github.com/tulpje/tulpje/commit/96bd60c9cce45568e392ef0ec95a70fdd25b0dfb))
+ * feat(handler)!: use subcommands and subcommand groups ([`23ceadd`](https://github.com/tulpje/tulpje/commit/23ceadde444896be6f8784e0cb88542048f7e28e))
+ * feat(framework)!: added support for subcommands and subcommand groups ([`175c77a`](https://github.com/tulpje/tulpje/commit/175c77a9e031c0fda73ccc2a566eac72d3cb4bbc))
+ * chore: remove unused file module/module.rs ([`04c74f5`](https://github.com/tulpje/tulpje/commit/04c74f51c1cfd8314762ac4b73c6ca2b3a3e8d3a))
+ * build: specify GitHub release title ([`2652cde`](https://github.com/tulpje/tulpje/commit/2652cde710df4e47dbc2373a341bbff383722a23))
+</details>
+
 ## [0.12.1] - 2026-10-04
 
 ### Changed

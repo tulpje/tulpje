@@ -6,6 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.13.0] - 2026-10-04
+
+### Breaking Changes
+
+ - Added support for subcommands and subcommand groups
+
+### Removed
+
+ - Remove unused file module/module.rs
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * feat(framework)!: added support for subcommands and subcommand groups ([`175c77a`](https://github.com/tulpje/tulpje/commit/175c77a9e031c0fda73ccc2a566eac72d3cb4bbc))
+ * chore: remove unused file module/module.rs ([`04c74f5`](https://github.com/tulpje/tulpje/commit/04c74f51c1cfd8314762ac4b73c6ca2b3a3e8d3a))
+</details>
+
 ## [framework-v0.11.1] - 2026-10-04
 
 ### Breaking Changes
