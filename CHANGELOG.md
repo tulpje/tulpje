@@ -6,6 +6,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.14.1] - 2026-10-04
+
+### Changed
+
+ - Clean up emoji stats on GuildCreate and GuildEmojisUpdate events
+
+### Fixed
+
+ - Validate the emoji stats embed
+ - Don't show pagination/sorting when emoji stats are empty
+
+### Removed
+
+ - Remove emoji stats cleanup task, handled on event now
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * fix(handler): validate the emoji stats embed ([`dfd1645`](https://github.com/tulpje/tulpje/commit/dfd1645ce72cb1b8dba36f256211340c7681d90a))
+ * fix(handler): don't show pagination/sorting when emoji stats are empty ([`21b657a`](https://github.com/tulpje/tulpje/commit/21b657adaf5a89fc6e0d0c92ae1f8dbe964514a9))
+ * chore(handler): remove emoji stats cleanup task, handled on event now ([`8f8a76c`](https://github.com/tulpje/tulpje/commit/8f8a76cf0e3236a0f70b66daaffe28ba0756c4d3))
+ * feat(handler): clean up emoji stats on GuildCreate and GuildEmojisUpdate events ([`12a646c`](https://github.com/tulpje/tulpje/commit/12a646c4ed3ccfd330c0b6545f320e072788f397))
+</details>
+
 ## [0.14.0] - 2026-10-04
 
 ### Added
