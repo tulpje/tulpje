@@ -6,6 +6,41 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.14.0] - 2026-10-04
+
+### Added
+
+ - Added manual and automatic removal of emoji stats for deleted emojis
+ - Add missing commas in RELEASE_FILENAME_MATCHLIST_WORKSPACE
+
+### Changed
+
+ - Implement pagination for `/emoji stats`
+ - Split modules::stats into multiple files
+ - Implement fallback for /stats when we can't get stats from redis
+ - Split core module into multiple files
+
+### Fixed
+
+ - Always source .env from project root
+ - Don't hardcode independent crates in RELEASE_FILENAME_MATCHLIST_WORKSPACE
+ - Use latest main tag (vX.Y.Z) in push.sh
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * fix(build): always source .env from project root ([`d7ca4ba`](https://github.com/tulpje/tulpje/commit/d7ca4bae09197d476013112e59b8c790104246d2))
+ * feat(handler): added manual and automatic removal of emoji stats for deleted emojis ([`b0f6904`](https://github.com/tulpje/tulpje/commit/b0f6904cadef61acd4b8102e0b0b1bcbff78e708))
+ * feat(handler): implement pagination for `/emoji stats` ([`063e310`](https://github.com/tulpje/tulpje/commit/063e3107e36b633c7d568c458f12d1e7bfee3d2b))
+ * refactor(handler): split modules::stats into multiple files ([`17cbe71`](https://github.com/tulpje/tulpje/commit/17cbe710da7209ae7bd149db4ef9db29bf45f5fa))
+ * feat(handler): implement fallback for /stats when we can't get stats from redis ([`f472ebf`](https://github.com/tulpje/tulpje/commit/f472ebfb31a8b36adf8b6868c2982d1d987334f2))
+ * refactor(handler): split core module into multiple files ([`0ccfabe`](https://github.com/tulpje/tulpje/commit/0ccfabecec2adf40f78d3ea2139269d02e709e3f))
+ * fix(build): don't hardcode independent crates in RELEASE_FILENAME_MATCHLIST_WORKSPACE ([`4539228`](https://github.com/tulpje/tulpje/commit/4539228a6207cb408e8f2047554ba0e6cf7e826a))
+ * fix(build): add missing commas in RELEASE_FILENAME_MATCHLIST_WORKSPACE ([`c83c106`](https://github.com/tulpje/tulpje/commit/c83c106749ff8d79a5e3b026a6d8f1e06ac157e7))
+ * fix(build): use latest main tag (vX.Y.Z) in push.sh ([`d74caf3`](https://github.com/tulpje/tulpje/commit/d74caf3aca486d11796eacade37f085da51169a7))
+</details>
+
 ## [0.13.0] - 2026-10-04
 
 ### Breaking Changes
