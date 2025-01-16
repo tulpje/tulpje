@@ -6,6 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.14.0] - 2026-10-04
+
+### Breaking Changes
+
+ - Update twilight to 0.16.0
+
+### Removed
+
+ - Remove unnecessary logging of unhandled events
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * fix(framework): remove unnecessary logging of unhandled events ([`adb7e15`](https://github.com/tulpje/tulpje/commit/adb7e15463ba861b9cf821a93529c93f44dc2237))
+ * chore!: update twilight to 0.16.0 ([`e4f10ea`](https://github.com/tulpje/tulpje/commit/e4f10eab776ab0a1529025ba7b8e9cb20c165153))
+</details>
+
 ## [framework-v0.13.0] - 2026-10-04
 
 ### Breaking Changes
