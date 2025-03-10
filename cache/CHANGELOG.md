@@ -6,7 +6,29 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [0.1.0] - 2026-10-04
+## [0.2.0] - 2026-10-04
+
+### Breaking Changes
+
+ - Use redis-rs directly instead of through bb8 pool
+
+### Changed
+
+ - Bump redis from 0.28.2 to 0.29.1
+ - Bump serde from 1.0.216 to 1.0.219
+ - Bump serde_json from 1.0.133 to 1.0.138
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * build(deps): bump redis from 0.28.2 to 0.29.1 ([`a65610b`](https://github.com/tulpje/tulpje/commit/a65610b39b50e851ef96207d4c4da63f544f94f2))
+ * build(deps): bump serde from 1.0.216 to 1.0.219 ([`cc80138`](https://github.com/tulpje/tulpje/commit/cc8013804aac926c4104e61d4196c72c2ba3faa9))
+ * build(deps): bump serde_json from 1.0.133 to 1.0.138 ([`78203bb`](https://github.com/tulpje/tulpje/commit/78203bb7396b63807cc1103dece994c06202ef03))
+ * refactor!: use redis-rs directly instead of through bb8 pool ([`12add45`](https://github.com/tulpje/tulpje/commit/12add4574d435e2c8f86ba139502f042847e9111))
+</details>
+
+## [cache-v0.1.0] - 2026-10-04
 
 ### Changed
 

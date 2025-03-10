@@ -6,7 +6,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [0.14.0] - 2026-10-04
+## [0.14.1] - 2026-10-04
+
+### Changed
+
+ - Bump uuid from 1.13.2 to 1.15.1
+ - Bump serde from 1.0.216 to 1.0.219
+ - Bump uuid from 1.11.0 to 1.13.2
+ - Bump tokio from 1.42.0 to 1.43.0
+ - Disable chrono wasmbind feature for our code
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * build(deps): bump uuid from 1.13.2 to 1.15.1 ([`3a109cf`](https://github.com/tulpje/tulpje/commit/3a109cfabbe514953ce1cbac848ec6ef221c653f))
+ * build(deps): bump serde from 1.0.216 to 1.0.219 ([`cc80138`](https://github.com/tulpje/tulpje/commit/cc8013804aac926c4104e61d4196c72c2ba3faa9))
+ * build(deps): bump uuid from 1.11.0 to 1.13.2 ([`d5cd49f`](https://github.com/tulpje/tulpje/commit/d5cd49fa324bc2e9e0f9467fadcac0150aa4cafe))
+ * build(deps): bump tokio from 1.42.0 to 1.43.0 ([`52b47ea`](https://github.com/tulpje/tulpje/commit/52b47eabe48162dced27a91a92eeef68ef6d160b))
+ * chore: disable chrono wasmbind feature for our code ([`2f7c237`](https://github.com/tulpje/tulpje/commit/2f7c237f764ec32709d87580fa7c2f06f81d527d))
+</details>
+
+## [framework-v0.14.0] - 2026-10-04
 
 ### Breaking Changes
 

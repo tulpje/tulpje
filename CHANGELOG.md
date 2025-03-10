@@ -6,6 +6,60 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.16.0] - 2026-10-04
+
+### Breaking Changes
+
+ - Use redis-rs directly instead of through bb8 pool
+
+### Changed
+
+ - Bump vergen-gitcl from 1.0.2 to 1.0.5
+ - Bump redis from 0.28.2 to 0.29.1
+ - Bump sqlx from 0.8.2 to 0.8.3
+ - Bump uuid from 1.13.2 to 1.15.1
+ - Bump ring from 0.17.8 to 0.17.13
+ - Bump serde from 1.0.216 to 1.0.219
+ - Bump uuid from 1.11.0 to 1.13.2
+ - Bump async-trait from 0.1.83 to 0.1.86
+ - Bump serde_json from 1.0.133 to 1.0.138
+ - Bump metrics-exporter-prometheus from 0.16.0 to 0.16.2
+ - Bump tokio from 1.42.0 to 1.43.0
+ - Disable chrono wasmbind feature for our code
+ - Enable dependabot
+
+### Fixed
+
+ - Update tokio-websockets to v0.11.3
+ - Don't use a subshell while parsing .env into env vars
+
+### Removed
+
+ - Remove indirect dependency on aws-lc-rs
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * build(deps): bump vergen-gitcl from 1.0.2 to 1.0.5 ([`2468a18`](https://github.com/tulpje/tulpje/commit/2468a187b90d3dfba328a430ee09ebaea882b151))
+ * build(deps): bump redis from 0.28.2 to 0.29.1 ([`a65610b`](https://github.com/tulpje/tulpje/commit/a65610b39b50e851ef96207d4c4da63f544f94f2))
+ * build(deps): bump sqlx from 0.8.2 to 0.8.3 ([`fe0f4c7`](https://github.com/tulpje/tulpje/commit/fe0f4c74a4376febb8ac6640e30f7f158045482c))
+ * build(deps): bump uuid from 1.13.2 to 1.15.1 ([`3a109cf`](https://github.com/tulpje/tulpje/commit/3a109cfabbe514953ce1cbac848ec6ef221c653f))
+ * build(deps): bump ring from 0.17.8 to 0.17.13 ([`858ecbe`](https://github.com/tulpje/tulpje/commit/858ecbed10e873ae4562155fe33cd99be76999cf))
+ * build(deps): bump serde from 1.0.216 to 1.0.219 ([`cc80138`](https://github.com/tulpje/tulpje/commit/cc8013804aac926c4104e61d4196c72c2ba3faa9))
+ * build(deps): bump uuid from 1.11.0 to 1.13.2 ([`d5cd49f`](https://github.com/tulpje/tulpje/commit/d5cd49fa324bc2e9e0f9467fadcac0150aa4cafe))
+ * build(deps): bump async-trait from 0.1.83 to 0.1.86 ([`f2d8e69`](https://github.com/tulpje/tulpje/commit/f2d8e692d9c43887e8a7b5c665f60d9fc33252e3))
+ * build(deps): bump serde_json from 1.0.133 to 1.0.138 ([`78203bb`](https://github.com/tulpje/tulpje/commit/78203bb7396b63807cc1103dece994c06202ef03))
+ * build(deps): bump metrics-exporter-prometheus from 0.16.0 to 0.16.2 ([`5e6cfb6`](https://github.com/tulpje/tulpje/commit/5e6cfb60419590f326a84b3991033ace9dec53f0))
+ * build(deps): bump tokio from 1.42.0 to 1.43.0 ([`52b47ea`](https://github.com/tulpje/tulpje/commit/52b47eabe48162dced27a91a92eeef68ef6d160b))
+ * chore: disable chrono wasmbind feature for our code ([`2f7c237`](https://github.com/tulpje/tulpje/commit/2f7c237f764ec32709d87580fa7c2f06f81d527d))
+ * fix: update tokio-websockets to v0.11.3 ([`eace74f`](https://github.com/tulpje/tulpje/commit/eace74fb4f444948f14bd57aa23e3f5106a78050))
+ * build: enable dependabot ([`2a21c5b`](https://github.com/tulpje/tulpje/commit/2a21c5bdd2f455bc85e1537da829f6fc4ab8a8be))
+ * fix(build): don't use a subshell while parsing .env into env vars ([`deaa38d`](https://github.com/tulpje/tulpje/commit/deaa38d197a0f4a42e7ffd1a0c61ba20d23fbebc))
+ * refactor!: use redis-rs directly instead of through bb8 pool ([`12add45`](https://github.com/tulpje/tulpje/commit/12add4574d435e2c8f86ba139502f042847e9111))
+ * fix(shared): remove indirect dependency on aws-lc-rs ([`99d0541`](https://github.com/tulpje/tulpje/commit/99d05412d556c3a41539fec2feaa3db6b4a147d9))
+</details>
+
 ## [0.15.0] - 2026-10-04
 
 ### Breaking Changes
