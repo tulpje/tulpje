@@ -6,7 +6,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [0.2.0] - 2026-10-04
+## [0.3.0] - 2026-10-04
+
+### Changed
+
+ - Bump serde_json from 1.0.138 to 1.0.140
+
+### Fixed
+
+ - Redis should have feature `tokio-comp` not `aio`
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * fix(handler): redis should have feature `tokio-comp` not `aio` ([`5a478cb`](https://github.com/tulpje/tulpje/commit/5a478cb694650f5d1b22d8265a40f2a409f3d60e))
+ * build(deps): bump serde_json from 1.0.138 to 1.0.140 ([`b92e976`](https://github.com/tulpje/tulpje/commit/b92e9766acfafb5444bdbb591256170f36790723))
+</details>
+
+## [cache-v0.2.0] - 2026-10-04
 
 ### Breaking Changes
 

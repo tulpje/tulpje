@@ -6,7 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [0.14.1] - 2026-10-04
+## [0.14.2] - 2026-10-04
+
+### Changed
+
+ - Bump tokio-util from 0.7.13 to 0.7.14
+ - Bump chrono from 0.4.39 to 0.4.40
+ - Bump uuid from 1.15.1 to 1.16.0
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * build(deps): bump tokio-util from 0.7.13 to 0.7.14 ([`02f275c`](https://github.com/tulpje/tulpje/commit/02f275cc0f23d67b8ea733ad5734433ba4e9fa60))
+ * build(deps): bump chrono from 0.4.39 to 0.4.40 ([`dc8a0dd`](https://github.com/tulpje/tulpje/commit/dc8a0dd32f6ae05b609de9c5c7f13c7339778f29))
+ * build(deps): bump uuid from 1.15.1 to 1.16.0 ([`01e5716`](https://github.com/tulpje/tulpje/commit/01e57160b2f973d121e5d1e175830f88571eb2de))
+</details>
+
+## [framework-v0.14.1] - 2026-10-04
 
 ### Changed
 
