@@ -6,6 +6,43 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.17.1] - 2026-10-04
+
+### Added
+
+ - Add cachix-action
+ - Add nix-community substituter
+ - Add github ci and docker image workflows
+
+### Changed
+
+ - Use personal cachix cache
+ - Bump tokio from 1.43.0 to 1.44.2
+ - Get local development with docker working again
+ - Update twilight-gateway-queue to 5f5e0c1
+
+### Fixed
+
+ - Make dependabot target dev branch
+ - Don't show double : in image name
+ - Fix ability to run `docker compose up`
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * build(github): add cachix-action ([`c12b916`](https://github.com/tulpje/tulpje/commit/c12b916bae10169a7532115c8609c3ce3fd8dad2))
+ * build: use personal cachix cache ([`4d2f584`](https://github.com/tulpje/tulpje/commit/4d2f584e3e5a6e8eefa27ca303238b38a672577b))
+ * fix(build): add nix-community substituter ([`8a063ea`](https://github.com/tulpje/tulpje/commit/8a063eae4915c041f54cabfe501665d74a859789))
+ * feat(ci): add github ci and docker image workflows ([`9010c52`](https://github.com/tulpje/tulpje/commit/9010c525ee459dfffac4f9f6f8a611dcf80e00d5))
+ * build(deps): bump tokio from 1.43.0 to 1.44.2 ([`a737982`](https://github.com/tulpje/tulpje/commit/a737982c92cbe89eac6ab94f4b848dd53207a768))
+ * fix(ci): make dependabot target dev branch ([`e2cff35`](https://github.com/tulpje/tulpje/commit/e2cff3504280091aa0e8600788505d8ffcd80676))
+ * build: get local development with docker working again ([`4089d19`](https://github.com/tulpje/tulpje/commit/4089d19a8bc915442309d25df49827ba45b8ead9))
+ * chore: update twilight-gateway-queue to 5f5e0c1 ([`a22cac8`](https://github.com/tulpje/tulpje/commit/a22cac8652c6c54105510147dba4a42c471f1811))
+ * fix(build/push): don't show double : in image name ([`7a6dbef`](https://github.com/tulpje/tulpje/commit/7a6dbefb52662d94ab6fd17175ea8c8693775a39))
+ * wip: fix ability to run `docker compose up` ([`ff01dba`](https://github.com/tulpje/tulpje/commit/ff01dba9de98dc57c047855a94b09faaf84e5d0e))
+</details>
+
 ## [0.17.0] - 2026-10-04
 
 ### Breaking Changes
