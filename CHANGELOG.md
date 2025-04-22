@@ -6,6 +6,62 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.18.0] - 2026-10-04
+
+### Breaking Changes
+
+ - Split `reconnecting-amqp` into separate crate
+
+### Added
+
+ - Add logging to `contrib/release.py`
+ - Add start up messages containing version to gateway/handler
+ - Add type safety to state transitions
+ - Add `AmqpHandle::wait_start` that waits for amqp to connect
+
+### Changed
+
+ - Bump metrics from 0.24.1 to 0.24.2
+ - Format `release.py` using `ruff`
+ - Use python-semver in `release.py`
+ - Use uv for `release.py`
+ - Bump sqlx from 0.8.4 to 0.8.5
+ - Use state machine, only reopen channel if channel closed
+ - Rewrite using an event handler loop
+ - Implement reconnection logic for amqp
+ - Bump sqlx from 0.8.3 to 0.8.4
+ - Make metrics listen address configurable
+ - Move shared amqp logic into tulpje-shared
+
+### Fixed
+
+ - Fix changelog generation
+ - Fix skopeo command
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * build: fix changelog generation ([`ddd452a`](https://github.com/tulpje/tulpje/commit/ddd452aa39ad26f934f6ca286228901acff19721))
+ * build: add logging to `contrib/release.py` ([`5747a49`](https://github.com/tulpje/tulpje/commit/5747a497535bc1a80f129a9ae32ae64825aea4be))
+ * feat: add start up messages containing version to gateway/handler ([`9f427b8`](https://github.com/tulpje/tulpje/commit/9f427b8abf72a6e6755177b22c877e18397dc9a6))
+ * build(deps): bump metrics from 0.24.1 to 0.24.2 ([`b66f706`](https://github.com/tulpje/tulpje/commit/b66f7067b5c3b8fa3292e57fa65f6b93502cd4d3))
+ * refactor!: split `reconnecting-amqp` into separate crate ([`5e8941b`](https://github.com/tulpje/tulpje/commit/5e8941b7179484fa095ef65d14230875b28e9503))
+ * feat(shared/amqp): add type safety to state transitions ([`c1dfd8e`](https://github.com/tulpje/tulpje/commit/c1dfd8ec741228f7c5cde7dde8ca68c975383ca1))
+ * chore(style): format `release.py` using `ruff` ([`c097470`](https://github.com/tulpje/tulpje/commit/c09747055702727e9788a3805044cfff1886fd09))
+ * refactor(build): use python-semver in `release.py` ([`5408032`](https://github.com/tulpje/tulpje/commit/540803241c61f52a36cbad9ab9afdd7c0e1b86fa))
+ * feat(build): use uv for `release.py` ([`0dda274`](https://github.com/tulpje/tulpje/commit/0dda2749fabd8aa8cbb6519fec81417ba9545b41))
+ * build(deps): bump sqlx from 0.8.4 to 0.8.5 ([`9b0f20f`](https://github.com/tulpje/tulpje/commit/9b0f20f0a381c8e5474fb49a0b2448ff90a06ca3))
+ * feat(shared/amqp): add `AmqpHandle::wait_start` that waits for amqp to connect ([`27c21ff`](https://github.com/tulpje/tulpje/commit/27c21ff28fd4ae4a7e6a4c02e13da47e0943cdfe))
+ * refactor(shared/amqp): use state machine, only reopen channel if channel closed ([`80977ef`](https://github.com/tulpje/tulpje/commit/80977efd13a39d533d8a5f5842853cc104dfb69d))
+ * refactor(shared/amqp): rewrite using an event handler loop ([`bdb5062`](https://github.com/tulpje/tulpje/commit/bdb5062ffe73566914cc2b3f2bed245485bbbea5))
+ * feat(shared): implement reconnection logic for amqp ([`3b70812`](https://github.com/tulpje/tulpje/commit/3b708121045381253cc9b86924641ecc7e4d03cb))
+ * build(deps): bump sqlx from 0.8.3 to 0.8.4 ([`fa618eb`](https://github.com/tulpje/tulpje/commit/fa618eb13f6879e0133368910c59f1f949946900))
+ * feat(shared): make metrics listen address configurable ([`7651cbd`](https://github.com/tulpje/tulpje/commit/7651cbd7b03d8884ca6fa6e79a764d2b23bb414f))
+ * refactor: move shared amqp logic into tulpje-shared ([`9a88105`](https://github.com/tulpje/tulpje/commit/9a88105812bf7c269de44d2b5d69ecf542910cbe))
+ * build(github): fix skopeo command ([`f277654`](https://github.com/tulpje/tulpje/commit/f27765408d83bdfd60ca3efc1dd8426c17fefb84))
+</details>
+
 ## [0.17.1] - 2026-10-04
 
 ### Added
