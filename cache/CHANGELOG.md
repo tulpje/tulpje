@@ -6,6 +6,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.2.1] - 2026-10-04
+
+### Changed
+
+ - Make `tracing` and `tracing-subscriber` workspace dependencies
+ - Bump tracing from 0.1.41 to 0.1.43
+
+### Fixed
+
+ - Don't use workspace description
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * chore(deps): make `tracing` and `tracing-subscriber` workspace dependencies ([`234032f`](https://github.com/tulpje/tulpje/commit/234032f52f8e4016c537f3a4f60bc911a3c74b6a))
+ * chore(deps): bump tracing from 0.1.41 to 0.1.43 ([`d94fd01`](https://github.com/tulpje/tulpje/commit/d94fd0157b04ddcc536343ef2612c1890104d164))
+ * fix(reconnecting-amqp): don't use workspace description ([`e7a4d4f`](https://github.com/tulpje/tulpje/commit/e7a4d4fe294725996ee46b85f11d9ddd6db1ee5d))
+</details>
+
 ## [reconnecting-amqp-v0.2.0-rc.1] - 2026-10-04
 
 ### Breaking Changes

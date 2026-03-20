@@ -6,6 +6,117 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.19.1] - 2026-10-04
+
+### Breaking Changes
+
+ - Remove musl cross compilation
+
+### Added
+
+ - Add brief setup instructions to the README
+ - Additional trace logging for fronter positions
+ - Add cachix caching to `build-docker.sh`
+
+### Changed
+
+ - Bump version to 0.19.1-beta.2
+ - Send command errors to discord
+ - Dedicated function for handling gateway messages
+ - Move shard management into dedicated struct
+ - Implement graceful shutdown
+ - Use `tokio::select!`'s else branch to break out of loop
+ - Move `ParsedEvent` to dedicated file
+ - Don't use `TryFrom` for parsing Message into `ParsedEvent`
+ - Rename `ShardManager` to `ShardReporter`
+ - Return join handle from `ShardManagerHandle::new`
+ - Refactor event parsing and processing
+ - Enable `zstd` compression in `twilight-gateway`
+ - Use `nix run` to run handler/gateway locally
+ - Update `twilight-cache-inmemory`, `twilight-gateway`, `twilight-http` and `twilight-model` from 0.17.0 to 0.17.1
+ - Make `chrono` a workspace dependency
+ - Bump `tracing` from 0.1.43 to 0.1.44
+ - Make `tracing` and `tracing-subscriber` workspace dependencies
+ - Bump `serde_json` from 1.0.145 to 1.0.149
+ - Update `reqwest` from 0.12.25 to 0.13.1
+ - Make `serde` and `serde_json` workspace dependencies
+ - Update `redis-rs` from 0.32.7 to 1.0.1
+ - Bump reqwest from 0.12.24 to 0.12.25
+ - Bump tracing-subscriber from 0.3.20 to 0.3.22
+ - Bump metrics-exporter-prometheus from 0.18.0 to 0.18.1
+ - Bump uuid from 1.18.1 to 1.19.0
+ - Bump metrics-exporter-prometheus from 0.17.2 to 0.18.0
+ - Bump tracing from 0.1.41 to 0.1.43
+ - Bump metrics from 0.24.2 to 0.24.3
+ - Bump redis from 0.32.6 to 0.32.7
+ - Bump rsa from 0.9.7 to 0.9.10
+
+### Fixed
+
+ - Fix version bumping logic
+ - Correctly preserve fronter order
+ - Create channels with correct permissions
+ - Better error handling on updating fronters
+ - Don't clone Latency for every event send to `ShardReporter`
+ - Don't panic on join errors, log them
+ - Shut down amqp task before joining it
+ - Switch from `ring` to aws-lc-rs`
+ - Don't use workspace description
+
+### Removed
+
+ - Remove unnecessary `pub` visibility on `ShardReporter`
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * fix(build): fix version bumping logic ([`daea733`](https://github.com/tulpje/tulpje/commit/daea733d61211ce7ed415d9605b1c84c84ac0ab0))
+ * chore: add brief setup instructions to the README ([`e7d4584`](https://github.com/tulpje/tulpje/commit/e7d4584b2ac2f1de88dddef1994beeeec3e0e5af))
+ * chore: bump version to 0.19.1-beta.2 ([`c91791a`](https://github.com/tulpje/tulpje/commit/c91791a757e4f271aec033a792300ce08d4938f0))
+ * chore(handler/pk): additional trace logging for fronter positions ([`d067a1f`](https://github.com/tulpje/tulpje/commit/d067a1f86d4cb12015a3343ae5facac262ae78d3))
+ * fix(handler/pk): correctly preserve fronter order ([`4fde536`](https://github.com/tulpje/tulpje/commit/4fde536c60691e1d85649751dc4b9804a2df4e9e))
+ * fix(handler/pk): create channels with correct permissions ([`d5f0d81`](https://github.com/tulpje/tulpje/commit/d5f0d819bba1570e36419c70b32e1f5322c36610))
+ * fix(handler/pk): better error handling on updating fronters ([`bb0a2cc`](https://github.com/tulpje/tulpje/commit/bb0a2cce6a87820e37fe5c4733653790d7edd5fd))
+ * feat(framework): send command errors to discord ([`5f3db99`](https://github.com/tulpje/tulpje/commit/5f3db99a34f888a0ba18fad0c19b32a3a95ba820))
+ * refactor(gateway): dedicated function for handling gateway messages ([`3361684`](https://github.com/tulpje/tulpje/commit/336168441cb9f98c521095b1f2ee97750a316504))
+ * refactor(gateway): move shard management into dedicated struct ([`7468367`](https://github.com/tulpje/tulpje/commit/7468367dc88b43dee2fa8696fa4038e993ff7617))
+ * feat(gateway): implement graceful shutdown ([`74693c3`](https://github.com/tulpje/tulpje/commit/74693c39d236a793defa2d967bb80d7a45119640))
+ * refactor(gateway): use `tokio::select!`'s else branch to break out of loop ([`2e5792e`](https://github.com/tulpje/tulpje/commit/2e5792e4a288da85f0b3565fafb9d98ec21715f0))
+ * fix(gateway): don't clone Latency for every event send to `ShardReporter` ([`e3df646`](https://github.com/tulpje/tulpje/commit/e3df6467494d4b0c025e3a9be514221ee1ee275d))
+ * refactor(gateway): move `ParsedEvent` to dedicated file ([`743b89c`](https://github.com/tulpje/tulpje/commit/743b89c104ba43130789ea31f018672cccd66868))
+ * refactor(gateway): don't use `TryFrom` for parsing Message into `ParsedEvent` ([`4dc8573`](https://github.com/tulpje/tulpje/commit/4dc8573ba915b15e972e356e61156bf0e55d9837))
+ * fix(gateway): remove unnecessary `pub` visibility on `ShardReporter` ([`52de55b`](https://github.com/tulpje/tulpje/commit/52de55b9221399600a0365adc14f395276d2ab53))
+ * refactor(gateway): rename `ShardManager` to `ShardReporter` ([`0587f03`](https://github.com/tulpje/tulpje/commit/0587f03d81ec9447e1776cdd7bb7bc769c70a2ac))
+ * fix(gateway): don't panic on join errors, log them ([`45368b5`](https://github.com/tulpje/tulpje/commit/45368b53759fe89965d0084f8e4d57b7eb977917))
+ * refactor(gateway): return join handle from `ShardManagerHandle::new` ([`7190c77`](https://github.com/tulpje/tulpje/commit/7190c77d24a825ba87fb2aab72ac88cb7c9aaf4c))
+ * refactor(gateway): refactor event parsing and processing ([`1a2dc33`](https://github.com/tulpje/tulpje/commit/1a2dc33939d230c9b761070d4a8104365b17d1ec))
+ * fix(gateway): shut down amqp task before joining it ([`1e927c6`](https://github.com/tulpje/tulpje/commit/1e927c6c0d9daead13ffa818a58d49f1d4c5af03))
+ * fix(build)!: remove musl cross compilation ([`713993c`](https://github.com/tulpje/tulpje/commit/713993c4e4c7209b47f18e21e4d3106e5efa1332))
+ * feat(gateway): enable `zstd` compression in `twilight-gateway` ([`46a4d01`](https://github.com/tulpje/tulpje/commit/46a4d01c0bad39e2495f3e90816537526a5d2fc7))
+ * feat(build): add cachix caching to `build-docker.sh` ([`44b185f`](https://github.com/tulpje/tulpje/commit/44b185fba37e9a5aa34fe047bfef90bced937c6e))
+ * refactor(build): use `nix run` to run handler/gateway locally ([`b9b6a47`](https://github.com/tulpje/tulpje/commit/b9b6a47f9bad47c7ab513de71097fc8cb7fafc0a))
+ * fix: switch from `ring` to aws-lc-rs` ([`d6567bb`](https://github.com/tulpje/tulpje/commit/d6567bb6ae2c863ca415d5c066a0befbef6acf36))
+ * chore(deps): update `twilight-cache-inmemory`, `twilight-gateway`, `twilight-http` and `twilight-model` from 0.17.0 to 0.17.1 ([`e3b1c33`](https://github.com/tulpje/tulpje/commit/e3b1c33fb5adb0e92cd1c161d0e317ab31dada4e))
+ * chore(deps): make `chrono` a workspace dependency ([`9151b03`](https://github.com/tulpje/tulpje/commit/9151b03b0bd779f31a4c79042792cdff0182679c))
+ * chore(deps): bump `tracing` from 0.1.43 to 0.1.44 ([`68f82a9`](https://github.com/tulpje/tulpje/commit/68f82a938a463c8b6ccb55099f90011efe9ddb55))
+ * chore(deps): make `tracing` and `tracing-subscriber` workspace dependencies ([`234032f`](https://github.com/tulpje/tulpje/commit/234032f52f8e4016c537f3a4f60bc911a3c74b6a))
+ * chore(deps): bump `serde_json` from 1.0.145 to 1.0.149 ([`6d14aa8`](https://github.com/tulpje/tulpje/commit/6d14aa807aa592227f3daa61543b2b5004b0fb02))
+ * chore(deps): update `reqwest` from 0.12.25 to 0.13.1 ([`901fa50`](https://github.com/tulpje/tulpje/commit/901fa50eda5ad69c7dd5aecd40d0059bc5654b09))
+ * chore(deps): make `serde` and `serde_json` workspace dependencies ([`52f8711`](https://github.com/tulpje/tulpje/commit/52f8711b9f31a4edf8fbe3c4b5de9f84f55d309f))
+ * chore(deps): update `redis-rs` from 0.32.7 to 1.0.1 ([`ea32c13`](https://github.com/tulpje/tulpje/commit/ea32c1382b88364a12a64e75127238f05696ec09))
+ * chore(deps): bump reqwest from 0.12.24 to 0.12.25 ([`ecec8d9`](https://github.com/tulpje/tulpje/commit/ecec8d9c8b5cd47d5a2aa88cf5f31749656575a8))
+ * chore(deps): bump tracing-subscriber from 0.3.20 to 0.3.22 ([`d836c1e`](https://github.com/tulpje/tulpje/commit/d836c1ef2321ffeea6b6102d04be74f8940051d4))
+ * chore(deps): bump metrics-exporter-prometheus from 0.18.0 to 0.18.1 ([`9f7b3e6`](https://github.com/tulpje/tulpje/commit/9f7b3e6b76623df6db819222e1b3377d3a700de0))
+ * chore(deps): bump uuid from 1.18.1 to 1.19.0 ([`80a14f3`](https://github.com/tulpje/tulpje/commit/80a14f33fab65dd6c7aff93af878a4d9ffa0d670))
+ * chore(deps): bump metrics-exporter-prometheus from 0.17.2 to 0.18.0 ([`77672c4`](https://github.com/tulpje/tulpje/commit/77672c4e4033d01670ad2a5a3ca5d616586e4956))
+ * chore(deps): bump tracing from 0.1.41 to 0.1.43 ([`d94fd01`](https://github.com/tulpje/tulpje/commit/d94fd0157b04ddcc536343ef2612c1890104d164))
+ * chore(deps): bump metrics from 0.24.2 to 0.24.3 ([`9a29cd4`](https://github.com/tulpje/tulpje/commit/9a29cd4b1a10ebe564190ab607735c818ff428c3))
+ * chore(deps): bump redis from 0.32.6 to 0.32.7 ([`1fb3982`](https://github.com/tulpje/tulpje/commit/1fb3982f1c363ec1488b2e9801e812afa85d34d6))
+ * build(deps): bump rsa from 0.9.7 to 0.9.10 ([`7309ff0`](https://github.com/tulpje/tulpje/commit/7309ff0dec42e42e479e214164ac2bfecbf09811))
+ * fix(reconnecting-amqp): don't use workspace description ([`e7a4d4f`](https://github.com/tulpje/tulpje/commit/e7a4d4fe294725996ee46b85f11d9ddd6db1ee5d))
+</details>
+
 ## [0.19.0-rc.2] - 2026-10-04
 
 ### Added
