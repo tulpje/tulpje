@@ -6,6 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.20.0-rc.2] - 2026-10-04
+
+### Fixed
+
+ - Mark prereleases correctly
+ - Flatten event fields so VictoriaLogs can parse it
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * fix(build): mark prereleases correctly ([`fb32652`](https://github.com/tulpje/tulpje/commit/fb32652c3fc665afb95bb3087048f47931c2f24b))
+ * fix(shared/logging): flatten event fields so VictoriaLogs can parse it ([`4fa2fdf`](https://github.com/tulpje/tulpje/commit/4fa2fdfccfbacd9d5be835e6585f943a6bf48578))
+</details>
+
 ## [0.20.0-rc.1] - 2026-10-04
 
 ### Added
