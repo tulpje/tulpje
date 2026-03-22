@@ -6,6 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.20.0-rc.3] - 2026-10-04
+
+### Changed
+
+ - More logging in `process_system`
+
+### Fixed
+
+ - Fix RUST_LOG not being honoured, and spans not showing
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * fix(shared/logging): fix RUST_LOG not being honoured, and spans not showing ([`c1ffe79`](https://github.com/tulpje/tulpje/commit/c1ffe797e83ffb7161e3346ee7c2d7e4118b91db))
+ * chore(module/pk): more logging in `process_system` ([`1762bfc`](https://github.com/tulpje/tulpje/commit/1762bfcf7396f43bc8d6e63f03b96fd148bcbcfb))
+</details>
+
 ## [0.20.0-rc.2] - 2026-10-04
 
 ### Fixed
