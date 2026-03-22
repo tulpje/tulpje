@@ -6,6 +6,72 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.20.0-rc.1] - 2026-10-04
+
+### Added
+
+ - Add extra metrics
+ - Add tracing::span to event handling
+ - Add `sqlx-migrate` and `sqlx-prepare` tasks
+
+### Changed
+
+ - Configurable extra data in error message
+ - Enable globally instead of per guild
+ - Configurable log format using `RUST_LOG_FORMAT` env var
+ - Send an error reference to discord instead of the actual error message
+ - Prettier responses when adding/removing notify systems
+ - Better logging for update-member-roles
+ - Update vulnerable deps
+ - Staggered fronter updates
+ - Use cache when updating fronters
+ - Use `sqlx::query_as!` instead of manual conversion
+ - Front change notifications
+ - Update pkrs from 0.4.0 to 0.5.0
+ - Don't save token, only optionally use it to update member roles
+ - Update vulnerable deps
+ - Switch to using `mod.rs` files
+ - Update to rust 1.94.0
+
+### Fixed
+
+ - Still set `last_updated` when front is forbidden
+ - Also handle systems we can't fetch from PluralKit in add/remove
+ - Fix clippy warnings
+
+### Removed
+
+ - Delete fronters before deleting system
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * feat(framework): configurable extra data in error message ([`c38250d`](https://github.com/tulpje/tulpje/commit/c38250d08ebab423b9a4106209d6cdf12f607a2b))
+ * chore(module/pk): enable globally instead of per guild ([`10b60b4`](https://github.com/tulpje/tulpje/commit/10b60b419d123fc938ce55eb8cd6a834fbf7497c))
+ * feat(handler/pk): add extra metrics ([`f526948`](https://github.com/tulpje/tulpje/commit/f526948ca29f977da29d030456393dcdf88edcb9))
+ * feat: configurable log format using `RUST_LOG_FORMAT` env var ([`dde6a0d`](https://github.com/tulpje/tulpje/commit/dde6a0d69188402eb8918799d98176f3aa78ee90))
+ * feat(framework): send an error reference to discord instead of the actual error message ([`4f44e1b`](https://github.com/tulpje/tulpje/commit/4f44e1b08d7292783b17e6152dac4d96c164587a))
+ * feat(framework): add tracing::span to event handling ([`4bfa125`](https://github.com/tulpje/tulpje/commit/4bfa125fa567b20115a0a2c09281c154333e9d9d))
+ * feat(pk): prettier responses when adding/removing notify systems ([`40adc3d`](https://github.com/tulpje/tulpje/commit/40adc3d9d932441dafb97837cbdc4c3abd4e1e01))
+ * feat(pk): better logging for update-member-roles ([`7036c60`](https://github.com/tulpje/tulpje/commit/7036c608571fae67b029cdf236ff40a3569dc3f0))
+ * fix(pk): still set `last_updated` when front is forbidden ([`724d254`](https://github.com/tulpje/tulpje/commit/724d254cad07d2cb28eb3bf5fd5db1edae4da433))
+ * chore(deps): update vulnerable deps ([`3849ea8`](https://github.com/tulpje/tulpje/commit/3849ea8df1b598d4739fdae900db194ea84ea0c3))
+ * fix(pk): also handle systems we can't fetch from PluralKit in add/remove ([`5c2e51b`](https://github.com/tulpje/tulpje/commit/5c2e51b40b144e03ceaa76d77f39711f18ad42c8))
+ * fix(pk): delete fronters before deleting system ([`ae2f254`](https://github.com/tulpje/tulpje/commit/ae2f2541006017c3321fe49d20f5a0b01385d036))
+ * feat(pk): staggered fronter updates ([`7409016`](https://github.com/tulpje/tulpje/commit/740901666b16f47aa28336d5cd2b284aa66c3ae3))
+ * refactor(handler/pk): use cache when updating fronters ([`6c863e8`](https://github.com/tulpje/tulpje/commit/6c863e80ce08a2842e5558b43dc318307e3346fd))
+ * refactor(handler/pk): use `sqlx::query_as!` instead of manual conversion ([`91a344f`](https://github.com/tulpje/tulpje/commit/91a344f8d1449551389964202d52f6addc0bd18e))
+ * feat(justfile): add `sqlx-migrate` and `sqlx-prepare` tasks ([`88d27d6`](https://github.com/tulpje/tulpje/commit/88d27d625dd034253d3a647542db4c7514f48d30))
+ * feat(pluralkit): front change notifications ([`bd16e3d`](https://github.com/tulpje/tulpje/commit/bd16e3dc421311b85b68058fd9f7467c890ff284))
+ * chore(deps): update pkrs from 0.4.0 to 0.5.0 ([`45893e9`](https://github.com/tulpje/tulpje/commit/45893e9944e4c446184381cd098cb03217b755c3))
+ * refactor(pk): don't save token, only optionally use it to update member roles ([`7fe129f`](https://github.com/tulpje/tulpje/commit/7fe129ffcedfbd5a0d3c2ea85375127247767fed))
+ * chore(deps): update vulnerable deps ([`b51b09a`](https://github.com/tulpje/tulpje/commit/b51b09a66e06b5603cd619abbca64a356700e70b))
+ * refactor: switch to using `mod.rs` files ([`e7614fa`](https://github.com/tulpje/tulpje/commit/e7614fa7ae6bed2ad1b5113d4d5efd3e351b9b15))
+ * chore: fix clippy warnings ([`54920a2`](https://github.com/tulpje/tulpje/commit/54920a2d104aee0c39f012cac86d4115ec937ab1))
+ * chore: update to rust 1.94.0 ([`aaf37e6`](https://github.com/tulpje/tulpje/commit/aaf37e6ec1fc2911e898a9e1b0d9948da306b496))
+</details>
+
 ## [0.19.1] - 2026-10-04
 
 ### Breaking Changes

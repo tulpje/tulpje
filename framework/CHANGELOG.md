@@ -6,7 +6,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [0.15.1] - 2026-10-04
+## [0.16.0-rc.1] - 2026-10-04
+
+### Added
+
+ - Add tracing::span to event handling
+
+### Changed
+
+ - Configurable extra data in error message
+ - Send an error reference to discord instead of the actual error message
+ - Front change notifications
+ - Switch to using `mod.rs` files
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * feat(framework): configurable extra data in error message ([`c38250d`](https://github.com/tulpje/tulpje/commit/c38250d08ebab423b9a4106209d6cdf12f607a2b))
+ * feat(framework): send an error reference to discord instead of the actual error message ([`4f44e1b`](https://github.com/tulpje/tulpje/commit/4f44e1b08d7292783b17e6152dac4d96c164587a))
+ * feat(framework): add tracing::span to event handling ([`4bfa125`](https://github.com/tulpje/tulpje/commit/4bfa125fa567b20115a0a2c09281c154333e9d9d))
+ * feat(pluralkit): front change notifications ([`bd16e3d`](https://github.com/tulpje/tulpje/commit/bd16e3dc421311b85b68058fd9f7467c890ff284))
+ * refactor: switch to using `mod.rs` files ([`e7614fa`](https://github.com/tulpje/tulpje/commit/e7614fa7ae6bed2ad1b5113d4d5efd3e351b9b15))
+</details>
+
+## [framework-v0.15.1] - 2026-10-04
 
 ### Changed
 
