@@ -6,6 +6,85 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.20.1-rc.1] - 2026-10-04
+
+### Added
+
+ - Add missing `git-cliff` package to flake
+ - Add check in `/pk roles update` for discord role limit
+ - Additional comments
+ - Additional comments
+ - Add env var to enable log source file and line no logging
+ - Add user facing errors for incorrect system references
+
+### Changed
+
+ - Let user know if they were/weren't already following a system
+ - Implement follow limit
+ - Update flake inputs to latest
+ - Use a global pk client
+ - Implement `Display` for `SystemRef`
+ - Check front is public during front category setup
+ - Track number of guilds we're in
+ - Use fancy response messages in `/pk notify setup`
+ - Split up `/pk notify setup` code
+ - Use fancy response messages in fronter module
+ - Factor out repetitive system ref parsing code
+ - Implement `success_response` and `error_response` utility functions
+ - Move role commands into subgroup and subcategory
+ - Clippy fix
+ - Split up fronter submodule more clearly
+ - Move fronter command definitions into fronter module
+
+### Fixed
+
+ - Fix feature commit detection
+ - Fix clippy warnings
+ - Use `PkClient::with_token` to reuse existing client
+ - Show system name in `/pk fronters setup` if available
+ - Correctly handle private front checking
+ - Correctly handle systems without registered switches
+ - Correctly use `Span`s with async functions
+ - Typo
+ - Make `/pk fronters setup` show error if pk module hasn't been setup yet
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * fix(build): add missing `git-cliff` package to flake ([`b09db28`](https://github.com/tulpje/tulpje/commit/b09db28c63eedf33ebd60bde3f26f70a59234956))
+ * fix(build): fix feature commit detection ([`5bd005e`](https://github.com/tulpje/tulpje/commit/5bd005ee7c642df51fe6453dcb6135eab5f2ea14))
+ * feat(handler/pk): let user know if they were/weren't already following a system ([`b39b532`](https://github.com/tulpje/tulpje/commit/b39b5323020c79a2eafa793f5ed96d94495a25e0))
+ * feat(handler/pk): implement follow limit ([`7a3001e`](https://github.com/tulpje/tulpje/commit/7a3001eb875bff2c2f1f27880d78881a14660ee8))
+ * feat(handler/pk): add check in `/pk roles update` for discord role limit ([`087fc35`](https://github.com/tulpje/tulpje/commit/087fc355ea2ddd91722e8e6c752548a4658617ef))
+ * chore(handler/pk): fix clippy warnings ([`64d2c40`](https://github.com/tulpje/tulpje/commit/64d2c40c14351ce6c03774e58719a78789d72129))
+ * fix(handler/pk): use `PkClient::with_token` to reuse existing client ([`ca207dc`](https://github.com/tulpje/tulpje/commit/ca207dc80cf1aeb8bb4b4049673c15da27f3362d))
+ * chore(deps): update flake inputs to latest ([`838ada6`](https://github.com/tulpje/tulpje/commit/838ada66d2a577cdb395f8e25e6309cec68ae94f))
+ * refactor(handler): use a global pk client ([`86644fe`](https://github.com/tulpje/tulpje/commit/86644feb25bbe16e63cee5cd89be03284be2dd49))
+ * fix(handler/pk): show system name in `/pk fronters setup` if available ([`e07c732`](https://github.com/tulpje/tulpje/commit/e07c732c6cbe55c7e5c315d04ccfebf5852be27a))
+ * fix(handler/pk): correctly handle private front checking ([`74e2094`](https://github.com/tulpje/tulpje/commit/74e2094e41fdc34f2049b5c176f98f5edf5f1c00))
+ * feat(handler/pk): implement `Display` for `SystemRef` ([`35598a9`](https://github.com/tulpje/tulpje/commit/35598a95a7fbcfc9355f45dfd5ce965dc343e8d6))
+ * chore(handler/pk): additional comments ([`b0c4bb4`](https://github.com/tulpje/tulpje/commit/b0c4bb4f046ba587d9a89398b8b14395407b7adc))
+ * fix(handler/pk): correctly handle systems without registered switches ([`721991d`](https://github.com/tulpje/tulpje/commit/721991de62a00b9dcbf901ffb602dcd3f81a9840))
+ * chore(handler/pk): additional comments ([`2f7be15`](https://github.com/tulpje/tulpje/commit/2f7be15a9e2461c277ef7487eae9fca36298d23e))
+ * feat(handler/pk): check front is public during front category setup ([`9246ed3`](https://github.com/tulpje/tulpje/commit/9246ed37ad6c9d73daab2986bdbfd3e9661daf5c))
+ * fix: correctly use `Span`s with async functions ([`1f61330`](https://github.com/tulpje/tulpje/commit/1f61330e614948c0874f8784680f4f1aed14aed0))
+ * feat(shared): add env var to enable log source file and line no logging ([`06cff50`](https://github.com/tulpje/tulpje/commit/06cff502926ffe0f5ae43f7162052929ea39082e))
+ * fix(gateway): typo ([`dd85e4a`](https://github.com/tulpje/tulpje/commit/dd85e4afc96dcad9d397cbac06c7530597552a7e))
+ * feat(gateway): track number of guilds we're in ([`c169c03`](https://github.com/tulpje/tulpje/commit/c169c037b8924bec6de3e33aeab7019b31fcd457))
+ * feat(handler/pk): use fancy response messages in `/pk notify setup` ([`a8ea278`](https://github.com/tulpje/tulpje/commit/a8ea278799bc173620f6eef8549f61f79383e789))
+ * refactor(handler/pk): split up `/pk notify setup` code ([`f88c479`](https://github.com/tulpje/tulpje/commit/f88c4792a4464c8bd73460b325fe0b13fe3d470b))
+ * feat(handler/pk): use fancy response messages in fronter module ([`85d412c`](https://github.com/tulpje/tulpje/commit/85d412cfd6e0e3ec7e822f042b365b549d4bf608))
+ * fix(handler/pk): make `/pk fronters setup` show error if pk module hasn't been setup yet ([`8bc783d`](https://github.com/tulpje/tulpje/commit/8bc783d8acc30226ba3050ccb42a6126b517a7c9))
+ * refactor(handler/pk): factor out repetitive system ref parsing code ([`28c9b25`](https://github.com/tulpje/tulpje/commit/28c9b2532c00ec74469a361d66e88034c39f1206))
+ * refactor(handler/pk): implement `success_response` and `error_response` utility functions ([`8b6c8af`](https://github.com/tulpje/tulpje/commit/8b6c8af246312743af046fc855ceddd8ee642176))
+ * refactor(handler/pk): move role commands into subgroup and subcategory ([`badd1fe`](https://github.com/tulpje/tulpje/commit/badd1fe9a1b860930e091a9378abe4f47218ad4e))
+ * chore(shared): clippy fix ([`9fb2f6e`](https://github.com/tulpje/tulpje/commit/9fb2f6ee7c9438e874e2191cab5aa9f8b2d13574))
+ * refactor(handler/pk): split up fronter submodule more clearly ([`6e1d9b4`](https://github.com/tulpje/tulpje/commit/6e1d9b4628862b8eb5aa7781c5ff6fb8ebb45c62))
+ * refactor(handler/pk): move fronter command definitions into fronter module ([`e9d94f3`](https://github.com/tulpje/tulpje/commit/e9d94f3be945248fa222e5e57d953288d4ebc839))
+ * fix(handler/pk): add user facing errors for incorrect system references ([`a94b117`](https://github.com/tulpje/tulpje/commit/a94b1173134c7c43a183b2221957cc01f914c5b3))
+</details>
+
 ## [0.20.0] - 2026-10-04
 
 ### Fixed
