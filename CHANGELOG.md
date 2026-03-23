@@ -6,6 +6,62 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.20.2-rc.1] - 2026-10-04
+
+### Added
+
+ - Add a user guide
+ - Add missing permission overwrites in `/pk notify setup`
+
+### Changed
+
+ - Use `handle_system_ref` in `/pk setup`
+ - Move `handle_system_ref` to module wide utils
+ - Handle 404 on `/pk setup`
+ - Nicer messages in various places
+ - Use new channel and permission code for `/pk fronters setup`
+ - Rework and split out channel finding and permission checking logic
+ - Make permission checking code generic
+ - Better permission check code
+ - Move reusable responses into dedicated module
+ - Move some utility functions to crate root
+ - Move `create_or_get_fronter_channel` next to setup command
+ - Handle channel references in `/pk notify setup`
+ - Error if user haven't set up a notify channel yet but they try to add a system
+
+### Fixed
+
+ - Make `find_channel_by_name` filter on channel type
+ - Also release if we go from prerelease to full
+
+### Removed
+
+ - Remove old debug statement
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * chore(docs): add a user guide ([`8181830`](https://github.com/tulpje/tulpje/commit/8181830758522f9d33075a3fa7fc72c604af8cee))
+ * refactor(handler/pk): use `handle_system_ref` in `/pk setup` ([`8a76788`](https://github.com/tulpje/tulpje/commit/8a76788470097f88a5801dd807d3e49324063d71))
+ * refactor(handler/pk): move `handle_system_ref` to module wide utils ([`62abd4b`](https://github.com/tulpje/tulpje/commit/62abd4b62ec908e58b8a3c1872e60987268ec8ad))
+ * chore(handler/pk): remove old debug statement ([`0a78884`](https://github.com/tulpje/tulpje/commit/0a788846b45850ac0d9f993096fd19340ae27b1d))
+ * feat(handler/pk): handle 404 on `/pk setup` ([`f50668d`](https://github.com/tulpje/tulpje/commit/f50668d839f0f7c129a53fbe9f6e011f0f356048))
+ * feat(handler/pk): nicer messages in various places ([`970d07f`](https://github.com/tulpje/tulpje/commit/970d07f9b949c8d6a097870ef11ff8f0048c8b93))
+ * fix(handler): make `find_channel_by_name` filter on channel type ([`69a0c04`](https://github.com/tulpje/tulpje/commit/69a0c04d59e3592a7061a1cdfe51fa790ca23485))
+ * fix(handler/pk): add missing permission overwrites in `/pk notify setup` ([`9f8be88`](https://github.com/tulpje/tulpje/commit/9f8be889a1728102376b85d158f9109b06f96291))
+ * refactor(handler/pk): use new channel and permission code for `/pk fronters setup` ([`0031d6c`](https://github.com/tulpje/tulpje/commit/0031d6c6043336f5bc07296fc3595c25108daa35))
+ * refactor(handler/pk): rework and split out channel finding and permission checking logic ([`159e701`](https://github.com/tulpje/tulpje/commit/159e7019497f3f30f18a6d538c62097a66d88815))
+ * refactor(handler): make permission checking code generic ([`4bd43cd`](https://github.com/tulpje/tulpje/commit/4bd43cdbf197794bbe4c47cb61ecdaef4a3008d2))
+ * refactor(handler): better permission check code ([`74602b1`](https://github.com/tulpje/tulpje/commit/74602b1c711e941a91fcb45a94d15b99b96252ef))
+ * refactor(handler): move reusable responses into dedicated module ([`05f5ccb`](https://github.com/tulpje/tulpje/commit/05f5ccb561992e810a180a7312ccac7e26e61f1d))
+ * refactor(handler): move some utility functions to crate root ([`c490636`](https://github.com/tulpje/tulpje/commit/c4906367ec942242172ff2b8918c5f4bc3f7763c))
+ * refactor(handler/pk): move `create_or_get_fronter_channel` next to setup command ([`03aaba2`](https://github.com/tulpje/tulpje/commit/03aaba21fd07ebc5e3bbf49df5aa1b4b37a25f1c))
+ * feat(handler/pk): handle channel references in `/pk notify setup` ([`04884d3`](https://github.com/tulpje/tulpje/commit/04884d3efdff27240eb28c9b0a16ee0c8bd0bbc9))
+ * feat(handler/pk): error if user haven't set up a notify channel yet but they try to add a system ([`ee8881d`](https://github.com/tulpje/tulpje/commit/ee8881d7f7fc190f4d4b093dca7eccdb8db3624a))
+ * fix(build): also release if we go from prerelease to full ([`8fcbcc2`](https://github.com/tulpje/tulpje/commit/8fcbcc2775a648967aae3082999c6570c482e391))
+</details>
+
 ## [0.20.1] - 2026-10-04
 
 ### Changed
