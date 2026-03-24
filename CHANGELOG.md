@@ -6,6 +6,41 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.21.1-rc.1] - 2026-10-04
+
+### Added
+
+ - Add missing `EMBED_LINKS` permission for to the notification channel
+ - Add `Permissions::CONNECT` to the permissions the bot needs on the fronter category
+
+### Changed
+
+ - Update actions/checkout to v6.0.2
+ - Update nixbuild/nix-quick-install-action to v34
+ - Update cachix/cachix-action to v17
+ - Yaml file formatting
+
+### Fixed
+
+ - Correctly bump version on fixes
+ - Fix a crash in `update_fronter_channels` and improve logging
+ - Leftover reference to http-proxy
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * fix(build): correctly bump version on fixes ([`73169ce`](https://github.com/tulpje/tulpje/commit/73169cefefc7db3a8a4243cf340a49085b783dba))
+ * fix(handler/pk): fix a crash in `update_fronter_channels` and improve logging ([`bcbe497`](https://github.com/tulpje/tulpje/commit/bcbe4970acc69e80d5a83eb6d86776c119c47ab1))
+ * fix(handler/pk): add missing `EMBED_LINKS` permission for to the notification channel ([`97b4949`](https://github.com/tulpje/tulpje/commit/97b4949f4ae11d5b1e2c9edac94a8a06817cbed7))
+ * fix(handler/pk): add `Permissions::CONNECT` to the permissions the bot needs on the fronter category ([`f8f2645`](https://github.com/tulpje/tulpje/commit/f8f2645f21e0cc3b5f3bd1bb250e883942ee8513))
+ * chore(ci): update actions/checkout to v6.0.2 ([`c99d002`](https://github.com/tulpje/tulpje/commit/c99d002ab01b1481149781d4f948365206b35fbf))
+ * chore(ci): update nixbuild/nix-quick-install-action to v34 ([`f8d77eb`](https://github.com/tulpje/tulpje/commit/f8d77ebba62b4b70a09513861926ada49930973a))
+ * chore(ci): update cachix/cachix-action to v17 ([`ff2a694`](https://github.com/tulpje/tulpje/commit/ff2a694d1947ebdf614266b096b18366736f609c))
+ * chore: yaml file formatting ([`061989e`](https://github.com/tulpje/tulpje/commit/061989eb939c9d547e80c48715088b71c7770aa1))
+ * fix(ci): leftover reference to http-proxy ([`594ab31`](https://github.com/tulpje/tulpje/commit/594ab31119c279215a3bfd696ce6e2d398cb194d))
+</details>
+
 ## [0.21.0-rc.2] - 2026-10-04
 
 ### Fixed
