@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.21.3] - 2026-10-04
+
+### Fixed
+
+ - Run `guilds:cleanup` daily
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * fix(handler): run `guilds:cleanup` daily ([`4006a27`](https://github.com/tulpje/tulpje/commit/4006a27615adbb5411254147404ee8b7d9c349be))
+</details>
+
 ## [0.21.3-rc.1] - 2026-10-04
 
 ### Changed
