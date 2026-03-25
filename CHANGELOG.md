@@ -6,6 +6,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.21.3-rc.1] - 2026-10-04
+
+### Changed
+
+ - Guild cleanup
+ - Register guild commands on `GuildCreate` instead of at start
+ - Toggle for MESSAGE_CONTENT intent
+
+### Fixed
+
+ - Only start the database for sqlx-migrate/sqlx-prepare tasks
+ - Track more resources we actually want from the cache
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * fix(build): only start the database for sqlx-migrate/sqlx-prepare tasks ([`5c9fe2a`](https://github.com/tulpje/tulpje/commit/5c9fe2ad2649a2ca92bf98a047f050ccb3448bf5))
+ * feat(handler): guild cleanup ([`48caee4`](https://github.com/tulpje/tulpje/commit/48caee4c07eaca3bcfb62f414922453b64f4c53b))
+ * refactor(handler): register guild commands on `GuildCreate` instead of at start ([`9e398cd`](https://github.com/tulpje/tulpje/commit/9e398cde31321cfa997ece2821ce9c51c3d3b8fc))
+ * feat: toggle for MESSAGE_CONTENT intent ([`2046cfe`](https://github.com/tulpje/tulpje/commit/2046cfeae31c8958cfd0e0c341c90c3dcacb961f))
+ * fix(handler): track more resources we actually want from the cache ([`d3d1501`](https://github.com/tulpje/tulpje/commit/d3d15018a4e78a5b368f665f9153943f783b879f))
+</details>
+
 ## [0.21.2-rc.1] - 2026-10-04
 
 ### Changed
