@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.21.4-rc.1] - 2026-10-04
+
+### Fixed
+
+ - Don't clean up systems that are still configured in guilds
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * fix(handler): don't clean up systems that are still configured in guilds ([`50c5ab2`](https://github.com/tulpje/tulpje/commit/50c5ab268c8d504c932a8de46d97c1a827bf8ad1))
+</details>
+
 ## [0.21.3] - 2026-10-04
 
 ### Fixed
