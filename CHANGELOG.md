@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.21.4] - 2026-10-04
+
+### Fixed
+
+ - Make arguments to `just release` optional
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * fix(build): make arguments to `just release` optional ([`6d7ace9`](https://github.com/tulpje/tulpje/commit/6d7ace951b38a9b995b9494683ff20031f1dbb77))
+</details>
+
 ## [0.21.4-rc.2] - 2026-10-04
 
 ### Added
