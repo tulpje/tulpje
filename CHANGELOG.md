@@ -6,6 +6,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.21.5-rc.1] - 2026-10-04
+
+### Added
+
+ - Add total system count
+
+### Changed
+
+ - Reduce sensitive information in log messages
+ - Improve log message in `update_fronter_category
+
+### Fixed
+
+ - Only try to update fronters for systems that have notifications or a front category
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * feat(handler): add total system count ([`c27600e`](https://github.com/tulpje/tulpje/commit/c27600e95a5d55b6bac7bd4cb69cbe320cfef898))
+ * fix(handler): only try to update fronters for systems that have notifications or a front category ([`634fc21`](https://github.com/tulpje/tulpje/commit/634fc21c41c6f04b2efea0a4b6ab58bc2a5cc29f))
+ * chore(handler): reduce sensitive information in log messages ([`d4223ba`](https://github.com/tulpje/tulpje/commit/d4223ba746482819c8a70f8b0b2c23c73e38721e))
+ * chore(handler): improve log message in `update_fronter_category ([`d9a277c`](https://github.com/tulpje/tulpje/commit/d9a277c0d77472e1659bac0bc4076c836f52fddb))
+</details>
+
 ## [0.21.4] - 2026-10-04
 
 ### Fixed
