@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.22.0] - 2026-10-04
+
+### Fixed
+
+ - Fix tag naming
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * fix(tools/release-tulpje): fix tag naming ([`d01e40e`](https://github.com/tulpje/tulpje/commit/d01e40e5932cc85d3a0fd39a1f833fca7fb20655))
+</details>
+
 ## [0.22.0-rc.1] - 2026-10-04
 
 ### Added
