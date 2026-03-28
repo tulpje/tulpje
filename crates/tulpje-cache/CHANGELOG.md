@@ -6,66 +6,150 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [reconnecting-amqp-v0.2.1] - 2026-10-04
+## [0.5.1-rc.1] - 2026-10-04
 
 ### Changed
 
- - Make `tracing` and `tracing-subscriber` workspace dependencies
- - Bump tracing from 0.1.41 to 0.1.43
-
-### Fixed
-
- - Don't use workspace description
+ - Use `wild` linker
+ - Set `publish` in each crate's `Cargo.toml`
 
 ### Commit Details
 
 <details><summary>view details</summary>
 
- * chore(deps): make `tracing` and `tracing-subscriber` workspace dependencies ([`234032f`](https://github.com/tulpje/tulpje/commit/234032f52f8e4016c537f3a4f60bc911a3c74b6a))
- * chore(deps): bump tracing from 0.1.41 to 0.1.43 ([`d94fd01`](https://github.com/tulpje/tulpje/commit/d94fd0157b04ddcc536343ef2612c1890104d164))
- * fix(reconnecting-amqp): don't use workspace description ([`e7a4d4f`](https://github.com/tulpje/tulpje/commit/e7a4d4fe294725996ee46b85f11d9ddd6db1ee5d))
+ * chore(build): use `wild` linker ([`be4dd98`](https://github.com/tulpje/tulpje/commit/be4dd98c6090e3ac7ae0b0e24dac850f193031d5))
+ * chore: set `publish` in each crate's `Cargo.toml` ([`e2d986c`](https://github.com/tulpje/tulpje/commit/e2d986c8f9560959dec509f114687dd3023e5c5f))
 </details>
 
-## [reconnecting-amqp-v0.2.0-rc.1] - 2026-10-04
-
-### Breaking Changes
-
- - Split `reconnecting-amqp` into separate crate
+## [cache-v0.5.0-rc.1] - 2026-10-04
 
 ### Changed
 
- - Make `tokio-util` a workspace dependency
- - Bump `amqprs` from 2.1.2 to 2.1.3
- - Make `tokio` a workspace dependency
- - Bump `async-trait` from 0.1.86 to 0.1.89
- - Bump tokio from 1.44.2 to 1.47.1
- - Bump tokio-util from 0.7.14 to 0.7.16
+ - Front change notifications
+ - Switch to using `mod.rs` files
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * feat(pluralkit): front change notifications ([`bd16e3d`](https://github.com/tulpje/tulpje/commit/bd16e3dc421311b85b68058fd9f7467c890ff284))
+ * refactor: switch to using `mod.rs` files ([`e7614fa`](https://github.com/tulpje/tulpje/commit/e7614fa7ae6bed2ad1b5113d4d5efd3e351b9b15))
+</details>
+
+## [cache-v0.4.1] - 2026-10-04
+
+### Changed
+
+ - Update `twilight-cache-inmemory`, `twilight-gateway`, `twilight-http` and `twilight-model` from 0.17.0 to 0.17.1
+ - Make `serde` and `serde_json` workspace dependencies
+
+### Removed
+
+ - Remove catch-all for events, add missing ignored events
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * chore(deps): update `twilight-cache-inmemory`, `twilight-gateway`, `twilight-http` and `twilight-model` from 0.17.0 to 0.17.1 ([`e3b1c33`](https://github.com/tulpje/tulpje/commit/e3b1c33fb5adb0e92cd1c161d0e317ab31dada4e))
+ * fix(cache): remove catch-all for events, add missing ignored events ([`b5d4948`](https://github.com/tulpje/tulpje/commit/b5d4948ca697edc8ff8cefda570bb37c84a2320a))
+ * chore(deps): make `serde` and `serde_json` workspace dependencies ([`52f8711`](https://github.com/tulpje/tulpje/commit/52f8711b9f31a4edf8fbe3c4b5de9f84f55d309f))
+</details>
+
+## [cache-v0.4.0-rc.1] - 2026-10-04
+
+### Added
+
+ - Add `avatar_decoration_data` and `banner` fields to user
+
+### Changed
+
+ - Bump `serde_json` from 1.0.140 to 1.0.145
+ - Bump `serde` from 1.0.219 to 1.0.228
+ - Move redis crate to workspace deps
  - Update to rust 1.90.0, fix lint warnings, `cargo fmt`
  - `clippy::collapsible_if`
  - `cargo fmt`
  - Specify edition on workspace level
- - Update amqprs from 2.1.0 to 2.1.2
+ - Move twilight-* crates to workspace deps
 
 ### Fixed
 
- - Pin amqprs version due to trait changes
+ - Update User on MemberUpdate
+ - Hanging connections
+
+### Removed
+
+ - Remove deref
 
 ### Commit Details
 
 <details><summary>view details</summary>
 
- * chore(deps): make `tokio-util` a workspace dependency ([`1665fbe`](https://github.com/tulpje/tulpje/commit/1665fbe97bd472c878daff8024660078a2cd961e))
- * chore(deps): bump `amqprs` from 2.1.2 to 2.1.3 ([`5bcdb68`](https://github.com/tulpje/tulpje/commit/5bcdb687007854d1b425cd9eafc7c422ac858d1b))
- * chore(deps): make `tokio` a workspace dependency ([`894a678`](https://github.com/tulpje/tulpje/commit/894a678d0bdad4c1dee99bfd9fb64c2fc0b71013))
- * chore(deps): bump `async-trait` from 0.1.86 to 0.1.89 ([`652f101`](https://github.com/tulpje/tulpje/commit/652f10112fd52fc077d78ea135d903cd978667a6))
- * build(deps): bump tokio from 1.44.2 to 1.47.1 ([`ab3d857`](https://github.com/tulpje/tulpje/commit/ab3d8574b5a4dd5af4600b7beba9013119fd231f))
- * build(deps): bump tokio-util from 0.7.14 to 0.7.16 ([`fa43736`](https://github.com/tulpje/tulpje/commit/fa437366b1cd4604209ca991d2687cc460b65b1a))
+ * fix(cache): add `avatar_decoration_data` and `banner` fields to user ([`7fee98c`](https://github.com/tulpje/tulpje/commit/7fee98c34df25d4c9b18cdc070351e4ab84b7744))
+ * fix(cache): remove deref ([`35be22e`](https://github.com/tulpje/tulpje/commit/35be22e26db2a093752616b8881cf0445ddadb86))
+ * fix(cache): update User on MemberUpdate ([`4eac92f`](https://github.com/tulpje/tulpje/commit/4eac92f2344f46b1db32d729f6ec942189c45635))
+ * chore(deps): bump `serde_json` from 1.0.140 to 1.0.145 ([`7e2baa3`](https://github.com/tulpje/tulpje/commit/7e2baa398dae6719dd07d53875f6e1639875d1df))
+ * chore(deps): bump `serde` from 1.0.219 to 1.0.228 ([`5511665`](https://github.com/tulpje/tulpje/commit/55116655b37504981043e098367cfd8df29e8691))
+ * chore(deps): move redis crate to workspace deps ([`0299f80`](https://github.com/tulpje/tulpje/commit/0299f80d7e8a099677875d2cc6c9cf96b880508e))
  * chore(build): update to rust 1.90.0, fix lint warnings, `cargo fmt` ([`b850737`](https://github.com/tulpje/tulpje/commit/b8507378e832c0dee7bfedc74ebc72d3ad250235))
  * chore(lint): `clippy::collapsible_if` ([`3280fa2`](https://github.com/tulpje/tulpje/commit/3280fa2aff1e50057231438153466c6839807201))
  * chore: `cargo fmt` ([`a08aa81`](https://github.com/tulpje/tulpje/commit/a08aa8152bc0422ea2a1c3740cfd59a098e26e58))
  * refactor(build): specify edition on workspace level ([`751c335`](https://github.com/tulpje/tulpje/commit/751c335316d1e9b4440e98e7435fa38ed1ea8c09))
- * chore(reconnecting-amqp/deps): update amqprs from 2.1.0 to 2.1.2 ([`7706b0b`](https://github.com/tulpje/tulpje/commit/7706b0b29ba2d4b7c8e9f5256f436f4ca46f5fb1))
- * fix(reconnecting-amqp/deps): pin amqprs version due to trait changes ([`edc2b5a`](https://github.com/tulpje/tulpje/commit/edc2b5a9ab927debb7bf74f7eac09ae29d02bc18))
- * refactor!: split `reconnecting-amqp` into separate crate ([`5e8941b`](https://github.com/tulpje/tulpje/commit/5e8941b7179484fa095ef65d14230875b28e9503))
+ * chore(deps): move twilight-* crates to workspace deps ([`d36e8d5`](https://github.com/tulpje/tulpje/commit/d36e8d565d66b066284387a721bc3cc013e5365d))
+ * fix(gateway): hanging connections ([`5635aa6`](https://github.com/tulpje/tulpje/commit/5635aa6aa56de9cbecbafaefcaaeed0ef75fc0a2))
+</details>
+
+## [cache-v0.3.0] - 2026-10-04
+
+### Changed
+
+ - Bump serde_json from 1.0.138 to 1.0.140
+
+### Fixed
+
+ - Redis should have feature `tokio-comp` not `aio`
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * fix(handler): redis should have feature `tokio-comp` not `aio` ([`5a478cb`](https://github.com/tulpje/tulpje/commit/5a478cb694650f5d1b22d8265a40f2a409f3d60e))
+ * build(deps): bump serde_json from 1.0.138 to 1.0.140 ([`b92e976`](https://github.com/tulpje/tulpje/commit/b92e9766acfafb5444bdbb591256170f36790723))
+</details>
+
+## [cache-v0.2.0] - 2026-10-04
+
+### Breaking Changes
+
+ - Use redis-rs directly instead of through bb8 pool
+
+### Changed
+
+ - Bump redis from 0.28.2 to 0.29.1
+ - Bump serde from 1.0.216 to 1.0.219
+ - Bump serde_json from 1.0.133 to 1.0.138
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * build(deps): bump redis from 0.28.2 to 0.29.1 ([`a65610b`](https://github.com/tulpje/tulpje/commit/a65610b39b50e851ef96207d4c4da63f544f94f2))
+ * build(deps): bump serde from 1.0.216 to 1.0.219 ([`cc80138`](https://github.com/tulpje/tulpje/commit/cc8013804aac926c4104e61d4196c72c2ba3faa9))
+ * build(deps): bump serde_json from 1.0.133 to 1.0.138 ([`78203bb`](https://github.com/tulpje/tulpje/commit/78203bb7396b63807cc1103dece994c06202ef03))
+ * refactor!: use redis-rs directly instead of through bb8 pool ([`12add45`](https://github.com/tulpje/tulpje/commit/12add4574d435e2c8f86ba139502f042847e9111))
+</details>
+
+## [cache-v0.1.0] - 2026-10-04
+
+### Changed
+
+ - Implemented tulpje-cache, a redis based caching library
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * feat: implemented tulpje-cache, a redis based caching library ([`d11b12e`](https://github.com/tulpje/tulpje/commit/d11b12ed73a8fec4c80368e62e324a3b69536002))
 </details>
 <!-- generated by git-cliff -->

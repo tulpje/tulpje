@@ -6,6 +6,96 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.22.0-rc.1] - 2026-10-04
+
+### Added
+
+ - Add workspace hack with `cargo-hakari`
+ - Add a description to tulpje-shared
+ - Add `hyperfine` package
+ - Add more colored output
+ - Add glob support to workspace member resolution in `release.py`
+ - Add `--skip-slow` to `release.py` to speed up dry runs
+
+### Changed
+
+ - Rename `db` module to `db_id`
+ - Convert `pk_guilds` to use `system_uuid` instead of `system_id` and add foreign key
+ - Move migrations to repository root
+ - Move Core module into `tulpje-mod-core` crate
+ - Move Stats module into `tulpje-mod-stats` crate
+ - Move `format_significant_duration` to `tulpje-lib`
+ - Move `is_pk_proxy` to `tulpje-lib`
+ - Move Emoji module into `tulpje-mod-emoji` crate
+ - Split out command calls into separate function in `build.rs`
+ - Move PluralKit module into `tulpje-mod-pluralkit` crate
+ - Move code shared between modules into `tulpje-lib` crate
+ - Rename `tulpje-shared` to `tulpje-common`
+ - Use `wild` linker
+ - Use `debug = "line-tables-only" to improve debug build times and size
+ - Split log formatter into separate module
+ - Turn `release.py` into a proper python package
+ - Disable dependabot version updates, only use it for security
+ - Set `publish` in each crate's `Cargo.toml`
+ - Use the Color deref impl
+ - Move `Color` struct and role colors into `tulpje-framework`
+ - Point to new user guide
+
+### Fixed
+
+ - Properly add foreign keys to all databaes tables
+ - Pass shard id to gateway queue
+ - Rebuild `tulpje-handler` if migrations change
+ - Fix rerun-if-changed paths in build.rs
+ - Actually re-use the `cargoArtifacts` derivation
+ - Don't use references to Color, it's `Copy` now
+
+### Removed
+
+ - Remove unused dependency `serde-json` from `tulpje-common`
+ - Remove unused `tulpje-manager` crate
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * refactor(tulpje-lib): rename `db` module to `db_id` ([`d9531bf`](https://github.com/tulpje/tulpje/commit/d9531bf8efe081edf3c8867f10df8505f8b5e357))
+ * fix(handler): properly add foreign keys to all databaes tables ([`1921ee9`](https://github.com/tulpje/tulpje/commit/1921ee9ae7aa8be4d64bc47da443cb57c49c6fd5))
+ * refactor(handler): convert `pk_guilds` to use `system_uuid` instead of `system_id` and add foreign key ([`53117c1`](https://github.com/tulpje/tulpje/commit/53117c13f0449237dec9b6424fe93a08fdb02402))
+ * chore: move migrations to repository root ([`2ac9c1d`](https://github.com/tulpje/tulpje/commit/2ac9c1de832231402b330b6e76a4a28a0738e022))
+ * fix(gateway): pass shard id to gateway queue ([`e181030`](https://github.com/tulpje/tulpje/commit/e18103048b2789cd59d80e07e03af590ca4c9427))
+ * refactor: move Core module into `tulpje-mod-core` crate ([`4173e28`](https://github.com/tulpje/tulpje/commit/4173e28c136f830c6ac04c9460646410f2a69041))
+ * refactor: move Stats module into `tulpje-mod-stats` crate ([`834d8b1`](https://github.com/tulpje/tulpje/commit/834d8b1db38d16337914bff0d95dac5f4d75b4c9))
+ * chore(deps): remove unused dependency `serde-json` from `tulpje-common` ([`9b5d172`](https://github.com/tulpje/tulpje/commit/9b5d17226ea3198afa66717e3d5b24aa616eca66))
+ * refactor: move `format_significant_duration` to `tulpje-lib` ([`afebce8`](https://github.com/tulpje/tulpje/commit/afebce8c42a5243aba0dda018583bcd8bb0627db))
+ * refactor: move `is_pk_proxy` to `tulpje-lib` ([`48934fc`](https://github.com/tulpje/tulpje/commit/48934fc4c19d75c98b821eec8b6f11fa7d928979))
+ * refactor: move Emoji module into `tulpje-mod-emoji` crate ([`ba5ecd7`](https://github.com/tulpje/tulpje/commit/ba5ecd7ec4ffd6d27277c3b9d759fbb797fd9ce4))
+ * chore(build): add workspace hack with `cargo-hakari` ([`efd258f`](https://github.com/tulpje/tulpje/commit/efd258fca7b67e022a1033f757fe2693cc724e3e))
+ * chore: remove unused `tulpje-manager` crate ([`4c3ad99`](https://github.com/tulpje/tulpje/commit/4c3ad9905cd2d908b1a0ca6833d9857993078a7f))
+ * fix(build): rebuild `tulpje-handler` if migrations change ([`d92aef2`](https://github.com/tulpje/tulpje/commit/d92aef22b0f34edf793a753275734cdff609dffd))
+ * refactor(build): split out command calls into separate function in `build.rs` ([`a274be6`](https://github.com/tulpje/tulpje/commit/a274be648f6f7a9fc898f61b4a95fd9c559cc0dc))
+ * fix(build): fix rerun-if-changed paths in build.rs ([`ff69e98`](https://github.com/tulpje/tulpje/commit/ff69e9852446d2d5fe3ba3b6e58db1a3460305b2))
+ * refactor: move PluralKit module into `tulpje-mod-pluralkit` crate ([`25f933a`](https://github.com/tulpje/tulpje/commit/25f933a712a9703b7bf7bbc7083f94ae80df3844))
+ * refactor: move code shared between modules into `tulpje-lib` crate ([`90dc817`](https://github.com/tulpje/tulpje/commit/90dc8173aef357cadc8394b4ace79108296ca2e8))
+ * refactor: rename `tulpje-shared` to `tulpje-common` ([`8503abc`](https://github.com/tulpje/tulpje/commit/8503abc37aef038ff01e5e9e2b68c10f64b54632))
+ * chore: add a description to tulpje-shared ([`1d69670`](https://github.com/tulpje/tulpje/commit/1d696706c33e2319e532e0b218559d25f476b4c9))
+ * chore(build): use `wild` linker ([`be4dd98`](https://github.com/tulpje/tulpje/commit/be4dd98c6090e3ac7ae0b0e24dac850f193031d5))
+ * chore(build): use `debug = "line-tables-only" to improve debug build times and size ([`74233e6`](https://github.com/tulpje/tulpje/commit/74233e6d88b6b428ccb88603a0043b4c97c1e19d))
+ * fix(nix): actually re-use the `cargoArtifacts` derivation ([`4f8196e`](https://github.com/tulpje/tulpje/commit/4f8196e1812071a2a54d5b062e880a361046cd4e))
+ * chore(nix): add `hyperfine` package ([`3e87ae8`](https://github.com/tulpje/tulpje/commit/3e87ae8639b4caa3591a28e04602c566a67113af))
+ * feat(tools/release-tulpje): add more colored output ([`6286254`](https://github.com/tulpje/tulpje/commit/62862549891dda98bfae439e172b4e2a8d3d38c9))
+ * refactor(tools/release-tulpje): split log formatter into separate module ([`38ca4d7`](https://github.com/tulpje/tulpje/commit/38ca4d7add0eb7271b752d6f11a748d4342fe01f))
+ * refactor(tools/release-tulpje): turn `release.py` into a proper python package ([`d236f5e`](https://github.com/tulpje/tulpje/commit/d236f5e27e1186b9523b1024596551812244053b))
+ * fix(build): add glob support to workspace member resolution in `release.py` ([`e773857`](https://github.com/tulpje/tulpje/commit/e7738578fee817cc0139122dcb17abc3773505d8))
+ * feat(build): add `--skip-slow` to `release.py` to speed up dry runs ([`1effc2a`](https://github.com/tulpje/tulpje/commit/1effc2af683a7c2512b1fb7bee8048b8325d9ac0))
+ * chore(ci): disable dependabot version updates, only use it for security ([`9fbb076`](https://github.com/tulpje/tulpje/commit/9fbb076f2fe18b0a5b8495e629ef1322fa60f4f1))
+ * chore: set `publish` in each crate's `Cargo.toml` ([`e2d986c`](https://github.com/tulpje/tulpje/commit/e2d986c8f9560959dec509f114687dd3023e5c5f))
+ * chore: use the Color deref impl ([`a8d76cb`](https://github.com/tulpje/tulpje/commit/a8d76cbe9013a8355a3baacf615a7a446d9c97ca))
+ * fix(handler): don't use references to Color, it's `Copy` now ([`5eb0851`](https://github.com/tulpje/tulpje/commit/5eb0851b112a8066d5dbcff4c68f429c4bfd55bc))
+ * refactor: move `Color` struct and role colors into `tulpje-framework` ([`2c8cf4a`](https://github.com/tulpje/tulpje/commit/2c8cf4adf75ec1e49919be409115fbabecaeb412))
+ * chore(docs): point to new user guide ([`fa7730d`](https://github.com/tulpje/tulpje/commit/fa7730d4bf7a3260f849187097da7b96673cc117))
+</details>
+
 ## [0.21.5-rc.1] - 2026-10-04
 
 ### Added
@@ -422,10 +512,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
- - Configurable extra data in error message
  - Enable globally instead of per guild
  - Configurable log format using `RUST_LOG_FORMAT` env var
- - Send an error reference to discord instead of the actual error message
  - Prettier responses when adding/removing notify systems
  - Better logging for update-member-roles
  - Update vulnerable deps
@@ -453,11 +541,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <details><summary>view details</summary>
 
- * feat(framework): configurable extra data in error message ([`c38250d`](https://github.com/tulpje/tulpje/commit/c38250d08ebab423b9a4106209d6cdf12f607a2b))
  * chore(module/pk): enable globally instead of per guild ([`10b60b4`](https://github.com/tulpje/tulpje/commit/10b60b419d123fc938ce55eb8cd6a834fbf7497c))
  * feat(handler/pk): add extra metrics ([`f526948`](https://github.com/tulpje/tulpje/commit/f526948ca29f977da29d030456393dcdf88edcb9))
  * feat: configurable log format using `RUST_LOG_FORMAT` env var ([`dde6a0d`](https://github.com/tulpje/tulpje/commit/dde6a0d69188402eb8918799d98176f3aa78ee90))
- * feat(framework): send an error reference to discord instead of the actual error message ([`4f44e1b`](https://github.com/tulpje/tulpje/commit/4f44e1b08d7292783b17e6152dac4d96c164587a))
  * feat(framework): add tracing::span to event handling ([`4bfa125`](https://github.com/tulpje/tulpje/commit/4bfa125fa567b20115a0a2c09281c154333e9d9d))
  * feat(pk): prettier responses when adding/removing notify systems ([`40adc3d`](https://github.com/tulpje/tulpje/commit/40adc3d9d932441dafb97837cbdc4c3abd4e1e01))
  * feat(pk): better logging for update-member-roles ([`7036c60`](https://github.com/tulpje/tulpje/commit/7036c608571fae67b029cdf236ff40a3569dc3f0))
@@ -493,7 +579,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
  - Bump version to 0.19.1-beta.2
- - Send command errors to discord
  - Dedicated function for handling gateway messages
  - Move shard management into dedicated struct
  - Implement graceful shutdown
@@ -533,7 +618,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - Don't panic on join errors, log them
  - Shut down amqp task before joining it
  - Switch from `ring` to aws-lc-rs`
- - Don't use workspace description
 
 ### Removed
 
@@ -550,7 +634,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  * fix(handler/pk): correctly preserve fronter order ([`4fde536`](https://github.com/tulpje/tulpje/commit/4fde536c60691e1d85649751dc4b9804a2df4e9e))
  * fix(handler/pk): create channels with correct permissions ([`d5f0d81`](https://github.com/tulpje/tulpje/commit/d5f0d819bba1570e36419c70b32e1f5322c36610))
  * fix(handler/pk): better error handling on updating fronters ([`bb0a2cc`](https://github.com/tulpje/tulpje/commit/bb0a2cce6a87820e37fe5c4733653790d7edd5fd))
- * feat(framework): send command errors to discord ([`5f3db99`](https://github.com/tulpje/tulpje/commit/5f3db99a34f888a0ba18fad0c19b32a3a95ba820))
  * refactor(gateway): dedicated function for handling gateway messages ([`3361684`](https://github.com/tulpje/tulpje/commit/336168441cb9f98c521095b1f2ee97750a316504))
  * refactor(gateway): move shard management into dedicated struct ([`7468367`](https://github.com/tulpje/tulpje/commit/7468367dc88b43dee2fa8696fa4038e993ff7617))
  * feat(gateway): implement graceful shutdown ([`74693c3`](https://github.com/tulpje/tulpje/commit/74693c39d236a793defa2d967bb80d7a45119640))
@@ -586,7 +669,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  * chore(deps): bump metrics from 0.24.2 to 0.24.3 ([`9a29cd4`](https://github.com/tulpje/tulpje/commit/9a29cd4b1a10ebe564190ab607735c818ff428c3))
  * chore(deps): bump redis from 0.32.6 to 0.32.7 ([`1fb3982`](https://github.com/tulpje/tulpje/commit/1fb3982f1c363ec1488b2e9801e812afa85d34d6))
  * build(deps): bump rsa from 0.9.7 to 0.9.10 ([`7309ff0`](https://github.com/tulpje/tulpje/commit/7309ff0dec42e42e479e214164ac2bfecbf09811))
- * fix(reconnecting-amqp): don't use workspace description ([`e7a4d4f`](https://github.com/tulpje/tulpje/commit/e7a4d4fe294725996ee46b85f11d9ddd6db1ee5d))
 </details>
 
 ## [0.19.0-rc.2] - 2026-10-04
@@ -621,7 +703,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
  - Add missing fields to component structs
- - Add `avatar_decoration_data` and `banner` fields to user
  - Add `cargo edit` and `cargo machete`
  - Add cargo-outdated to devenv packages
  - Additional comments and cleanup
@@ -676,9 +757,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
  - Use primary_color for member roles
  - ReadyInfo no longer needs to be dereferenced
- - Update User on MemberUpdate
  - Also use non-annotated git tags to determine version
- - Pin amqprs version due to trait changes
  - Log invalid semver tags and skip them instead of crashing in release script
  - Bump tracing subscriber from 0.3.19 to 0.3.20
  - Hanging connections
@@ -716,9 +795,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  * fix(handler/pk): use primary_color for member roles ([`2a3d2b7`](https://github.com/tulpje/tulpje/commit/2a3d2b78c1b6cd7c188a262479e2fd44db770c96))
  * fix: remove tls feature flags that got removed in twilight 0.17 ([`ee69ff8`](https://github.com/tulpje/tulpje/commit/ee69ff8eb83304319482b74630b088f6ef0d05cc))
  * fix(gateway): ReadyInfo no longer needs to be dereferenced ([`b442e25`](https://github.com/tulpje/tulpje/commit/b442e25de158793ab5de46a981707bd57c6ce55b))
- * fix(cache): add `avatar_decoration_data` and `banner` fields to user ([`7fee98c`](https://github.com/tulpje/tulpje/commit/7fee98c34df25d4c9b18cdc070351e4ab84b7744))
  * chore!: update twilight dependencies to 0.17.0 ([`0dcb4ab`](https://github.com/tulpje/tulpje/commit/0dcb4abcc88eb5f5754eb548f283f36ff60aff4e))
- * fix(cache): update User on MemberUpdate ([`4eac92f`](https://github.com/tulpje/tulpje/commit/4eac92f2344f46b1db32d729f6ec942189c45635))
  * chore(deps): update flake inputs to latest ([`4b0ef6c`](https://github.com/tulpje/tulpje/commit/4b0ef6c6c70be58a49b077b55b37c3689d360ef7))
  * chore(deps): bump `async-trait` from 0.1.86 to 0.1.89 ([`652f101`](https://github.com/tulpje/tulpje/commit/652f10112fd52fc077d78ea135d903cd978667a6))
  * chore(deps): bump `sqlx` from 0.8.5 to 0.8.6 ([`ce98dea`](https://github.com/tulpje/tulpje/commit/ce98dea3965c97f364ef187860db71959173b061))
@@ -749,7 +826,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  * feat(build): add cargo-outdated to devenv packages ([`f1d7a3d`](https://github.com/tulpje/tulpje/commit/f1d7a3daae60ec6f7b046c8e838db9520a4abe23))
  * chore(deps): move twilight-* crates to workspace deps ([`d36e8d5`](https://github.com/tulpje/tulpje/commit/d36e8d565d66b066284387a721bc3cc013e5365d))
  * chore(reconnecting-amqp/deps): update amqprs from 2.1.0 to 2.1.2 ([`7706b0b`](https://github.com/tulpje/tulpje/commit/7706b0b29ba2d4b7c8e9f5256f436f4ca46f5fb1))
- * fix(reconnecting-amqp/deps): pin amqprs version due to trait changes ([`edc2b5a`](https://github.com/tulpje/tulpje/commit/edc2b5a9ab927debb7bf74f7eac09ae29d02bc18))
  * chore(deps): update flake inputs to latest ([`a57fdbb`](https://github.com/tulpje/tulpje/commit/a57fdbb1288b193eaf58cd1fee1c31cd46e5fa97))
  * fix(build): log invalid semver tags and skip them instead of crashing in release script ([`e735131`](https://github.com/tulpje/tulpje/commit/e735131d9caad7a38da3f60c5c107a8a159657db))
  * chore(deps): update to rust 1.89.0 ([`758d607`](https://github.com/tulpje/tulpje/commit/758d60757ee94812f95f6aef627e806325137f61))
@@ -1081,10 +1157,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
  - Reset minor/patch levels when bumping versions
 
-### Removed
-
- - Remove unused file module/module.rs
-
 ### Commit Details
 
 <details><summary>view details</summary>
@@ -1092,7 +1164,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  * fix(build): reset minor/patch levels when bumping versions ([`96bd60c`](https://github.com/tulpje/tulpje/commit/96bd60c9cce45568e392ef0ec95a70fdd25b0dfb))
  * feat(handler)!: use subcommands and subcommand groups ([`23ceadd`](https://github.com/tulpje/tulpje/commit/23ceadde444896be6f8784e0cb88542048f7e28e))
  * feat(framework)!: added support for subcommands and subcommand groups ([`175c77a`](https://github.com/tulpje/tulpje/commit/175c77a9e031c0fda73ccc2a566eac72d3cb4bbc))
- * chore: remove unused file module/module.rs ([`04c74f5`](https://github.com/tulpje/tulpje/commit/04c74f51c1cfd8314762ac4b73c6ca2b3a3e8d3a))
  * build: specify GitHub release title ([`2652cde`](https://github.com/tulpje/tulpje/commit/2652cde710df4e47dbc2373a341bbff383722a23))
 </details>
 
@@ -1130,10 +1201,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
  - Add release tooling
 
-### Changed
-
- - Version tulpje-framework separately from the bot
-
 ### Fixed
 
  - Set a default for HANDLER_COUNT and don't override SHARD_COUNT from .env
@@ -1149,7 +1216,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  * fix(build): set a default for HANDLER_COUNT and don't override SHARD_COUNT from .env ([`936aa2b`](https://github.com/tulpje/tulpje/commit/936aa2bdb5a2aafa0da8badc1933895bf2d638b0))
  * fix: revert "don't clear target/release, unneeded after removal of amqp feature" ([`0c0ae0c`](https://github.com/tulpje/tulpje/commit/0c0ae0c6a6e2dcf509e5f261f753ab20e7b0c861))
  * fix(handler): fix crash when unable to parse gateway payload, log error instead ([`bd95703`](https://github.com/tulpje/tulpje/commit/bd957031c7a34e5ed24ee5ad223caefbce42f090))
- * chore: version tulpje-framework separately from the bot ([`445a87a`](https://github.com/tulpje/tulpje/commit/445a87ab0dcc685cbe3b394722cbebf5618e7a69))
  * chore!: move sqlx data to the tulpje-handler crate as they're part of that anyway ([`3214d95`](https://github.com/tulpje/tulpje/commit/3214d95eb52bab36845c3ff02aed91be6f7c312e))
  * fix(handler): use fork of pkrs that's actually published to crates.io ([`103dc52`](https://github.com/tulpje/tulpje/commit/103dc5252a612a1fc8c7e35fb7df98b51dc61026))
 </details>
@@ -1159,7 +1225,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Breaking Changes
 
  - Move DisordEventMeta to tulpje-framework and rename it Metadata
- - Remove unused InteractionHandler trait
  - Rewrite the deploy and push scripts to use bash
  - Remove features to choose amqp implementation, just use amqprs
 
@@ -1197,7 +1262,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  * chore: mark all crates as publishable ([`c348f46`](https://github.com/tulpje/tulpje/commit/c348f46db387d6d70b50302d1b52bce8cbd37b58))
  * refactor: don't make main() return Result, use .expect() to add info to errors ([`371972e`](https://github.com/tulpje/tulpje/commit/371972e6eddfc29f7188b97420772ecb52bf6a01))
  * refactor!: move DisordEventMeta to tulpje-framework and rename it Metadata ([`0b52c83`](https://github.com/tulpje/tulpje/commit/0b52c837279db332f18c9af3fc4bac1a16167972))
- * chore(framework)!: remove unused InteractionHandler trait ([`ec4266e`](https://github.com/tulpje/tulpje/commit/ec4266eea5f2035dbe4ab3c32c27aad8c61f4579))
  * fix: add missing package metadata ([`1a696c0`](https://github.com/tulpje/tulpje/commit/1a696c07dd05da3874f6ac1dbb60bc0df71f8128))
  * feat: implement additional metrics and show them in /processes ([`3dbdb99`](https://github.com/tulpje/tulpje/commit/3dbdb99906ac8ae4dfb93d8d881478a798a4acac))
  * feat(shared): implement version!() macro to get version from vergen env vars ([`b150a0d`](https://github.com/tulpje/tulpje/commit/b150a0df6f6723911c97ddcee1f3d055f668696b))
@@ -1281,10 +1345,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.7.0] - 2025-01-04
 
-### Breaking Changes
-
- - Mark builder methods as #[must_use]
-
 ### Added
 
  - Add explicit scaling support and store the handler count/id
@@ -1301,7 +1361,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - SHARD_ID env var should be uppercase
  - Enable clippy::explicit_iter_loop clippy::explicit_into_iter_loop and fix warnings
  - Wrap Registry in an Arc to avoid expensive `clone` operations
- - Mark contexts/handlers as Sync + Send
  - Enable clippy::redundant_closure and fix warnings
  - Enable clippy::or_fun_call and fix warnings
  - Enable clippy::option_if_let_else and fix warnings
@@ -1346,7 +1405,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  * fix(lint): enable clippy::explicit_iter_loop clippy::explicit_into_iter_loop and fix warnings ([`ef47d2b`](https://github.com/tulpje/tulpje/commit/ef47d2bd8b47105ddcf7d0cac8342efea64b6896))
  * fix(handler): wrap Registry in an Arc to avoid expensive `clone` operations ([`b73330b`](https://github.com/tulpje/tulpje/commit/b73330b1d818b17424dae5f2ba81e44b2bd8c39e))
  * chore: remove outdated comment ([`3b0e668`](https://github.com/tulpje/tulpje/commit/3b0e6685869a8d7650e31f405fd1c74837f9d77d))
- * fix(framework): mark contexts/handlers as Sync + Send ([`e052727`](https://github.com/tulpje/tulpje/commit/e052727c5e4a2c0e8030640f66e3166248e911c8))
  * fix(lint): enable clippy::redundant_closure and fix warnings ([`f95b528`](https://github.com/tulpje/tulpje/commit/f95b5283dc0f8c911f1b0cf60e7db73d602808ef))
  * fix(lint): enable clippy::or_fun_call and fix warnings ([`6835e9e`](https://github.com/tulpje/tulpje/commit/6835e9ef07bd852baf5ad0d16adb6b06e54c5488))
  * fix(lint): enable clippy::option_if_let_else and fix warnings ([`c2642eb`](https://github.com/tulpje/tulpje/commit/c2642eb655619cb211effd50de71fce9ecfc82a2))
@@ -1364,7 +1422,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  * fix(lint): enable clippy::get_unwrap and fix warnings ([`741c3b1`](https://github.com/tulpje/tulpje/commit/741c3b1d655293ffe51d65858ed9d19bbd13f0f7))
  * fix(lint): enable clippy::ignored_unit_patterns and fix warnings ([`80d3d79`](https://github.com/tulpje/tulpje/commit/80d3d797fc6d0fcf685f143de2c1a633e328970c))
  * fix(lint): enable clippy::clone_on_ref_ptr and fix warnings ([`cc81e10`](https://github.com/tulpje/tulpje/commit/cc81e10285528b3b388c1395abd6b9df7559e6d9))
- * feat(framework)!: mark builder methods as #[must_use] ([`f0c535a`](https://github.com/tulpje/tulpje/commit/f0c535ad9e3a3a53f28bcee2192ec827ad1926eb))
  * fix(lint): enable clippy::needless_for_each and fix warnings ([`bff5128`](https://github.com/tulpje/tulpje/commit/bff51285ae69387e4be2c46762fe33cc735f55b7))
  * fix(lint): enable clippy::redundant_clone and fix warnings ([`add7613`](https://github.com/tulpje/tulpje/commit/add7613e3b9853b2a1222ebaa0e242b74d5201c3))
  * chore(lint): enable clippy::mod_module_files ([`fd55d60`](https://github.com/tulpje/tulpje/commit/fd55d6041f82fa83c94090d4fb68859c6e4e8c16))
@@ -1407,7 +1464,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Breaking Changes
 
  - Don't pass context in constructor
- - Disallow adding tasks after starting scheduler
 
 ### Changed
 
@@ -1417,7 +1473,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
  - After defer we should use ctx.update
  - Actually send user errors back to the user
- - InteractionRegistry::get should not be &mut
 
 ### Commit Details
 
@@ -1425,10 +1480,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
  * fix(handler/pk): after defer we should use ctx.update ([`1f13896`](https://github.com/tulpje/tulpje/commit/1f13896e3f596665ccf8ae3d7dac799bdeaf9dd5))
  * fix(handler/pk): actually send user errors back to the user ([`97005c6`](https://github.com/tulpje/tulpje/commit/97005c65332be179959ec9b51efd4f00222c9cdf))
- * fix(framework): InteractionRegistry::get should not be &mut ([`90a1978`](https://github.com/tulpje/tulpje/commit/90a19785823f55386a1a6731ab7b1639af28a082))
  * feat: per-guild commands ([`b5de362`](https://github.com/tulpje/tulpje/commit/b5de36220153cc69a77d6189774d93f80ff050ef))
  * refactor(framework)!: don't pass context in constructor ([`3ad9713`](https://github.com/tulpje/tulpje/commit/3ad97134dd72ff3132a40e1bc81799162733134c))
- * feat(framework)!: disallow adding tasks after starting scheduler ([`4559347`](https://github.com/tulpje/tulpje/commit/455934756c14ae6b6459dafc5bad5fb7b49358d4))
 </details>
 
 ## [0.4.2] - 2025-01-02
@@ -1511,19 +1564,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.4.0] - 2024-12-30
 
-### Added
-
- - Added `CommandContext::defer` helper method
- - Added `CommandContext::update` method to update the current interaction's message (after defer)
- - Added helper methods to get command options
-
 ### Changed
 
  - PluralKit module
  - Task scheduling using cron syntax
  - Suppress clippy::single_match warning
  - Implement emoji cloning
- - Helper method to create CommandContext from base context
  - Macros for making registering handlers slightly nicer
  - Implemented basic command and event handling framework
 
@@ -1544,10 +1590,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  * style(gateway): suppress clippy::single_match warning ([`4447262`](https://github.com/tulpje/tulpje/commit/44472620aea36fd296e1b95dce8a53e25436a03f))
  * fix: thread safetey ugh headaches ([`7c2f831`](https://github.com/tulpje/tulpje/commit/7c2f831d3b1480c516c1c716d1c4221d3e9970ac))
  * feat(handler): implement emoji cloning ([`ff52f17`](https://github.com/tulpje/tulpje/commit/ff52f1750e8bacdcada503f627027337a09730ae))
- * feat(framework): added `CommandContext::defer` helper method ([`1bfc43a`](https://github.com/tulpje/tulpje/commit/1bfc43aa7c04c67ed68d5d0d634293cf3a7da9bc))
- * feat(framework): added `CommandContext::update` method to update the current interaction's message (after defer) ([`56e2696`](https://github.com/tulpje/tulpje/commit/56e26960a6f420555b682336bc50bbd73b212632))
- * feat(framework): added helper methods to get command options ([`10db396`](https://github.com/tulpje/tulpje/commit/10db396651c225ad5bfa81b808ec76119a2ce55f))
- * feat(framework): helper method to create CommandContext from base context ([`8f01a15`](https://github.com/tulpje/tulpje/commit/8f01a15f6ae0f4a316d3631995349499132130a2))
  * feat(framework): macros for making registering handlers slightly nicer ([`0ad6ee5`](https://github.com/tulpje/tulpje/commit/0ad6ee59d7f359c575fb467dba44c8e1a4f59397))
  * feat(framework): implemented basic command and event handling framework ([`4438e03`](https://github.com/tulpje/tulpje/commit/4438e0306c591c74e6597d4d79ef4c729d2af5b0))
 </details>
