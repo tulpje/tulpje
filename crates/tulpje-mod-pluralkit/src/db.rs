@@ -132,6 +132,32 @@ pub(crate) async fn get_system(
     }
 }
 
+pub(crate) async fn get_system_for_guild(
+    db: &sqlx::PgPool,
+    guild_id: Id<GuildMarker>,
+) -> Result<Option<ModPkSystem>, Error> {
+    Ok(sqlx::query_as!(
+        ModPkSystem,
+        r#"
+            SELECT
+                pk_systems.id,
+                pk_systems.uuid,
+                pk_systems.name
+            FROM
+                pk_guilds
+            INNER JOIN
+                pk_systems
+            ON
+                pk_systems.uuid = pk_guilds.system_uuid
+            WHERE
+                guild_id = $1
+        "#,
+        i64::from(DbId(guild_id))
+    )
+    .fetch_optional(db)
+    .await?)
+}
+
 pub(crate) async fn update_system(db: &sqlx::PgPool, system: &ModPkSystem) -> Result<(), Error> {
     sqlx::query!(
         "INSERT INTO pk_systems (id, uuid, name) VALUES ($1, $2, $3) ON CONFLICT (uuid) DO UPDATE SET id = $1, name = $3",
