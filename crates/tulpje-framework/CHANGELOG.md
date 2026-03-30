@@ -6,6 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.16.1] - 2026-10-04
+
+### Added
+
+ - Add `twilight-standby` for waiting for events
+
+### Changed
+
+ - Implement `EventContext::from_context`
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * refactor(framework): implement `EventContext::from_context` ([`8ac6848`](https://github.com/tulpje/tulpje/commit/8ac684857585bb956b0a7d01887d29fcbfda547a))
+ * feat(tulpje-framework): add `twilight-standby` for waiting for events ([`a5330dd`](https://github.com/tulpje/tulpje/commit/a5330ddc76ac569262d6c7a15d1ee1b40ab11475))
+</details>
+
 ## [framework-v0.16.1-rc.1] - 2026-10-04
 
 ### Added

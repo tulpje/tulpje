@@ -6,6 +6,37 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.22.1-rc.3] - 2026-10-04
+
+### Added
+
+ - Add permission check to `/pk fronters setup`
+ - Add overwrite confirmation to `/pk fronters setup` and `/pk notify setup`
+ - Add `twilight-standby` for waiting for events
+
+### Changed
+
+ - Also handle guild permissions in `handle_permissions`
+ - Implement `From<Uuid>` for `SystemRef`
+ - Confirmation before overwriting guild system
+ - Implement ConfirmationDialog for building/handling confirmation prompts
+ - Implement `EventContext::from_context`
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * fixup! feat(tulpje-mod-pluralkit): add overwrite confirmation to `/pk fronters setup` and `/pk notify setup` ([`4ef0349`](https://github.com/tulpje/tulpje/commit/4ef0349454defed13b815b500fdde21c4dc7df31))
+ * feat(tulpje-mod-pluralkit): add permission check to `/pk fronters setup` ([`59d9eb8`](https://github.com/tulpje/tulpje/commit/59d9eb8415981296c826721fd4ae439cb6f6eee2))
+ * feat(tulpje-lib): also handle guild permissions in `handle_permissions` ([`8f10f03`](https://github.com/tulpje/tulpje/commit/8f10f037774cae3de8c63d21cd52e3cf8e17e101))
+ * feat(tulpje-mod-pluralkit): add overwrite confirmation to `/pk fronters setup` and `/pk notify setup` ([`84f74e5`](https://github.com/tulpje/tulpje/commit/84f74e52eae14cd7cf1dbbbb24fe23dd4f2f34e6))
+ * feat(tulpje-mod-pluralkit): implement `From<Uuid>` for `SystemRef` ([`e65503e`](https://github.com/tulpje/tulpje/commit/e65503e668565ee273577343bbcaee7533ad922b))
+ * feat(tulpje-mod-pluralkit): confirmation before overwriting guild system ([`87317ab`](https://github.com/tulpje/tulpje/commit/87317ab4a94813344bf23a60eccd994c3f8ac2cf))
+ * feat(tulpje-lib): implement ConfirmationDialog for building/handling confirmation prompts ([`2d76154`](https://github.com/tulpje/tulpje/commit/2d76154a752eeef63c14d06942108396d3bc9c66))
+ * refactor(framework): implement `EventContext::from_context` ([`8ac6848`](https://github.com/tulpje/tulpje/commit/8ac684857585bb956b0a7d01887d29fcbfda547a))
+ * feat(tulpje-framework): add `twilight-standby` for waiting for events ([`a5330dd`](https://github.com/tulpje/tulpje/commit/a5330ddc76ac569262d6c7a15d1ee1b40ab11475))
+</details>
+
 ## [0.22.1-rc.2] - 2026-10-04
 
 ### Changed
