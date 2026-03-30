@@ -1,11 +1,17 @@
 use pkrs_fork::{client::PluralKitError, model::PkId};
 use tulpje_framework::Error;
+use twilight_model::channel::message::component::ButtonStyle;
+
+use tulpje_lib::{
+    confirmation_dialog::{ConfirmationDialogBuilder, MessageStyle},
+    context::CommandContext,
+    responses,
+};
 
 use super::{
     db::{self, ModPkSystem},
     util::handle_system_ref,
 };
-use tulpje_lib::{context::CommandContext, responses};
 
 // TODO: command to see current settings
 pub async fn setup_pk(ctx: CommandContext) -> Result<(), Error> {
@@ -42,6 +48,13 @@ pub async fn setup_pk(ctx: CommandContext) -> Result<(), Error> {
         Err(err) => return Err(err.into()),
     };
 
+    if let Some(existing_system) = db::get_system_for_guild(&ctx.services.db, guild.id).await?
+        && !handle_overwrite_existing_system(&ctx, &existing_system).await?
+    {
+        // setup was canceled, return
+        return Ok(());
+    }
+
     tulpje_lib::db::touch_guild(&ctx.services.db, guild.id).await?;
     db::update_system(&ctx.services.db, &system).await?;
     db::save_guild_settings(&ctx.services.db, guild.id, user_id, system.uuid).await?;
@@ -60,4 +73,34 @@ pub async fn setup_pk(ctx: CommandContext) -> Result<(), Error> {
     .await?;
 
     Ok(())
+}
+
+async fn handle_overwrite_existing_system(
+    ctx: &CommandContext,
+    system: &ModPkSystem,
+) -> Result<bool, Error> {
+    ConfirmationDialogBuilder::new()
+        .prompt_text(
+            MessageStyle::Warning,
+            &format!(
+                "### Warning\nThis server is already configured for `{}`\nOverwrite?",
+                system.name.as_ref().unwrap_or(&system.id)
+            ),
+        )
+        .cancel_text(
+            MessageStyle::Info,
+            &format!(
+                "### Canceled\nSetup canceled, keeping `{}` as configured system for this server",
+                system.name.as_ref().unwrap_or(&system.id)
+            ),
+        )
+        .confirm_button(ButtonStyle::Danger, |builder| {
+            builder.label("Yes, overwrite")
+        })
+        .cancel_button(ButtonStyle::Secondary, |builder| {
+            builder.label("No, cancel")
+        })
+        .build()
+        .execute(ctx)
+        .await
 }

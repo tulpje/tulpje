@@ -1,0 +1,34 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                pk_systems.id,\n                pk_systems.uuid,\n                pk_systems.name\n            FROM\n                pk_guilds\n            INNER JOIN\n                pk_systems\n            ON\n                pk_systems.uuid = pk_guilds.system_uuid\n            WHERE\n                guild_id = $1\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 1,
+        "name": "uuid",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 2,
+        "name": "name",
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int8"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      true
+    ]
+  },
+  "hash": "4fdb5ac27e7f4206b9a7175fda405f4054505daeb911498fe5c88b5a0af41881"
+}
