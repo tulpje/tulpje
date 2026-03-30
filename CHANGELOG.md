@@ -6,6 +6,39 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.22.1-rc.1] - 2026-10-04
+
+### Changed
+
+ - More frequent system front updates
+ - Update pkrs-fork to 0.8.0 and enable metrics
+ - Use pkrs-fork 0.7.0 and its new error type
+ - Move `touch_guild` to `tulpje-lib`
+
+### Fixed
+
+ - Make `get_notify_guilds_for_system` return `Id` instead of `DbId`
+ - Make sure guild is inserted into `guilds` before data depending on it is
+
+### Removed
+
+ - Remove overload warning
+ - Remove systems with private fronters from notifications and inform user
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * chore(tulpje-mod-pluralkit): remove overload warning ([`3f27ed4`](https://github.com/tulpje/tulpje/commit/3f27ed40bca78d3d91641280cb33699a3e17f6ff))
+ * feat(tulpje-mod-pluralkit): more frequent system front updates ([`cb56f1f`](https://github.com/tulpje/tulpje/commit/cb56f1fe202a3b6479ff9c7b1dc2fa6454de7d1c))
+ * feat(handler): update pkrs-fork to 0.8.0 and enable metrics ([`4f952ac`](https://github.com/tulpje/tulpje/commit/4f952acfa069db0c160a47df6c635e1ded4899b5))
+ * feat(tulpje-mod-pluralkit): remove systems with private fronters from notifications and inform user ([`fbca444`](https://github.com/tulpje/tulpje/commit/fbca444acacf1e5393ef1c6cbab1dc0173aaa75d))
+ * fix(tulpje-mod-pluralkit): make `get_notify_guilds_for_system` return `Id` instead of `DbId` ([`d4b98a9`](https://github.com/tulpje/tulpje/commit/d4b98a93207dc0e38c49e068316160b8dd07fcd7))
+ * feat: use pkrs-fork 0.7.0 and its new error type ([`1d1faa8`](https://github.com/tulpje/tulpje/commit/1d1faa8ebecb604116035b22521345d11ee2d533))
+ * fix(handler): make sure guild is inserted into `guilds` before data depending on it is ([`7ec9113`](https://github.com/tulpje/tulpje/commit/7ec9113bf0170c870382db29ddf94fb04f1594bd))
+ * refactor: move `touch_guild` to `tulpje-lib` ([`429113e`](https://github.com/tulpje/tulpje/commit/429113edd01e98c1151e895b29d971557b68f9af))
+</details>
+
 ## [0.22.0] - 2026-10-04
 
 ### Fixed
