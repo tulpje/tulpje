@@ -183,16 +183,7 @@ pub(crate) async fn delete_fronters(db: &sqlx::PgPool, system_uuid: Uuid) -> Res
 }
 
 pub(crate) async fn get_systems_to_update(db: &sqlx::PgPool) -> Result<Vec<ModPkSystem>, Error> {
-    // fetch 10 systems that
-    //   * haven't had fronters updated for over 10 minutes,
-    //   * or that are missing in pk_system_fronters
-    // running this once a minute should get us a limit of 100 systems, which should be sufficient
-    // for now
-    //
-    // NOTE: We don't need to filter on whether a system is in pk_notify_systems or pk_fronters
-    //       because the pk_systems table should get cleaned up by the calls to cleanup_system
-    //       automatically
-    // TODO: Write a query that shows us any "orphan" systems
+    // fetch 5 systems ordered by most stale, and that haven't been updated in over a minute
     Ok(sqlx::query_as!(
         ModPkSystem,
         r#"
@@ -206,7 +197,7 @@ pub(crate) async fn get_systems_to_update(db: &sqlx::PgPool) -> Result<Vec<ModPk
             WHERE (
                     updated_at IS NULL
                 OR
-                    updated_at <= NOW() - interval '10 minutes'
+                    updated_at <= NOW() - interval '1 minutes'
             ) AND (
                     uuid IN (
                         SELECT
@@ -229,7 +220,7 @@ pub(crate) async fn get_systems_to_update(db: &sqlx::PgPool) -> Result<Vec<ModPk
             ORDER BY
                 updated_at
             ASC NULLS FIRST
-            LIMIT 10
+            LIMIT 5
         "#
     )
     .fetch_all(db)
