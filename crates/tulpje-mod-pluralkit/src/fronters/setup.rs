@@ -19,6 +19,7 @@ use tulpje_lib::{
     confirmation_dialog::{ConfirmationDialogBuilder, MessageStyle},
     context::CommandContext,
     responses,
+    util::handle_permissions,
 };
 
 pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
@@ -33,6 +34,17 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
         responses::error(&ctx, "PluralKit module not set-up, please run `/pk setup`").await?;
         return Ok(());
     };
+
+    tracing::debug!(
+        "/pk fronters setup, checking permissions for guild {}",
+        guild.id,
+    );
+    let bot_user = ctx.client.current_user().await?.model().await?;
+    let required_permissions =
+        Permissions::MANAGE_CHANNELS | Permissions::VIEW_CHANNEL | Permissions::CONNECT;
+    if !handle_permissions(&ctx, guild.id, bot_user.id, None, required_permissions).await? {
+        return Ok(());
+    }
 
     tracing::debug!(
         "/pk fronters setup, checking for existing category for guild {}",
@@ -76,9 +88,6 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
     }
 
     let category_title = ctx.get_arg_string("title")?;
-    let bot_user = ctx.client.current_user().await?.model().await?;
-    let required_permissions =
-        Permissions::MANAGE_CHANNELS | Permissions::VIEW_CHANNEL | Permissions::CONNECT;
 
     // define required permissions
     let permission_overwrites = vec![
