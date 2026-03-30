@@ -5,6 +5,41 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.22.1-rc.1] - 2026-03-30
+
+### Changed
+
+ - More frequent system front updates
+ - Update pkrs-fork to 0.8.0 and enable metrics
+ - Use pkrs-fork 0.7.0 and its new error type
+ - Move `touch_guild` to `tulpje-lib`
+
+### Fixed
+
+ - Make `get_notify_guilds_for_system` return `Id` instead of `DbId`
+ - Make sure guild is inserted into `guilds` before data depending on it is
+ - Changelog version
+
+### Removed
+
+ - Remove overload warning
+ - Remove systems with private fronters from notifications and inform user
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * chore(tulpje-mod-pluralkit): remove overload warning ([`694ab38`](https://github.com/tulpje/tulpje/commit/694ab389fc19b1537a3adb131e23cd7c474f5e28))
+ * feat(tulpje-mod-pluralkit): more frequent system front updates ([`fe95b3e`](https://github.com/tulpje/tulpje/commit/fe95b3e471bef0c0d3da2cb4679214095d8c6c3c))
+ * feat(handler): update pkrs-fork to 0.8.0 and enable metrics ([`4f28992`](https://github.com/tulpje/tulpje/commit/4f2899272a44241fb2470675b0caab98d7e125c1))
+ * feat(tulpje-mod-pluralkit): remove systems with private fronters from notifications and inform user ([`f096ddd`](https://github.com/tulpje/tulpje/commit/f096ddd3cef31eafa5480a5d4bc1a82fa7c3ef04))
+ * fix(tulpje-mod-pluralkit): make `get_notify_guilds_for_system` return `Id` instead of `DbId` ([`0851068`](https://github.com/tulpje/tulpje/commit/08510688822f1960c21ef8ab3d6cda34f83b82e3))
+ * feat: use pkrs-fork 0.7.0 and its new error type ([`6f7f941`](https://github.com/tulpje/tulpje/commit/6f7f9410418aa0a7e32b5b2e15c78deb5f6a4953))
+ * fix(handler): make sure guild is inserted into `guilds` before data depending on it is ([`8c7146c`](https://github.com/tulpje/tulpje/commit/8c7146ca3153dee77c7a05c3dd89c62bb7526b21))
+ * refactor: move `touch_guild` to `tulpje-lib` ([`88b5118`](https://github.com/tulpje/tulpje/commit/88b5118c35c2ae60fff85cea2179830c69945b91))
+ * fix: changelog version ([`aeed99f`](https://github.com/tulpje/tulpje/commit/aeed99f3ddcf6e1b5225004807cbfbd3c0d493fa))
+</details>
+
 ## [0.22.0] - 2026-03-28
 
 ### Fixed
