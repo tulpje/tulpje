@@ -5,6 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.22.1-rc.3] - 2026-03-30
+
+### Added
+
+ - Add permission check to `/pk fronters setup`
+ - Add overwrite confirmation to `/pk fronters setup` and `/pk notify setup`
+ - Add `twilight-standby` for waiting for events
+
+### Changed
+
+ - Also handle guild permissions in `handle_permissions`
+ - Implement `From<Uuid>` for `SystemRef`
+ - Confirmation before overwriting guild system
+ - Implement ConfirmationDialog for building/handling confirmation prompts
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * fixup! feat(tulpje-mod-pluralkit): add overwrite confirmation to `/pk fronters setup` and `/pk notify setup` ([`5158bcb`](https://github.com/tulpje/tulpje/commit/5158bcb73317c8de12a539ab4924f10975896c28))
+ * feat(tulpje-mod-pluralkit): add permission check to `/pk fronters setup` ([`2857d02`](https://github.com/tulpje/tulpje/commit/2857d021bf9853ce55b933686ea44cfd16eb00ef))
+ * feat(tulpje-lib): also handle guild permissions in `handle_permissions` ([`d0abc29`](https://github.com/tulpje/tulpje/commit/d0abc2973b8157bb046ee01f5292447733e5c127))
+ * feat(tulpje-mod-pluralkit): add overwrite confirmation to `/pk fronters setup` and `/pk notify setup` ([`d5d1139`](https://github.com/tulpje/tulpje/commit/d5d11393e60e250ecdaecd0fe34000af4a3b33e1))
+ * feat(tulpje-mod-pluralkit): implement `From<Uuid>` for `SystemRef` ([`3672e59`](https://github.com/tulpje/tulpje/commit/3672e59ab96ee7f14805e5908959dc4bf8e91ad5))
+ * feat(tulpje-mod-pluralkit): confirmation before overwriting guild system ([`58a818e`](https://github.com/tulpje/tulpje/commit/58a818ea66069419809dda31f4984fe80c8e588c))
+ * feat(tulpje-lib): implement ConfirmationDialog for building/handling confirmation prompts ([`790df18`](https://github.com/tulpje/tulpje/commit/790df18154a3b2d132444aa0a2507e5a3af81b53))
+ * feat(tulpje-framework): add `twilight-standby` for waiting for events ([`82a5dbc`](https://github.com/tulpje/tulpje/commit/82a5dbc0906277b3da449dbe6ed62ee8b1190181))
+</details>
+
 ## [0.22.1-rc.2] - 2026-03-30
 
 ### Changed
