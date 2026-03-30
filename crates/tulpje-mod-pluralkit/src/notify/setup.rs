@@ -61,7 +61,15 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
 
     let channel = if let Some(channel) = existing_channel {
         // if existing channel, check permissions and return if missing
-        if !handle_permissions(&ctx, guild.id, bot_user.id, &channel, required_permissions).await? {
+        if !handle_permissions(
+            &ctx,
+            guild.id,
+            bot_user.id,
+            Some(&channel),
+            required_permissions,
+        )
+        .await?
+        {
             return Ok(());
         }
         channel

@@ -95,7 +95,7 @@ pub async fn handle_permissions(
     ctx: &CommandContext,
     guild_id: Id<GuildMarker>,
     user_id: Id<UserMarker>,
-    channel: &Channel,
+    channel: Option<&Channel>,
     permissions: Permissions,
 ) -> Result<bool, Error> {
     let everyone_role = get_everyone_role(&ctx.client, &ctx.services.cache, guild_id).await?;
@@ -112,10 +112,14 @@ pub async fn handle_permissions(
     );
 
     // calculate effective permissions
-    let calculated_permissions = calculator.in_channel(
-        channel.kind,
-        &channel.permission_overwrites.clone().unwrap_or_default(),
-    );
+    let calculated_permissions = if let Some(channel) = channel {
+        calculator.in_channel(
+            channel.kind,
+            &channel.permission_overwrites.clone().unwrap_or_default(),
+        )
+    } else {
+        calculator.root()
+    };
 
     // calculate missing permissions
     let missing_permissions = permissions.difference(calculated_permissions);
@@ -148,8 +152,8 @@ pub async fn handle_permissions(
     responses::error(
         ctx,
         &format!(
-            "### Error\nbot is missing {permissions_string} in <#{}>",
-            channel.id
+            "### Error\nbot is missing {permissions_string} in {}",
+            channel.map_or_else(|| "server".into(), |c| format!("<#{}>", c.id))
         ),
     )
     .await?;
