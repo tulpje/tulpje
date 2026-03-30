@@ -125,7 +125,7 @@ pub(crate) async fn get_guild_follow_count(
 pub(crate) async fn get_notify_guilds_for_system(
     db: &sqlx::PgPool,
     system: Uuid,
-) -> Result<Vec<DbId<GuildMarker>>, Error> {
+) -> Result<Vec<Id<GuildMarker>>, Error> {
     Ok(sqlx::query_scalar!(
         "SELECT guild_id FROM pk_notify_systems WHERE system_uuid = $1",
         system
@@ -133,6 +133,6 @@ pub(crate) async fn get_notify_guilds_for_system(
     .fetch_all(db)
     .await?
     .into_iter()
-    .map(Into::into)
+    .map(|id| *DbId::from(id))
     .collect())
 }

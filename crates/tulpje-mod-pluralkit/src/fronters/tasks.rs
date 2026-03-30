@@ -224,7 +224,7 @@ async fn notify_front_change(
             system.id
         );
 
-        let Some(channel_id) = get_notify_channel(db, *guild_id).await? else {
+        let Some(channel_id) = get_notify_channel(db, guild_id).await? else {
             metrics::counter!("pk:notifications", "type" => "channel-missing").increment(1);
             tracing::warn!(
                 method = "notify_front_change",
