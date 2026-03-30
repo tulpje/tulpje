@@ -1,3 +1,4 @@
+pub mod confirmation_dialog;
 pub mod context;
 pub mod db;
 pub mod db_id;
