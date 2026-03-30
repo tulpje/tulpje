@@ -69,6 +69,8 @@ pub async fn handle<T: Clone + Send + Sync + 'static>(
     registry: &Registry<T>,
     event: Event,
 ) {
+    ctx.standby.process(&event);
+
     if let twilight_gateway::Event::InteractionCreate(event) = event.clone()
         && let Err(err) = handle_interaction(*event, ctx.clone(), &meta, registry).await
     {
@@ -84,6 +86,7 @@ pub async fn handle<T: Clone + Send + Sync + 'static>(
                 application_id: ctx.application_id,
                 client: Arc::clone(&ctx.client),
                 services: Arc::clone(&ctx.services),
+                standby: Arc::clone(&ctx.standby),
 
                 event: event.clone(),
             };

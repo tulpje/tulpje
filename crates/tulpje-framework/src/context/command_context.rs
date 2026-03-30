@@ -11,6 +11,7 @@ use twilight_model::{
     http::interaction::{InteractionResponse, InteractionResponseType},
     id::{Id, marker::ApplicationMarker},
 };
+use twilight_standby::Standby;
 use twilight_util::builder::InteractionResponseDataBuilder;
 
 use super::Context;
@@ -22,6 +23,7 @@ pub struct CommandContext<T: Clone + Send + Sync> {
     pub application_id: Id<ApplicationMarker>,
     pub services: Arc<T>,
     pub client: Arc<Client>,
+    pub standby: Arc<Standby>,
 
     pub event: InteractionCreate,
     pub command: CommandData,
@@ -46,6 +48,7 @@ impl<T: Clone + Send + Sync> CommandContext<T> {
             application_id: ctx.application_id,
             client: ctx.client,
             services: ctx.services,
+            standby: ctx.standby,
 
             command,
             event,

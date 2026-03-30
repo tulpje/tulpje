@@ -8,6 +8,7 @@ use twilight_model::{
     http::interaction::InteractionResponse,
     id::{Id, marker::ApplicationMarker},
 };
+use twilight_standby::Standby;
 
 use super::Context;
 use crate::{Error, Metadata};
@@ -18,6 +19,7 @@ pub struct ComponentInteractionContext<T: Clone + Send + Sync> {
     pub application_id: Id<ApplicationMarker>,
     pub services: Arc<T>,
     pub client: Arc<Client>,
+    pub standby: Arc<Standby>,
 
     pub event: InteractionCreate,
     pub interaction: MessageComponentInteractionData,
@@ -34,6 +36,7 @@ impl<T: Clone + Send + Sync> ComponentInteractionContext<T> {
             application_id: ctx.application_id,
             client: ctx.client,
             services: ctx.services,
+            standby: ctx.standby,
 
             meta,
             interaction,

@@ -3,6 +3,7 @@ use std::sync::Arc;
 use twilight_gateway::Event;
 use twilight_http::Client;
 use twilight_model::id::{Id, marker::ApplicationMarker};
+use twilight_standby::Standby;
 
 use crate::Metadata;
 
@@ -12,6 +13,7 @@ pub struct EventContext<T: Clone + Send + Sync> {
     pub application_id: Id<ApplicationMarker>,
     pub services: Arc<T>,
     pub client: Arc<Client>,
+    pub standby: Arc<Standby>,
 
     pub event: Event,
 }
