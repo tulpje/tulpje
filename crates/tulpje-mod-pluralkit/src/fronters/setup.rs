@@ -11,7 +11,7 @@ use twilight_model::{
 
 use super::db;
 use crate::{
-    db::{ModPkSystem, get_guild_settings_for_id, get_system},
+    db::{get_guild_settings_for_id, get_system},
     fronters::{db::get_fronter_category, shared::handle_private_front},
     util::SystemRef,
 };
@@ -52,17 +52,13 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
     );
     // check for an existing category
     if let Some(existing_category) = get_fronter_category(&ctx.services.db, guild.id).await.map_err(|err| format!("couldn't fetch fronter category: {err}"))?
-        // and try to fetch the associated system (which should always return one, considering
-        // the foreign key constraint
-        && let Some(existing_system) =
-            get_system(&ctx.services.db, &guild_settings.system_uuid.into()).await.map_err(|err| format!("couldn't fetch system {}: {}", guild_settings.system_uuid, err))?
-        // then also get the channel name to show it to the uer
+        // then also get the channel name to show it to the user
         // TODO: Use cache
         && let Ok(channel_resp) = ctx.client.channel(*existing_category).await
         && let Ok(channel) = channel_resp.model().await
         && let Some(channel_name) = channel.name
         // prompt the user for confirmation to overwrite
-        && !handle_overwrite_existing_category(&ctx, &existing_system, &channel_name).await.map_err(|err| format!("error handling confirmation dialog: {err}"))?
+        && !handle_overwrite_existing_category(&ctx, &channel_name).await.map_err(|err| format!("error handling confirmation dialog: {err}"))?
     {
         return Ok(());
     }
@@ -129,24 +125,21 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
 
 async fn handle_overwrite_existing_category(
     ctx: &CommandContext,
-    system: &ModPkSystem,
     name: &str,
 ) -> Result<bool, Error> {
     ConfirmationDialogBuilder::new()
         .prompt_text(
             MessageStyle::Warning,
             &format!(
-                "### Warning\nTulpje already shows fronters for `{}` under `{}`, are you sure you want to create a new fronter category?",
-                system.name.as_ref().unwrap_or(&system.id),
+                "### Warning\nTulpje already shows fronters under `{}`, are you sure you want to create a new fronter category?",
                 name
             ),
         )
         .cancel_text(
             MessageStyle::Info,
             &format!(
-                "### Canceled\nSetup canceled, keeping `{}` as fronter category for `{}` in this server",
+                "### Canceled\nSetup canceled, keeping `{}` as fronter category this server",
                 name,
-                system.name.as_ref().unwrap_or(&system.id),
             ),
         )
         .confirm_button(ButtonStyle::Danger, |builder| {
