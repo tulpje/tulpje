@@ -6,6 +6,7 @@ use twilight_model::{
     gateway::payload::incoming::InteractionCreate,
     id::{Id, marker::ApplicationMarker},
 };
+use twilight_standby::Standby;
 
 use super::Context;
 use crate::Metadata;
@@ -16,6 +17,7 @@ pub struct ModalContext<T: Clone + Send + Sync> {
     pub application_id: Id<ApplicationMarker>,
     pub services: Arc<T>,
     pub client: Arc<Client>,
+    pub standby: Arc<Standby>,
 
     pub event: InteractionCreate,
     pub data: ModalInteractionData,
@@ -32,6 +34,7 @@ impl<T: Clone + Send + Sync> ModalContext<T> {
             application_id: ctx.application_id,
             client: ctx.client,
             services: ctx.services,
+            standby: ctx.standby,
 
             meta,
             data,

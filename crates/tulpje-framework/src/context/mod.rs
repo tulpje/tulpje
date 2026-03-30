@@ -2,6 +2,7 @@ use std::sync::Arc;
 
 use twilight_http::{Client, client::InteractionClient};
 use twilight_model::id::{Id, marker::ApplicationMarker};
+use twilight_standby::Standby;
 
 pub mod autocomplete_context;
 pub mod command_context;
@@ -21,6 +22,7 @@ pub struct Context<T: Clone + Send + Sync> {
     pub application_id: Id<ApplicationMarker>,
     pub services: Arc<T>,
     pub client: Arc<Client>,
+    pub standby: Arc<Standby>,
 }
 
 impl<T: Clone + Send + Sync> Context<T> {
@@ -35,6 +37,7 @@ impl<T: Clone + Send + Sync> Clone for Context<T> {
             application_id: self.application_id,
             services: Arc::clone(&self.services),
             client: Arc::clone(&self.client),
+            standby: Arc::clone(&self.standby),
         }
     }
 }

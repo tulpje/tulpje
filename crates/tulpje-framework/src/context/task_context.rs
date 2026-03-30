@@ -1,6 +1,7 @@
 use std::sync::Arc;
 use twilight_http::Client;
 use twilight_model::id::{Id, marker::ApplicationMarker};
+use twilight_standby::Standby;
 
 use super::Context;
 
@@ -9,6 +10,7 @@ pub struct TaskContext<T: Clone + Send + Sync> {
     pub application_id: Id<ApplicationMarker>,
     pub services: Arc<T>,
     pub client: Arc<Client>,
+    pub standby: Arc<Standby>,
 }
 
 impl<T: Clone + Send + Sync> TaskContext<T> {
@@ -17,6 +19,7 @@ impl<T: Clone + Send + Sync> TaskContext<T> {
             application_id: ctx.application_id,
             services: ctx.services,
             client: ctx.client,
+            standby: ctx.standby,
         }
     }
 }

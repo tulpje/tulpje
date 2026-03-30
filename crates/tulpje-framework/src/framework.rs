@@ -1,7 +1,9 @@
+use std::time::Duration;
 use std::{future::Future, pin::Pin, sync::Arc};
 
 use tokio::{sync::mpsc, task::JoinHandle};
 use tracing::{Instrument as _, Span};
+use twilight_standby::Standby;
 
 use crate::Metadata;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
@@ -78,6 +80,7 @@ impl<T: Clone + Send + Sync + 'static> Framework<T> {
             application_id,
             services,
             client,
+            standby: Arc::new(Standby::new()),
         };
         let scheduler =
             SchedulerHandle::new(registry.tasks.values().cloned().collect(), ctx.clone());
@@ -236,7 +239,9 @@ impl<T: Clone + Send + Sync + 'static> Dispatch<T> {
         self.receiver.close();
         self.tracker.close();
 
-        self.tracker.wait().await;
+        if let Err(err) = tokio::time::timeout(Duration::from_secs(5), self.tracker.wait()).await {
+            tracing::warn!("waiting for dispatch tasks timed out: {err}");
+        };
     }
 }
 
