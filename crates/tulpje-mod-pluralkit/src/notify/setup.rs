@@ -1,6 +1,7 @@
 use twilight_model::{
     channel::{
         ChannelType,
+        message::component::ButtonStyle,
         permission_overwrite::{PermissionOverwrite, PermissionOverwriteType},
     },
     guild::Permissions,
@@ -9,6 +10,7 @@ use twilight_model::{
 
 use tulpje_framework::Error;
 use tulpje_lib::{
+    confirmation_dialog::{ConfirmationDialogBuilder, MessageStyle},
     context::CommandContext,
     responses,
     util::{find_channel_by_name, handle_channel_from_id, handle_permissions, parse_channel_ref},
@@ -44,6 +46,19 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
         .await?
     };
 
+    if let Some(configured_channel) = db::get_notify_channel(&ctx.services.db, guild.id).await?
+        // don't prompt if they're configuring the same channel again
+        && existing_channel
+            .as_ref()
+            .is_some_and(|chan| chan.id != *configured_channel)
+        // show confirmation prompt, and if response is negative return
+        && !handle_overwrite_existing_channel(&ctx, &format!("<#{}>", configured_channel.get()))
+            .await?
+    {
+        // setup was canceled, return
+        return Ok(());
+    }
+
     let channel = if let Some(channel) = existing_channel {
         // if existing channel, check permissions and return if missing
         if !handle_permissions(&ctx, guild.id, bot_user.id, &channel, required_permissions).await? {
@@ -71,9 +86,42 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
     db::save_notify_channel(&ctx.services.db, guild.id, channel.id).await?;
     responses::success(
         &ctx,
-        &format!("bot will notify you of front changes in <#{}>", channel.id),
+        &format!(
+            "### Success\nTulpje will notify you of front changes in <#{}>",
+            channel.id
+        ),
     )
     .await?;
 
     Ok(())
+}
+
+async fn handle_overwrite_existing_channel(
+    ctx: &CommandContext,
+    channel_ref: &str,
+) -> Result<bool, Error> {
+    ConfirmationDialogBuilder::new()
+        .prompt_text(
+            MessageStyle::Warning,
+            &format!(
+                "### Warning\nTulpje already sends notifications to {}, are you sure you want to change it?",
+                channel_ref
+            ),
+        )
+        .cancel_text(
+            MessageStyle::Info,
+            &format!(
+                "### Canceled\nSetup canceled, keeping {} as notification channel for this server",
+                channel_ref
+            ),
+        )
+        .confirm_button(ButtonStyle::Danger, |builder| {
+            builder.label("Yes, change it")
+        })
+        .cancel_button(ButtonStyle::Secondary, |builder| {
+            builder.label("No, cancel")
+        })
+        .build()
+        .execute(ctx)
+        .await
 }
