@@ -1,8 +1,8 @@
 use std::collections::{HashMap, HashSet};
 
+use pkrs_fork::client::PluralKitError;
 use pkrs_fork::model::Member;
 use pkrs_fork::{client::PkClient, model::PkId};
-use reqwest::StatusCode;
 use serde_either::StringOrStruct;
 use tracing::Level;
 use tulpje_cache::Cache;
@@ -269,23 +269,18 @@ pub(crate) async fn handle_private_front(
     system_ref: SystemRef,
     message: &str,
 ) -> Result<bool, Error> {
-    if let Err(err) = ctx
+    match ctx
         .services
         .pk
         .get_system_fronters(&PkId(system_ref.into()))
         .await
     {
-        // inform user front is private and return
-        if let Some(status) = err.status()
-            && status == StatusCode::FORBIDDEN
-        {
+        Ok(_) => Ok(false),
+        // 30004 = private front
+        Err(PluralKitError::Pk(_, error)) if error.code == 30004 => {
             responses::error(ctx, message).await?;
-            return Ok(true);
+            Ok(true)
         }
-
-        // propagate any other errors
-        return Err(err.into());
-    };
-
-    Ok(false)
+        Err(err) => Err(err.into()),
+    }
 }

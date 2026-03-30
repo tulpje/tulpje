@@ -1,5 +1,4 @@
-use pkrs_fork::model::PkId;
-use reqwest::StatusCode;
+use pkrs_fork::{client::PluralKitError, model::PkId};
 use tulpje_framework::Error;
 
 use super::{
@@ -28,10 +27,9 @@ pub async fn setup_pk(ctx: CommandContext) -> Result<(), Error> {
         .await
     {
         Ok(system) => system.into(),
-        Err(err)
-            if err
-                .status()
-                .is_some_and(|status| status == StatusCode::NOT_FOUND) =>
+        Err(PluralKitError::Pk(_, error))
+            // 20001 = System not found
+            if error.code == 20001 =>
         {
             responses::error(
                 &ctx,

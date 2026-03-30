@@ -11,7 +11,7 @@ rust-version.workspace = true
 edition.workspace = true
 
 [dependencies]
-pkrs-fork = { version = "0.6.1", default-features = false, features = ["reqwest-client", "rustls-tls"] }
+pkrs-fork = { version = "0.7.0", default-features = false, features = ["reqwest-client", "rustls-tls"] }
 redis = { workspace = true }
 serde = { workspace = true }
 sqlx = { version = "0.8.6", features = ["runtime-tokio", "postgres", "chrono", "json", "macros", "uuid"] }

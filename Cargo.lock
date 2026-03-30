@@ -1433,7 +1433,7 @@ dependencies = [
  "metrics",
  "metrics-util",
  "quanta",
- "thiserror 2.0.8",
+ "thiserror 2.0.18",
  "tokio",
  "tracing",
 ]
@@ -1703,13 +1703,12 @@ checksum = "953ec861398dccce10c670dfeaf3ec4911ca479e9c02154b3a215178c5f566f2"
 
 [[package]]
 name = "pkrs-fork"
-version = "0.6.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "acbff080966a07e4a680cc3e04ea780355c91b5fb1afb8ab96bdb23b957c2773"
+version = "0.7.0"
 dependencies = [
  "reqwest 0.12.25",
  "serde",
  "serde_either",
+ "thiserror 2.0.18",
  "time",
  "url",
  "uuid",
@@ -1807,7 +1806,7 @@ dependencies = [
  "rustc-hash 2.1.0",
  "rustls",
  "socket2 0.5.8",
- "thiserror 2.0.8",
+ "thiserror 2.0.18",
  "tokio",
  "tracing",
 ]
@@ -1828,7 +1827,7 @@ dependencies = [
  "rustls",
  "rustls-pki-types",
  "slab",
- "thiserror 2.0.8",
+ "thiserror 2.0.18",
  "tinyvec",
  "tracing",
  "web-time",
@@ -2575,7 +2574,7 @@ dependencies = [
  "serde_json",
  "sha2",
  "smallvec",
- "thiserror 2.0.8",
+ "thiserror 2.0.18",
  "tokio",
  "tokio-stream",
  "tracing",
@@ -2659,7 +2658,7 @@ dependencies = [
  "smallvec",
  "sqlx-core",
  "stringprep",
- "thiserror 2.0.8",
+ "thiserror 2.0.18",
  "tracing",
  "uuid",
  "whoami",
@@ -2698,7 +2697,7 @@ dependencies = [
  "smallvec",
  "sqlx-core",
  "stringprep",
- "thiserror 2.0.8",
+ "thiserror 2.0.18",
  "tracing",
  "uuid",
  "whoami",
@@ -2724,7 +2723,7 @@ dependencies = [
  "serde",
  "serde_urlencoded",
  "sqlx-core",
- "thiserror 2.0.8",
+ "thiserror 2.0.18",
  "tracing",
  "url",
  "uuid",
@@ -2808,11 +2807,11 @@ dependencies = [
 
 [[package]]
 name = "thiserror"
-version = "2.0.8"
+version = "2.0.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "08f5383f3e0071702bf93ab5ee99b52d26936be9dedd9413067cbdcddcb6141a"
+checksum = "4288b5bcbc7920c07a1149a35cf9590a2aa808e0bc1eafaade0b80947865fbc4"
 dependencies = [
- "thiserror-impl 2.0.8",
+ "thiserror-impl 2.0.18",
 ]
 
 [[package]]
@@ -2828,9 +2827,9 @@ dependencies = [
 
 [[package]]
 name = "thiserror-impl"
-version = "2.0.8"
+version = "2.0.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f2f357fcec90b3caef6623a099691be676d033b40a058ac95d2a6ade6fa0c943"
+checksum = "ebc4ee7f67670e9b64d05fa4253e753e016c6c95ff35b89b7941d6b856dec1d5"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -3273,6 +3272,7 @@ dependencies = [
  "reqwest 0.13.1",
  "serde_either",
  "sqlx",
+ "thiserror 2.0.18",
  "tracing",
  "tulpje-cache",
  "tulpje-framework",
@@ -4128,7 +4128,7 @@ dependencies = [
  "sqlx-core",
  "sqlx-postgres",
  "syn",
- "thiserror 2.0.8",
+ "thiserror 2.0.18",
  "time",
  "tokio",
  "tokio-rustls",
