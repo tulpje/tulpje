@@ -61,6 +61,12 @@ impl From<SystemRef> for String {
     }
 }
 
+impl From<Uuid> for SystemRef {
+    fn from(value: Uuid) -> Self {
+        Self::Uuid(value)
+    }
+}
+
 impl Display for SystemRef {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
