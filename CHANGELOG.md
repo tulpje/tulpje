@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.22.1-rc.2] - 2026-10-04
+
+### Changed
+
+ - Update `pkrs-fork` from 0.8.0 to 0.8.1
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * chore(deps): update `pkrs-fork` from 0.8.0 to 0.8.1 ([`50441e9`](https://github.com/tulpje/tulpje/commit/50441e9f6cc512596a45d365f101f72b88c1966d))
+</details>
+
 ## [0.22.1-rc.1] - 2026-10-04
 
 ### Changed
