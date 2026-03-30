@@ -69,6 +69,23 @@ pub(crate) async fn remove_notify_system(
     Ok(())
 }
 
+pub(crate) async fn remove_notify_system_from_guilds(
+    db: &sqlx::PgPool,
+    system_uuid: Uuid,
+    guilds: Vec<Id<GuildMarker>>,
+) -> Result<(), Error> {
+    let guild_ids: Vec<_> = guilds.into_iter().map(|id| i64::from(DbId(id))).collect();
+    sqlx::query!(
+        "DELETE FROM pk_notify_systems WHERE system_uuid = $1 AND guild_id = ANY($2)",
+        system_uuid,
+        &guild_ids
+    )
+    .execute(db)
+    .await?;
+
+    Ok(())
+}
+
 pub(crate) async fn get_notify_systems(
     db: &sqlx::PgPool,
     guild_id: Id<GuildMarker>,
