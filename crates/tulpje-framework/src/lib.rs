@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use twilight_gateway::Event;
 use twilight_model::gateway::payload::incoming::InteractionCreate;
 
@@ -81,15 +79,7 @@ pub async fn handle<T: Clone + Send + Sync + 'static>(
         tracing::info!("running event handlers for {:?}", event.kind());
 
         for handler in handlers {
-            let event_ctx = EventContext {
-                meta: meta.clone(),
-                application_id: ctx.application_id,
-                client: Arc::clone(&ctx.client),
-                services: Arc::clone(&ctx.services),
-                standby: Arc::clone(&ctx.standby),
-
-                event: event.clone(),
-            };
+            let event_ctx = EventContext::from_context(ctx.clone(), meta.clone(), event.clone());
 
             if let Err(err) = handler.run(event_ctx).await {
                 tracing::warn!("error running event handler {}: {}", handler.uuid, err);
