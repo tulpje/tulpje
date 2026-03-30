@@ -46,7 +46,7 @@ pub fn build() -> Module<Services> {
         // tasks
         .task(
             "pk:update-fronters",
-            "0 * * * * *", // every minute
+            "*/5 * * * * *", // every 5 seconds
             handler_func!(fronters::tasks::update_fronters),
         )
         .task(
