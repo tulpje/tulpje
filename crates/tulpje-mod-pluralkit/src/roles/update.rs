@@ -1,8 +1,8 @@
 use std::collections::{HashMap, HashSet};
 
+use pkrs_fork::client::PluralKitError;
 use pkrs_fork::model::Member;
 use pkrs_fork::{client::PkClient, model::PkId};
-use reqwest::StatusCode;
 use tracing::debug;
 use tulpje_cache::Cache;
 use twilight_http::Client;
@@ -260,11 +260,11 @@ async fn handle_get_system_members(
     {
         Ok(members) => Ok(Some(members)),
         // private member list
-        Err(err)
-            if err
-                .status()
-                .is_some_and(|status| status == StatusCode::FORBIDDEN) =>
+        Err(PluralKitError::Pk(_, message))
+            // 30001 = unauthorized to view member list
+            if message.code == 30001 =>
         {
+            // TODO: Try to fetch system name?
             responses::error(
                 ctx,
                 &format!("### Error\nMember list for `{system_ref}` is private"),
@@ -273,14 +273,13 @@ async fn handle_get_system_members(
             Ok(None)
         }
         // missing system
-        Err(err)
-            if err
-                .status()
-                .is_some_and(|status| status == StatusCode::NOT_FOUND) =>
+        Err(PluralKitError::Pk(_, message))
+            // 20001 = missing system
+            if message.code == 20001 =>
         {
             responses::error(
                     ctx,
-                    &format!("### Error\nPluralKit returned a `404 Not Found` error, does `{system_ref}` exist?"),
+                    &format!("### Error\nPluralKit can't find this system, does `{system_ref}` exist?"),
                 )
                 .await?;
             Ok(None)

@@ -1,6 +1,8 @@
-use pkrs_fork::{client::PkClient, model::PkId};
+use pkrs_fork::{
+    client::{PkClient, PluralKitError},
+    model::PkId,
+};
 
-use reqwest::StatusCode;
 use tulpje_framework::Error;
 
 use crate::{
@@ -20,18 +22,12 @@ pub(super) async fn resolve_system_from_reference(
             uuid: system.uuid,
             name: system.name,
         })),
-        Err(err)
-            if err
-                .status()
-                .is_some_and(|status| status == StatusCode::NOT_FOUND) =>
-        {
-            match system_ref {
-                SystemRef::Id(_) | SystemRef::Uuid(_) => Ok(db::get_system(db, system_ref).await?),
-                SystemRef::DiscordId(_) => Err(
-                    "something went wrong, please try deleting using a system ID instead".into(),
-                ),
+        Err(PluralKitError::Pk(_, message)) if message.code == 20001 => match system_ref {
+            SystemRef::Id(_) | SystemRef::Uuid(_) => Ok(db::get_system(db, system_ref).await?),
+            SystemRef::DiscordId(_) => {
+                Err("something went wrong, please try using a system ID instead".into())
             }
-        }
+        },
         Err(err) => Err(err.into()),
     }
 }

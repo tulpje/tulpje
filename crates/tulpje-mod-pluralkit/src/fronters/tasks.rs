@@ -2,10 +2,9 @@ use std::{slice, sync::Arc};
 
 use chrono::{DateTime, NaiveDateTime, Utc};
 use pkrs_fork::{
-    client::PkClient,
+    client::{PkClient, PluralKitError},
     model::{Member, PkId, Switch as PkSwitch},
 };
-use reqwest::StatusCode;
 use serde_either::StringOrStruct;
 use tulpje_cache::Cache;
 use tulpje_lib::context::TaskContext;
@@ -37,36 +36,45 @@ struct Switch {
     pub(crate) timestamp: NaiveDateTime,
 }
 
+#[derive(thiserror::Error, Debug)]
+enum UpdateSystemFrontersError {
+    #[error("fronters for system {0} are private")]
+    Private(Uuid),
+    #[error(transparent)]
+    Other(#[from] Error),
+}
+
 async fn update_system_fronters(
     db: &sqlx::PgPool,
     system: &ModPkSystem,
     client: &PkClient,
-) -> Result<FrontChange, Error> {
+) -> Result<FrontChange, UpdateSystemFrontersError> {
     let latest_switch = match client
         .get_system_fronters(&PkId(system.uuid.to_string()))
         .await
     {
-        Ok(front) => Ok::<_, Error>(front),
-        // still update the fronter timestamp if front is private to avoid
-        // forever trying to update fronts we can't access
-        Err(err)
-            if err
-                .status()
-                .is_some_and(|status| status == StatusCode::FORBIDDEN) =>
+        Ok(front) => Ok::<_, UpdateSystemFrontersError>(front),
+        // handle private fronters
+        Err(PluralKitError::Pk(_, error))
+            // 30004 = private fronters
+            if error.code == 30004 =>
         {
             db::update_fronters_timestamp(db, system.uuid).await?;
-            Err(err.into())
+            Err(UpdateSystemFrontersError::Private(system.uuid))
         }
-        // pass through any other errors
-        Err(err) => Err(err.into()),
+        // directly return any other errors
+        Err(err) => Err(UpdateSystemFrontersError::Other(err.into())),
     }?;
 
     let timestamp = if let Some(ref switch) = latest_switch {
         DateTime::from_timestamp(switch.timestamp.to_utc().unix_timestamp(), 0)
             .ok_or_else(|| {
-                format!(
-                    "timestamp out of range: {}",
-                    switch.timestamp.to_utc().unix_timestamp()
+                UpdateSystemFrontersError::Other(
+                    format!(
+                        "timestamp out of range: {}",
+                        switch.timestamp.to_utc().unix_timestamp()
+                    )
+                    .into(),
                 )
             })?
             .naive_utc()
