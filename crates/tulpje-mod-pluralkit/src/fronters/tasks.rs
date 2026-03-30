@@ -7,10 +7,10 @@ use pkrs_fork::{
 };
 use serde_either::StringOrStruct;
 use tulpje_cache::Cache;
-use tulpje_lib::context::TaskContext;
+use tulpje_lib::{context::TaskContext, util::warning_message};
 use twilight_http::Client;
 use twilight_model::{
-    channel::message::Embed,
+    channel::message::{Embed, MessageFlags},
     id::{Id, marker::ChannelMarker},
     util::Timestamp,
 };
@@ -200,6 +200,63 @@ fn create_front_change_embed(system: &ModPkSystem, switch: &Switch) -> Result<Em
         .build())
 }
 
+async fn notify_front_private(
+    db: &sqlx::PgPool,
+    discord_client: &Arc<Client>,
+    system: &ModPkSystem,
+) -> Result<(), Error> {
+    let guilds = notify_db::get_notify_guilds_for_system(db, system.uuid).await?;
+    tracing::debug!(
+        method = "notify_front_change",
+        "notifying {} guilds of front for {} being private",
+        guilds.len(),
+        system.uuid
+    );
+
+    let message = warning_message(&format!(
+        "### System Unfollowed\nCurrent fronters for `{}` are private, system unfollowed",
+        system.name.as_ref().unwrap_or(&system.id)
+    ));
+
+    let mut guilds_successfully_notified = Vec::new();
+    for guild_id in guilds {
+        metrics::counter!("pk:notifications", "type" => "total").increment(1);
+        let Some(channel_id) = get_notify_channel(db, guild_id).await? else {
+            metrics::counter!("pk:notifications", "type" => "channel-missing").increment(1);
+            tracing::warn!(
+                method = "notify_front_private",
+                "no notify channel configured for guild {} despite it having tracked systems",
+                guild_id,
+            );
+            continue;
+        };
+
+        if let Err(err) = discord_client
+            .create_message(*channel_id)
+            .flags(MessageFlags::IS_COMPONENTS_V2)
+            .components(slice::from_ref(&message))
+            .await
+        {
+            metrics::counter!("pk:notifications", "type" => "error").increment(1);
+            tracing::warn!(
+                method = "notify_front_private",
+                "error sending front private notification to guild {} channel {}: {}",
+                guild_id,
+                channel_id,
+                err
+            );
+        } else {
+            metrics::counter!("pk:notifications", "type" => "private").increment(1);
+            guilds_successfully_notified.push(guild_id);
+        }
+    }
+
+    notify_db::remove_notify_system_from_guilds(db, system.uuid, guilds_successfully_notified)
+        .await?;
+
+    Ok(())
+}
+
 async fn notify_front_change(
     db: &sqlx::PgPool,
     discord_client: &Arc<Client>,
@@ -261,7 +318,14 @@ async fn process_system(
     cache: &Cache,
     system: &ModPkSystem,
 ) -> Result<(), Error> {
-    let changed = update_system_fronters(db, system, pk_client).await?;
+    let changed = match update_system_fronters(db, system, pk_client).await {
+        Ok(changed) => changed,
+        Err(UpdateSystemFrontersError::Private(_)) => {
+            notify_front_private(db, discord_client, system).await?;
+            return Ok(());
+        }
+        Err(err) => return Err(err.into()),
+    };
     match changed {
         FrontChange::Changed(switch) => {
             tracing::debug!("front changed for {}", system.uuid);
