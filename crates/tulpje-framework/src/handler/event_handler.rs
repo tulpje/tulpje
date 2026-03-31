@@ -18,6 +18,10 @@ pub struct EventHandler<T: Clone + Send + Sync> {
 }
 
 impl<T: Clone + Send + Sync> EventHandler<T> {
+    #[tracing::instrument(name="event-handler", skip_all, fields(
+        module=self.module,
+        event=?self.event
+    ))]
     pub async fn run(&self, ctx: EventContext<T>) -> Result<(), Error> {
         // can add more handling/parsing/etc here in the future
         (self.func)(ctx).await

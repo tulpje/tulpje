@@ -18,6 +18,10 @@ pub struct TaskHandler<T: Clone + Send + Sync> {
 }
 
 impl<T: Clone + Send + Sync> TaskHandler<T> {
+    #[tracing::instrument(name="task-handler", skip_all, fields(
+        module=self.module,
+        name=self.name
+    ))]
     pub async fn run(&self, ctx: TaskContext<T>) -> Result<(), Error> {
         // can add more handling/parsing/etc here in the future
         (self.func)(ctx).await
