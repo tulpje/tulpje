@@ -5,6 +5,56 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.23.0-rc.1] - 2026-03-31
+
+### Changed
+
+ - Link to new user guide in README
+ - Non-recursive `find_file_upwards`
+ - Split code in multiple modules
+ - Set up proper unit testing
+ - Only allow regular releases on main branch, also push current branch when releasing
+ - Explicitly type paths with PurePath
+ - Tweaked log messages
+ - Also log the event type of the event we just sent
+ - Don't store errors in a separate log field
+ - Make `metrics` a workspace dependency
+ - Make `sqlx` a workspace dependency
+ - Make `async-trait` a workspace dependency
+ - Make `pkrs-fork` a workspace dependency
+ - Reworked confirmation dialog code using traits
+
+### Fixed
+
+ - Only build docker images after other checks succeed
+ - Don't use tag name for crate path
+ - Fix confirmation check for existing channels
+ - Don't use shared deps for `tulpje-utils`
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * fix(ci): only build docker images after other checks succeed ([`a561e18`](https://github.com/tulpje/tulpje/commit/a561e18ad982f02ff628ee0a89a9f468ba49cd3c))
+ * chore(docs): link to new user guide in README ([`5a780b2`](https://github.com/tulpje/tulpje/commit/5a780b2aad81047d9e24b08932b28a0c32fbc917))
+ * refactor(tools/release-tulpje): non-recursive `find_file_upwards` ([`237fc9d`](https://github.com/tulpje/tulpje/commit/237fc9d4c48394654f4dbacd796f80223eb3a3ee))
+ * refactor(tools/release-tulpje): split code in multiple modules ([`f8a2884`](https://github.com/tulpje/tulpje/commit/f8a2884f22648a527e2c172037e108b92f23b437))
+ * chore(tools/release-tulpje): set up proper unit testing ([`3985523`](https://github.com/tulpje/tulpje/commit/39855230c11a9e1bf77075247ac7753f1045587b))
+ * feat(tools/release-tulpje): only allow regular releases on main branch, also push current branch when releasing ([`bd50ea2`](https://github.com/tulpje/tulpje/commit/bd50ea2932c52317895062b1aecc00ebedb1768f))
+ * refactor(tools/release-tulpje): explicitly type paths with PurePath ([`d48150c`](https://github.com/tulpje/tulpje/commit/d48150c8bfdea1ad82c31965ed1c7b79a6d9d7cc))
+ * fix(tools/release-tulpje): don't use tag name for crate path ([`0513d72`](https://github.com/tulpje/tulpje/commit/0513d722918123762f66ef853504749f770d87cd))
+ * fix(tulpje-mod-pluralkit): fix confirmation check for existing channels ([`bbce1f6`](https://github.com/tulpje/tulpje/commit/bbce1f6d505c3f005dcbd1b81d27b51f6d3866df))
+ * chore(tulpje-mod-pluralkit): tweaked log messages ([`3129251`](https://github.com/tulpje/tulpje/commit/3129251e7759ffea5cc6a4bcb09bf2403862d8d3))
+ * chore(tulpje-gateway): also log the event type of the event we just sent ([`c3a0de3`](https://github.com/tulpje/tulpje/commit/c3a0de3cbd37bdc694e6e14b85a0e98d6cf62122))
+ * chore(tulpje-gateway): don't store errors in a separate log field ([`987107a`](https://github.com/tulpje/tulpje/commit/987107aa0db6a3c84f0212c4383141398efd8bf1))
+ * chore(deps): make `metrics` a workspace dependency ([`8ef80c6`](https://github.com/tulpje/tulpje/commit/8ef80c63c719e24a07a28fc7ecc7e9cc104cd2b4))
+ * chore(deps): make `sqlx` a workspace dependency ([`25054f1`](https://github.com/tulpje/tulpje/commit/25054f13d5d4bfbacc85f47f3421b079af7d7921))
+ * chore(deps): make `async-trait` a workspace dependency ([`1eccc01`](https://github.com/tulpje/tulpje/commit/1eccc010fc9ba7ef744fccccea6b50a1710c6e00))
+ * chore(deps): make `pkrs-fork` a workspace dependency ([`2501784`](https://github.com/tulpje/tulpje/commit/2501784d2e5304f2c86c5e130c73d27eacb0fbb9))
+ * refactor: reworked confirmation dialog code using traits ([`9da9bbe`](https://github.com/tulpje/tulpje/commit/9da9bbe18906bd61b8e0b038b5c0194180d627a9))
+ * fix(build): don't use shared deps for `tulpje-utils` ([`899a886`](https://github.com/tulpje/tulpje/commit/899a8868e25c8cf93d846a95dac191aaf65b10e2))
+</details>
+
 ## [0.22.1] - 2026-03-30
 
 ### Commit Details
