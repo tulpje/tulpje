@@ -57,7 +57,7 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
         // don't prompt if they're configuring the same channel again
         && existing_channel
             .as_ref()
-            .is_some_and(|chan| chan.id != *configured_channel)
+            .is_none_or(|chan| chan.id != *configured_channel)
         // show confirmation prompt, and if response is negative return
         && !ConfirmSetup::new(*configured_channel).run(&ctx).await?
     {
