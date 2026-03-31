@@ -204,6 +204,12 @@ pub(crate) async fn get_systems_to_update(db: &sqlx::PgPool) -> Result<Vec<ModPk
                             system_uuid
                         FROM
                             pk_notify_systems
+                        INNER JOIN
+                            guilds
+                        ON
+                            guilds.guild_id = pk_notify_systems.guild_id
+                        WHERE
+                            guilds.deleted_at IS NULL
                     )
                 OR
                     uuid IN (
@@ -215,6 +221,12 @@ pub(crate) async fn get_systems_to_update(db: &sqlx::PgPool) -> Result<Vec<ModPk
                             pk_fronters
                         ON
                             pk_guilds.guild_id = pk_fronters.guild_id
+                        INNER JOIN
+                            guilds
+                        ON
+                            pk_guilds.guild_id = guilds.guild_id
+                        WHERE
+                            guilds.deleted_at IS NULL
                     )
             )
             ORDER BY

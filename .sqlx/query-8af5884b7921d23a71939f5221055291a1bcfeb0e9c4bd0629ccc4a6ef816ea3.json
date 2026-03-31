@@ -1,0 +1,22 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                system_uuid\n            FROM\n                pk_notify_systems\n            INNER JOIN\n                guilds\n            ON\n                guilds.guild_id = pk_notify_systems.guild_id\n            WHERE\n                pk_notify_systems.guild_id = $1\n            AND\n                guilds.deleted_at IS NULL\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "system_uuid",
+        "type_info": "Uuid"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int8"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "8af5884b7921d23a71939f5221055291a1bcfeb0e9c4bd0629ccc4a6ef816ea3"
+}

@@ -91,7 +91,20 @@ pub(crate) async fn get_notify_systems(
     guild_id: Id<GuildMarker>,
 ) -> Result<Vec<Uuid>, Error> {
     Ok(sqlx::query_scalar!(
-        "SELECT system_uuid FROM pk_notify_systems WHERE guild_id = $1",
+        r#"
+            SELECT
+                system_uuid
+            FROM
+                pk_notify_systems
+            INNER JOIN
+                guilds
+            ON
+                guilds.guild_id = pk_notify_systems.guild_id
+            WHERE
+                pk_notify_systems.guild_id = $1
+            AND
+                guilds.deleted_at IS NULL
+        "#,
         i64::from(DbId(guild_id)),
     )
     .fetch_all(db)
