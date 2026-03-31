@@ -1,7 +1,7 @@
-name: "Continuous Integration"
+name: "Build"
 on:
   push:
-    branches: "*"
+    branches: ["*"]
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -15,11 +15,10 @@ jobs:
           fetch-depth: 0
       - name: "Install Nix"
         uses: nixbuild/nix-quick-install-action@2c9db80fb984ceb1bcaa77cdda3fdf8cfba92035 # v34
-      - uses: cachix/cachix-action@1eb2ef646ac0255473d23a5907ad7b04ce94065c # v17
+      - name: "Configure Cachix"
+        uses: cachix/cachix-action@1eb2ef646ac0255473d23a5907ad7b04ce94065c # v17
         with:
           name: tulpje
           authToken: "${{ secrets.CACHIX_TOKEN }}"
-      - name: Build binaries
+      - name: Build Binaries
         run: nix build .
-      - name: Build docker images
-        run: nix build .#docker-gateway .#docker-handler .#docker-gateway-queue .#docker-nirn-proxy
