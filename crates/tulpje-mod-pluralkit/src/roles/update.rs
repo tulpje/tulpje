@@ -4,6 +4,7 @@ use pkrs_fork::client::PluralKitError;
 use pkrs_fork::model::Member;
 use pkrs_fork::{client::PkClient, model::PkId};
 use tulpje_cache::Cache;
+use tulpje_lib::ConfirmationDialog as _;
 use twilight_http::Client;
 use twilight_model::guild::{Guild, Role};
 use twilight_model::id::Id;
@@ -13,72 +14,52 @@ use tulpje_framework::Error;
 use tulpje_lib::{context::CommandContext, responses};
 use uuid::Uuid;
 
+use crate::roles::constants::{DISCORD_ROLE_LIMIT, REMAINING_ROLE_WARNING};
+use crate::roles::prompts::{ConfirmUpdatePrompt, NearRoleLimitWarningPrompt, role_change_message};
+use crate::roles::update_stats::UpdateStats;
 use crate::{
     db::get_guild_settings_for_id,
     util::{SystemRef, get_member_name, pk_color_to_discord},
 };
 
-// Discord's role limit
-// see https://support.discord.com/hc/en-us/articles/33694251638295-Discord-Account-Caps-Server-Caps-and-More
-const DISCORD_ROLE_LIMIT: usize = 250;
-const ROLE_BUFFER: usize = 25;
+fn role_limit_message(member_count: usize, existing_role_count: usize) -> String {
+    let combined_count = member_count + existing_role_count;
+    let over_limit = combined_count.saturating_sub(DISCORD_ROLE_LIMIT);
+    let existing_role_noun = if existing_role_count == 1 {
+        "role"
+    } else {
+        "roles"
+    };
+    let member_noun = if member_count == 1 {
+        "member"
+    } else {
+        "members"
+    };
+    let combined_noun = if combined_count == 1 { "role" } else { "roles" };
 
-fn role_limit_message(member_count: usize) -> String {
     format!(
         "### Error\n\
-        Can't create member roles, discord has a role limit of {DISCORD_ROLE_LIMIT} \
-        and your system has {member_count} (visible) members\n\n\
-        Additionally we keep a buffer of {ROLE_BUFFER} just in case"
+        This server currently has {existing_role_count} {existing_role_noun}, \
+        adding roles for {member_count} sytem {member_noun} would leave you with \
+        {combined_count} {combined_noun} which is {over_limit} more than \
+        discord's limit of {DISCORD_ROLE_LIMIT} roles"
     )
 }
 
 async fn handle_update_success_message(
     ctx: &CommandContext,
-    created: u16,
-    deleted: u16,
-    updated: u16,
-    assigned: u16,
+    stats: &UpdateStats,
 ) -> Result<(), Error> {
-    if created + deleted + updated + assigned == 0 {
+    if stats.total().done == 0 {
         responses::info(ctx, "Member roles are already up-to-date").await?;
         return Ok(());
-    }
-
-    // all this code is just to get messages to look like
-    //   1 role created, 2 updated, 1 assigned
-    //   2 roles updated, 1 assigned
-    //   etc
-    let mut parts = Vec::<(u16, &'static str)>::new();
-    if created > 0 {
-        parts.push((created, "created"));
-    }
-    if updated > 0 {
-        parts.push((updated, "updated"));
-    }
-    if deleted > 0 {
-        parts.push((deleted, "deleted"));
-    }
-    if assigned > 0 {
-        parts.push((assigned, "assigned"));
     }
 
     responses::success(
         ctx,
         &format!(
             "### Member Roles Updated\n{}",
-            parts
-                .into_iter()
-                .enumerate()
-                .map(|(idx, (count, verb))| {
-                    if idx == 0 {
-                        let noun = if count == 1 { "role" } else { "roles" };
-                        format!("{count} {noun} {verb}")
-                    } else {
-                        format!("{count} {verb}")
-                    }
-                })
-                .collect::<Vec<_>>()
-                .join(", ")
+            role_change_message(stats, "")
         ),
     )
     .await?;
@@ -115,16 +96,35 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
         return Ok(());
     };
 
-    // TODO: Actually check based on the number of roles in the server
-    let member_count = members.len();
-    if member_count > DISCORD_ROLE_LIMIT.saturating_sub(ROLE_BUFFER) {
-        responses::error(&ctx, &role_limit_message(member_count)).await?;
+    // get current and desired roles
+    let current_role_map = get_current_roles(&guild);
+    let desired_role_map = get_desired_roles(&members);
+
+    // get statistics for role limits
+    let total_guild_roles = guild.roles.len();
+    let roles_without_member_roles = total_guild_roles - current_role_map.len();
+    let system_member_count = members.len();
+    let total_roles_with_members = system_member_count + roles_without_member_roles;
+
+    // inform user that updating member roles would surpass discord's role limit
+    if total_roles_with_members > DISCORD_ROLE_LIMIT {
+        responses::error(
+            &ctx,
+            &role_limit_message(system_member_count, roles_without_member_roles),
+        )
+        .await?;
         return Ok(());
     }
 
-    // get current and desired server roles
-    let current_role_map = get_current_roles(&guild);
-    let desired_role_map = get_desired_roles(&members);
+    // prompt the user if they're ok with being close to the role limit
+    if total_roles_with_members >= DISCORD_ROLE_LIMIT - REMAINING_ROLE_WARNING
+        && !NearRoleLimitWarningPrompt::new(system_member_count, roles_without_member_roles)
+            .run(&ctx)
+            .await?
+    {
+        // user canceled
+        return Ok(());
+    }
 
     // get current and desired assigned roles for user
     let current_user_roles =
@@ -142,6 +142,27 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
 
     let ops = get_role_ops(&current_role_map, &desired_role_map);
 
+    // aggregate stats
+    let (create, delete, update) = ops
+        .iter()
+        .fold((0, 0, 0), |(created, deleted, updated), op| match op {
+            ChangeOperation::Create { .. } => (created + 1, deleted, updated),
+            ChangeOperation::Delete { .. } => (created, deleted + 1, updated),
+            ChangeOperation::Update { .. } => (created, deleted, updated + 1),
+        });
+
+    let mut update_stats =
+        UpdateStats::new(create, delete, update, missing_user_role_names.len() as u16);
+
+    // prompt user if listed changes are okay
+    if !ConfirmUpdatePrompt::new(update_stats.clone())
+        .run(&ctx)
+        .await?
+    {
+        // user canceled
+        return Ok(());
+    }
+
     let mut role_name_id_map: HashMap<String, Id<RoleMarker>> = current_role_map
         .iter()
         .map(|(k, v)| {
@@ -155,7 +176,7 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
 
     // TODO: actually handle errors
     // TODO: set mention permissions?
-    for op in &ops {
+    for (idx, op) in ops.iter().enumerate() {
         match op {
             ChangeOperation::Update { id, color } => {
                 ctx.client
@@ -166,6 +187,7 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
                         format!("error updating role {} in guild {}: {}", id, guild.id, err)
                     })?;
 
+                update_stats.update.done += 1;
                 tracing::debug!("updated role {} in guild {}", id, guild.id);
             }
             ChangeOperation::Create {
@@ -196,6 +218,7 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
 
                 role_name_id_map.insert(name.clone(), role.id);
 
+                update_stats.create.done += 1;
                 tracing::debug!("created role {} in guild {}", role.id, guild.id);
             }
             ChangeOperation::Delete { id } => {
@@ -203,12 +226,18 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
                     format!("error deleting role {} in guild {}: {}", id, guild.id, err)
                 })?;
 
+                update_stats.delete.done += 1;
                 tracing::debug!("deleted role {} in {}", id, guild.id);
             }
         };
+
+        // update user progress every 10 actions
+        if idx % 10 == 0 {
+            update_role_progress(&ctx, &update_stats).await;
+        }
     }
 
-    for missing_role_name in &missing_user_role_names {
+    for (idx, missing_role_name) in missing_user_role_names.iter().enumerate() {
         let Some(role_id) = role_name_id_map.get(*missing_role_name) else {
             tracing::warn!("couldn't get role id from `role_name_id_map` for {missing_role_name}");
             continue;
@@ -221,32 +250,22 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
                 format!("error assigning role {missing_role_name} ({role_id}): {err}")
             })?;
 
+        update_stats.assign.done += 1;
         tracing::debug!(
             "assigned role {} to user {} in guild {}",
             role_id,
             gs.user_id,
             gs.guild_id
         );
+
+        // update user progress every 10 actions
+        if idx % 10 == 0 {
+            update_role_progress(&ctx, &update_stats).await;
+        }
     }
 
-    // aggregate stats
-    let (created, deleted, updated) =
-        ops.into_iter()
-            .fold((0, 0, 0), |(created, deleted, updated), op| match op {
-                ChangeOperation::Create { .. } => (created + 1, deleted, updated),
-                ChangeOperation::Delete { .. } => (created, deleted + 1, updated),
-                ChangeOperation::Update { .. } => (created, deleted, updated + 1),
-            });
-
     // send success message to user
-    handle_update_success_message(
-        &ctx,
-        created,
-        deleted,
-        updated,
-        missing_user_role_names.len() as u16,
-    )
-    .await?;
+    handle_update_success_message(&ctx, &update_stats).await?;
 
     Ok(())
 }
@@ -312,6 +331,38 @@ enum ChangeOperation {
         id: Id<RoleMarker>,
         color: u32,
     },
+}
+
+async fn update_role_progress(ctx: &CommandContext, stats: &UpdateStats) {
+    let mut parts = Vec::<(u16, u16, &'static str)>::new();
+    if stats.create.total > 0 {
+        parts.push((stats.create.done, stats.create.total, "create"));
+    }
+    if stats.update.total > 0 {
+        parts.push((stats.update.done, stats.update.total, "update"));
+    }
+    if stats.delete.total > 0 {
+        parts.push((stats.delete.done, stats.delete.total, "delete"));
+    }
+    if stats.assign.total > 0 {
+        parts.push((stats.assign.done, stats.assign.total, "assign"));
+    }
+
+    if let Err(err) = responses::info(
+        ctx,
+        &format!(
+            "### Updating...\n{}",
+            parts
+                .into_iter()
+                .map(|(done, total, verb)| format!("{done}/{total} {verb}"))
+                .collect::<Vec<_>>()
+                .join(", ")
+        ),
+    )
+    .await
+    {
+        tracing::warn!("error updating role update progress: {err}");
+    }
 }
 
 // TODO: Persist updated info in the cache

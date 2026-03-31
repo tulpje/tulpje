@@ -6,7 +6,10 @@ use twilight_util::builder::command::StringBuilder;
 
 use tulpje_lib::context::Services;
 
+mod constants;
+mod prompts;
 mod update;
+mod update_stats;
 
 pub(crate) fn commands() -> SubCommandGroupBuilder<Services> {
     SubCommandGroupBuilder::new("roles", "manage member roles").subcommand(
