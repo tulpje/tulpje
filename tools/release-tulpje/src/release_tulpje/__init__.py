@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 from collections import defaultdict
 from typing import Iterable, NamedTuple, Optional, Self
-from fnmatch import fnmatchcase
 from graphlib import TopologicalSorter
 from glob import glob
 from semver import Version
+from pathlib import PurePath
 import tomllib
 import subprocess
 import json
@@ -36,15 +36,15 @@ def argparser() -> argparse.ArgumentParser:
     return parser
 
 
-def find_file_upwards(path: str, name: str) -> Optional[str]:
-    full_path = os.path.join(path, name)
+def find_file_upwards(path: PurePath, name: str) -> Optional[PurePath]:
+    full_path = path.joinpath(name)
     if os.path.isfile(full_path):
         return full_path
     else:
         if os.path.dirname(path) == path:
             return None
         else:
-            return find_file_upwards(os.path.dirname(path), name)
+            return find_file_upwards(path.parent, name)
 
 
 def version_bump(
@@ -127,23 +127,21 @@ def test_bump_version():
 class CrateInfo(NamedTuple):
     name: str
     version: Version
-    path: str
+    path: PurePath
     independent: bool
     workspace_dependencies: frozenset[str]
-    lock_file: str
+    lock_file: PurePath
 
     @property
-    def manifest(self) -> str:
-        return os.path.join(self.path, "Cargo.toml")
+    def manifest(self) -> PurePath:
+        return self.path.joinpath("Cargo.toml")
 
     @classmethod
-    def from_manifest(cls, path: str) -> Self:
+    def from_manifest(cls, path: PurePath) -> Self:
         with open(path, "rb") as manifest_file:
             manifest = tomllib.load(manifest_file)
 
-        workspace_manifest_path = find_file_upwards(
-            os.path.dirname(os.path.dirname(path)), "Cargo.toml"
-        )
+        workspace_manifest_path = find_file_upwards(path.parent.parent, "Cargo.toml")
         if workspace_manifest_path is None:
             raise Exception("Couldn't find workspace manifest")
 
@@ -178,7 +176,7 @@ class CrateInfo(NamedTuple):
         return cls(
             name=parsed_manifest["name"],
             version=version,
-            path=os.path.dirname(path),
+            path=path.parent,
             independent=independent,
             workspace_dependencies=frozenset(workspace_dependencies),
             lock_file=lock_file,
@@ -233,10 +231,10 @@ class CommitInfo(NamedTuple):
     breaking: bool
 
     raw_subject: str
-    files: list[str]
+    files: list[PurePath]
 
     @classmethod
-    def create(cls, sha: str, raw_subject: str, files: list[str]):
+    def create(cls, sha: str, raw_subject: str, files: list[PurePath]):
         match = cls.SUBJECT_REGEX.match(raw_subject)
         assert match is not None
 
@@ -256,11 +254,14 @@ def get_commits_since_ref(ref: str) -> list[CommitInfo]:
     ]
 
 
-def get_commit_files(sha: str) -> list[str]:
-    return process_run(
-        ["git", "diff-tree", "--no-commit-id", "--name-only", "-r", sha],
-        encoding="utf-8",
-    ).splitlines()
+def get_commit_files(sha: str) -> list[PurePath]:
+    return [
+        PurePath(p)
+        for p in process_run(
+            ["git", "diff-tree", "--no-commit-id", "--name-only", "-r", sha],
+            encoding="utf-8",
+        ).splitlines()
+    ]
 
 
 class SemverCheckResult(NamedTuple):
@@ -284,38 +285,40 @@ def cargo_semver_checks(
     return SemverCheckResult(result.returncode != 0, result.stdout)
 
 
-def filename_match(filename: str, matchlist: set[str]) -> bool:
-    def match_entry(filename: str, entry: str) -> bool:
+def filename_match(filename: PurePath, matchlist: set[str]) -> bool:
+    def match_entry(filename: PurePath, entry: str) -> bool:
         if entry.startswith("!"):
-            return fnmatchcase(filename, entry[1:]) or fnmatchcase(
-                filename, f"*/{entry[1:]}"
+            return filename.match(entry[1:], case_sensitive=True) or filename.match(
+                f"*/{entry[1:]}", case_sensitive=True
             )
         else:
-            return fnmatchcase(filename, entry) or fnmatchcase(filename, f"*/{entry}")
+            return filename.match(entry, case_sensitive=True) or filename.match(
+                f"*/{entry}", case_sensitive=True
+            )
 
     return any(match_entry(filename, entry) for entry in matchlist)
 
 
 def should_create_release(
-    commits: list[CommitInfo], matchlist: set[str], path: Optional[str]
+    commits: list[CommitInfo], matchlist: set[str], path: Optional[PurePath]
 ) -> bool:
     changed_files = {
         file
         for commit in commits
         for file in commit.files
-        if path is None or file.startswith(path)
+        if path is None or path in file.parents
     }
     return any(filename_match(file, matchlist) for file in changed_files)
 
 
 def filter_commits_by_path(
-    commits: list[CommitInfo], paths: Iterable[str], invert=False
+    commits: list[CommitInfo], paths: Iterable[PurePath], invert=False
 ) -> list[CommitInfo]:
-    def check(file: str, paths: Iterable[str], invert: bool) -> bool:
+    def check(file: PurePath, paths: Iterable[PurePath], invert: bool) -> bool:
         if invert:
-            return any(not file.startswith(path) for path in paths)
+            return any(path not in file.parents for path in paths)
         else:
-            return any(file.startswith(path) for path in paths)
+            return any(path in file.parents for path in paths)
 
     return [
         commit
@@ -385,8 +388,17 @@ class ReleaseInfo:
         return self.has_breaking_commit or self.is_breaking_semver_checks
 
     @property
-    def dir(self) -> str:
-        return f"{self.crates[0].path}" if self.single_crate else ""
+    def dir(self) -> PurePath:
+        if self.single_crate:
+            return self.crates[0].path
+
+        workspace_manifest = find_file_upwards(self.crates[0].path.parent, "Cargo.toml")
+        if workspace_manifest is None:
+            raise Exception(
+                f"Couldn't find workspace root for path {self.crates[0].path}"
+            )
+
+        return workspace_manifest
 
     @property
     def prev_tag(self) -> str:
@@ -425,17 +437,18 @@ def prefixed_version(prefix: str, version: Version) -> str:
 
 
 def create_changelog_update(
-    prefix: str,
+    tag_prefix: str,
     old_version: Version,
     new_version: Version,
-    independent_crate: bool,
+    independent_crate: Optional[CrateInfo],
     independent_crates: Iterable[CrateInfo],
 ) -> str:
     log.info(
-        "creating changelog update" + (f" for {prefix}" if len(prefix) > 0 else "")
+        "creating changelog update"
+        + (f" for {tag_prefix}" if len(tag_prefix) > 0 else "")
     )
     if independent_crate:
-        extra_args = ["--include-path", f"{prefix}/**/*"]
+        extra_args = ["--include-path", f"{independent_crate.path}/**/*"]
     else:
         extra_args = sum(
             [["--exclude-path", f"{crate.path}/**/*"] for crate in independent_crates],
@@ -450,7 +463,7 @@ def create_changelog_update(
             "all",
             "--tag",
             str(new_version),
-            f"{prefixed_version(prefix, old_version)}..HEAD",
+            f"{prefixed_version(tag_prefix, old_version)}..HEAD",
         ]
     )
     return process_run(command, encoding="utf-8").strip()
@@ -500,8 +513,6 @@ def gather_release(
             True,
         )
 
-    log.debug(f"gathered {len(commits)} commits")
-
     has_feature_commit = any(commit.typ == "feat" for commit in commits)
     has_breaking_change_commit = any(commit.breaking for commit in commits)
     has_breaking_change_semver_checks = (
@@ -522,7 +533,7 @@ def gather_release(
     # release if there's changes or we're going from prerelease -> regular release
     should_release = (
         should_create_release(
-            commits, file_whitelist, crates[0].path if independent_crate else ""
+            commits, file_whitelist, crates[0].path if independent_crate else None
         )
         or old_version.prerelease is not None
         and prerelease is None
@@ -543,7 +554,11 @@ def gather_release(
 
     new_changelog = (
         create_changelog_update(
-            tag_prefix, old_version, new_version, independent_crate, independent_crates
+            tag_prefix,
+            old_version,
+            new_version,
+            crates[0] if independent_crate else None,
+            independent_crates,
         )
         if not skip_slow
         else ""
@@ -591,7 +606,7 @@ def lock_bump_version(crate: CrateInfo, new_version: Version):
 
 
 def workspace_bump_version(
-    manifest_path: str, crates: Iterable[CrateInfo], version: Version
+    manifest_path: PurePath, crates: Iterable[CrateInfo], version: Version
 ):
     with open(manifest_path) as manifest_file:
         manifest = tomlkit.load(manifest_file)
@@ -743,7 +758,7 @@ def do_releases(releases_by_deps: list[ReleaseInfo], execute=False):
                 manifest_bump_version(release.crates[0], release.curr_version)
             else:
                 workspace_bump_version(
-                    "Cargo.toml", release.crates, release.curr_version
+                    PurePath("./Cargo.toml"), release.crates, release.curr_version
                 )
 
             for crate in release.crates:
@@ -850,7 +865,9 @@ def gather_crates() -> list[CrateInfo]:
         log.debug("no workspace members ... ")
         member_paths = []
 
-    cargo_toml_paths = [c for p in member_paths for c in glob(f"{p}/Cargo.toml")]
+    cargo_toml_paths = [
+        PurePath(c) for p in member_paths for c in glob(f"{p}/Cargo.toml")
+    ]
     return [
         CrateInfo.from_manifest(cargo_toml_path) for cargo_toml_path in cargo_toml_paths
     ]
@@ -879,6 +896,10 @@ def main(args: argparse.Namespace) -> int:
             grouped_crates, independent_crates, args.prerelease, args.skip_slow
         )
     ]
+    for release in releases:
+        log.debug(
+            f"crate {release.crates[0].name}, should release: {release.should_release}"
+        )
     releases_by_deps = sort_releases_by_deps(releases)
     releasable = process_dependencies(releases_by_deps)
     do_releases(releasable, args.execute)
