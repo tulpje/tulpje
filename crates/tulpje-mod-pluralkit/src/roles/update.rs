@@ -50,11 +50,6 @@ async fn handle_update_success_message(
     ctx: &CommandContext,
     stats: &UpdateStats,
 ) -> Result<(), Error> {
-    if stats.total().done == 0 {
-        responses::info(ctx, "Member roles are already up-to-date").await?;
-        return Ok(());
-    }
-
     responses::success(
         ctx,
         &format!(
@@ -153,6 +148,11 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
 
     let mut update_stats =
         UpdateStats::new(create, delete, update, missing_user_role_names.len() as u16);
+
+    if update_stats.total().total == 0 {
+        responses::info(&ctx, "Member roles are already up-to-date").await?;
+        return Ok(());
+    }
 
     // prompt user if listed changes are okay
     if !ConfirmUpdatePrompt::new(update_stats.clone())
