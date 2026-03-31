@@ -15,7 +15,7 @@ async-trait = { workspace = true }
 pkrs-fork = { workspace = true }
 redis = { workspace = true }
 serde = { workspace = true }
-sqlx = { version = "0.8.6", features = ["runtime-tokio", "postgres", "chrono", "json", "macros", "uuid"] }
+sqlx = { workspace = true }
 tulpje-cache = { version = "0.5.1", path = "../tulpje-cache" }
 tulpje-framework = { version = "0.16.1", path = "../tulpje-framework" }
 twilight-http = { workspace = true, features = ["decompression", "rustls-webpki-roots"] }
