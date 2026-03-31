@@ -3,7 +3,6 @@ use std::collections::{HashMap, HashSet};
 use pkrs_fork::client::PluralKitError;
 use pkrs_fork::model::Member;
 use pkrs_fork::{client::PkClient, model::PkId};
-use tracing::debug;
 use tulpje_cache::Cache;
 use twilight_http::Client;
 use twilight_model::guild::{Guild, Role};
@@ -12,6 +11,7 @@ use twilight_model::id::marker::{GuildMarker, RoleMarker, UserMarker};
 
 use tulpje_framework::Error;
 use tulpje_lib::{context::CommandContext, responses};
+use uuid::Uuid;
 
 use crate::{
     db::get_guild_settings_for_id,
@@ -147,7 +147,8 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
         .map(|(k, v)| {
             (
                 k.clone(),
-                v.id.expect("get_current_roles always assigns id: Some(...)"),
+                v.role_id
+                    .expect("get_current_roles always assigns id: Some(...)"),
             )
         })
         .collect();
@@ -156,53 +157,53 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
     // TODO: set mention permissions?
     for op in &ops {
         match op {
-            ChangeOperation::Update { id, name, color } => {
+            ChangeOperation::Update { id, color } => {
                 ctx.client
                     .update_role(guild.id, *id)
                     .color(Some(*color))
                     .await
-                    .map_err(|err| format!("error updating role {name} ({id}): {err}"))?;
+                    .map_err(|err| {
+                        format!("error updating role {} in guild {}: {}", id, guild.id, err)
+                    })?;
 
-                debug!(
-                    guild_id = guild.id.get(),
-                    guild_name = guild.name,
-                    "updated role: {}",
-                    name,
-                );
+                tracing::debug!("updated role {} in guild {}", id, guild.id);
             }
-            ChangeOperation::Create { name, color } => {
+            ChangeOperation::Create {
+                uuid: member_uuid,
+                name,
+                color,
+            } => {
                 let role = ctx
                     .client
                     .create_role(guild.id)
                     .name(name)
                     .color(*color)
                     .await
-                    .map_err(|err| format!("error creating role {name}: {err}"))?
+                    .map_err(|err| {
+                        format!(
+                            "error creating role for member {} in guild {}: {}",
+                            member_uuid, guild.id, err
+                        )
+                    })?
                     .model()
                     .await
-                    .map_err(|err| format!("error parsing role {name}: {err}"))?;
+                    .map_err(|err| {
+                        format!(
+                            "error parsing role for member {} in guild {}: {}",
+                            member_uuid, guild.id, err
+                        )
+                    })?;
 
                 role_name_id_map.insert(name.clone(), role.id);
 
-                debug!(
-                    guild_id = guild.id.get(),
-                    guild_name = guild.name,
-                    "created role: {}",
-                    name
-                );
+                tracing::debug!("created role {} in guild {}", role.id, guild.id);
             }
-            ChangeOperation::Delete { id, name } => {
-                ctx.client
-                    .delete_role(guild.id, *id)
-                    .await
-                    .map_err(|err| format!("error deleting role {name} ({id}): {err}"))?;
+            ChangeOperation::Delete { id } => {
+                ctx.client.delete_role(guild.id, *id).await.map_err(|err| {
+                    format!("error deleting role {} in guild {}: {}", id, guild.id, err)
+                })?;
 
-                debug!(
-                    guild_id = guild.id.get(),
-                    guild_name = guild.name,
-                    "deleted_role: {}",
-                    name
-                );
+                tracing::debug!("deleted role {} in {}", id, guild.id);
             }
         };
     }
@@ -220,10 +221,11 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
                 format!("error assigning role {missing_role_name} ({role_id}): {err}")
             })?;
 
-        debug!(
-            guild_id = guild.id.get(),
-            guild_name = guild.name,
-            "assigned role: {missing_role_name}"
+        tracing::debug!(
+            "assigned role {} to user {} in guild {}",
+            role_id,
+            gs.user_id,
+            gs.guild_id
         );
     }
 
@@ -291,7 +293,8 @@ async fn handle_get_system_members(
 
 #[derive(Debug, Hash, Eq, PartialEq)]
 struct MemberRole {
-    id: Option<Id<RoleMarker>>,
+    role_id: Option<Id<RoleMarker>>,
+    uuid: Option<Uuid>,
     name: String,
     color: u32,
 }
@@ -299,15 +302,14 @@ struct MemberRole {
 enum ChangeOperation {
     Create {
         name: String,
+        uuid: Uuid,
         color: u32,
     },
     Delete {
         id: Id<RoleMarker>,
-        name: String,
     },
     Update {
         id: Id<RoleMarker>,
-        name: String,
         color: u32,
     },
 }
@@ -346,7 +348,8 @@ fn get_desired_roles(members: &[Member]) -> HashMap<String, MemberRole> {
     members
         .iter()
         .map(|m| MemberRole {
-            id: None,
+            role_id: None,
+            uuid: Some(m.uuid),
             name: format!(
                 "{} (Alter)",
                 get_member_name(m)
@@ -366,7 +369,8 @@ fn get_current_roles(guild: &Guild) -> HashMap<String, MemberRole> {
         .iter()
         .filter(|v| v.name.ends_with(" (Alter)"))
         .map(|v| MemberRole {
-            id: Some(v.id),
+            role_id: Some(v.id),
+            uuid: None,
             name: v.name.clone(),
             color: v.colors.primary_color,
         })
@@ -387,20 +391,19 @@ fn get_role_ops(
                 // Update, only if color changed
                 (Some(current), Some(desired)) => {
                     (current.color != desired.color).then(|| ChangeOperation::Update {
-                        id: current.id.unwrap(),
-                        name: current.name.clone(),
+                        id: current.role_id.unwrap(),
                         color: desired.color,
                     })
                 }
                 // Create
                 (None, Some(desired)) => Some(ChangeOperation::Create {
                     name: desired.name.clone(),
+                    uuid: desired.uuid.unwrap_or_default(),
                     color: desired.color,
                 }),
                 // Delete
                 (Some(current), None) => Some(ChangeOperation::Delete {
-                    id: current.id.unwrap(),
-                    name: current.name.clone(),
+                    id: current.role_id.unwrap(),
                 }),
                 // Shit got fucked up aaaa
                 (None, None) => panic!("current and desired are both None, shouldn't happen"),
