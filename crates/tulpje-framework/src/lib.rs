@@ -90,7 +90,12 @@ pub async fn handle<T: Clone + Send + Sync + 'static>(
             let event_ctx = EventContext::from_context(ctx.clone(), meta.clone(), event.clone());
 
             if let Err(err) = handler.run(event_ctx).await {
-                tracing::warn!("error running event handler {}: {}", handler.uuid, err);
+                tracing::warn!(
+                    "error running event handler {} for event {:?}: {}",
+                    handler.uuid,
+                    event.kind(),
+                    err
+                );
             }
         }
     }
