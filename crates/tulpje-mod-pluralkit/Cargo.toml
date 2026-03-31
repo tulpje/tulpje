@@ -12,7 +12,7 @@ rust-version.workspace = true
 edition.workspace = true
 
 [dependencies]
-async-trait = "0.1.89"
+async-trait = { workspace = true }
 chrono = { workspace = true }
 metrics = "0.24.3"
 pkrs-fork = { workspace = true }

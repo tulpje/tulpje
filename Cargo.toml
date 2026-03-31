@@ -20,6 +20,7 @@ edition = "2024"
 crane.name = "tulpje"
 
 [workspace.dependencies]
+async-trait = { version = "0.1.89" }
 chrono = { version = "0.4.42", features = ["alloc", "clock", "std"], default-features = false }
 metrics-exporter-prometheus = { version = "0.18.1", default-features = false }
 pkrs-fork = { version = "0.8.1", default-features = false, features = ["reqwest-client", "rustls-tls", "metrics"] }
