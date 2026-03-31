@@ -3,7 +3,7 @@
 Unnecessarily complicated rewrite of a multi-purpose discord bot
 
 ## User Guide
-As a bot user please go to the [user guide](./USER_GUIDE.md) for instructions.
+As a bot user please go to the [user guide](https://tulpje.github.io/user-guide/) for instructions.
 
 ## Components
 
