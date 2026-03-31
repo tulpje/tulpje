@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.23.0-rc.3] - 2026-03-31
+
+### Fixed
+
+ - Fix count displays and checks in `/pk role update`
+ - Don't prompt to update in `/pk role update` if no role changes
+ - Don't try to notify deleted guilds or update systems only specified in them
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * fix(tulpje-mod-pluralkit): fix count displays and checks in `/pk role update` ([`be933b0`](https://github.com/tulpje/tulpje/commit/be933b0d9c0b567b758c21e3d8b91ffd0f9f30c2))
+ * fix(tulpje-mod-pluralkit): don't prompt to update in `/pk role update` if no role changes ([`c1b1638`](https://github.com/tulpje/tulpje/commit/c1b16385076043c389ef93ce18a66f5652a403af))
+ * fix(tulpje-mod-pluralkit): don't try to notify deleted guilds or update systems only specified in them ([`059d06a`](https://github.com/tulpje/tulpje/commit/059d06ae18fd4b9eb9203a8bb14a96505196194d))
+</details>
+
 ## [0.23.0-rc.2] - 2026-03-31
 
 ### Changed
