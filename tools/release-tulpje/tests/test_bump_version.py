@@ -1,5 +1,5 @@
 import pytest
-from release_tulpje import version_bump
+from release_tulpje.version import version_bump
 from semver import Version
 
 TEST_DATA = [
