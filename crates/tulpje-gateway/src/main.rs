@@ -116,7 +116,7 @@ async fn main() {
     .expect("error waiting for gateway queue");
 
     if let Err(err) = shard_manager.start() {
-        tracing::error!(?err, "error starting shard, shutting down ...");
+        tracing::error!("error starting shard, shutting down: {err}");
         shard_manager.shutdown();
     }
 

@@ -54,16 +54,13 @@ pub(super) async fn get_fronter_channels(
                 channel
             } else {
                 tracing::warn!(
-                    ?channel_id,
-                    "channel in `guild_channels` cache but missing in `channels`, this shouldn't happen"
+                    "channel {channel_id} in `guild_channels` cache but missing in `channels`, this shouldn't happen"
                 );
                 match client.channel(channel_id).await?.model().await {
                     Ok(channel) => channel,
                     Err(err) => {
                         tracing::warn!(
-                            ?channel_id,
-                            ?err,
-                            "channel in `guild_channels` cache but an error occured when fetching from discord"
+                            "channel {channel_id} in `guild_channels` cache but error occured when fetching from discord: {err}"
                         );
                         continue;
                     }

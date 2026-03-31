@@ -109,7 +109,7 @@ impl ShardReporter {
             tokio::select! {
                 Some(evt) = self.receiver.recv() => {
                     if let Err(err) = self.handle_event(&evt).await {
-                        tracing::warn!(?evt, ?err, "error handling event");
+                        tracing::warn!("error handling event {:?}: {}", evt.kind(), err);
                     }
                 },
                 () = self.shutdown.cancelled(), if !shutting_down => {

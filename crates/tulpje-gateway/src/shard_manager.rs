@@ -100,12 +100,12 @@ impl ShardManager {
                         Some(Ok(message)) => {
                             match self.handle_message(message) {
                                 Ok(true) => { break },
-                                Err(err) => tracing::warn!(?err, "error handling message"),
+                                Err(err) => tracing::warn!("error handling message: {err}"),
                                 _ => ()
                             }
                         }
                         Some(Err(err)) => {
-                            tracing::error!(?err, "error receiving discord message");
+                            tracing::error!("error receiving discord message: {err}");
                         }
                         None => {
                             tracing::error!("empty message, connection irrecoverably closed, exiting...");
