@@ -23,6 +23,7 @@ pub async fn handle_interaction<T: Clone + Send + Sync + 'static>(
     context: Context<T>,
     meta: &Metadata,
     registry: &Registry<T>,
+    processed: twilight_standby::ProcessResults,
 ) -> Result<(), Error> {
     match interaction::parse(&event, meta.clone(), context) {
         Ok(InteractionContext::Command(ctx)) => {
@@ -37,6 +38,13 @@ pub async fn handle_interaction<T: Clone + Send + Sync + 'static>(
         Ok(InteractionContext::ComponentInteraction(ctx)) => {
             let Some(component_interaction) = registry.components.get(&ctx.interaction.custom_id)
             else {
+                // twilight-standby already handled this interaction as well, so
+                // we don't wanna error for it
+                if processed.matched() > 0 {
+                    return Ok(());
+                }
+
+                // otherwise do error so the missing handler gets logged
                 return Err(format!(
                     "no handler for component interaction {}",
                     ctx.interaction.custom_id
@@ -67,10 +75,10 @@ pub async fn handle<T: Clone + Send + Sync + 'static>(
     registry: &Registry<T>,
     event: Event,
 ) {
-    ctx.standby.process(&event);
+    let processed = ctx.standby.process(&event);
 
     if let twilight_gateway::Event::InteractionCreate(event) = event.clone()
-        && let Err(err) = handle_interaction(*event, ctx.clone(), &meta, registry).await
+        && let Err(err) = handle_interaction(*event, ctx.clone(), &meta, registry, processed).await
     {
         tracing::warn!(err);
     }
