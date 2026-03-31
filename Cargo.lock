@@ -3307,7 +3307,6 @@ name = "tulpje-utils"
 version = "0.22.1"
 dependencies = [
  "reqwest 0.13.1",
- "workspace-hack",
 ]
 
 [[package]]
