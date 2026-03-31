@@ -189,7 +189,7 @@ async fn main() {
             let (meta, event) = match parse_delivery(message) {
                 Ok((meta, event)) => (meta, event),
                 Err(err) => {
-                    tracing::error!(?err, "couldn't parse delivery");
+                    tracing::error!("couldn't parse delivery: {err}");
                     continue;
                 }
             };

@@ -41,7 +41,7 @@ async fn minimal_stats_response(ctx: CommandContext, api_latency: i64) -> Result
         ))
         .await
     {
-        tracing::warn!(?err, "failed to respond to command");
+        tracing::warn!("failed to respond to command: {err}");
     }
 
     Ok(())
@@ -176,7 +176,7 @@ pub async fn stats(ctx: CommandContext) -> Result<(), Error> {
         .embeds(Some(&[embed]))
         .await
     {
-        tracing::warn!(?err, "failed to respond to command");
+        tracing::warn!("failed to respond to command: {err}");
     }
 
     Ok(())
@@ -234,7 +234,7 @@ pub async fn shards(ctx: CommandContext) -> Result<(), Error> {
         })
         .await
     {
-        tracing::warn!(?err, "failed to respond to command");
+        tracing::warn!("failed to respond to command: {err}");
     }
 
     Ok(())
@@ -290,7 +290,7 @@ pub async fn processes(ctx: CommandContext) -> Result<(), Error> {
         })
         .await
     {
-        tracing::warn!(?err, "failed to respond to command");
+        tracing::warn!("failed to respond to command: {err}");
     }
 
     Ok(())
