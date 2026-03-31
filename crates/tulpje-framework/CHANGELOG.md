@@ -6,20 +6,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [0.16.1] - 2026-10-04
+## [0.17.0-rc.1] - 2026-10-04
 
 ### Added
 
+ - Add tracing spans to handlers
  - Add `twilight-standby` for waiting for events
 
 ### Changed
 
+ - Also log event type when an event handler fails to run
+ - Lower log level for informative messages
  - Implement `EventContext::from_context`
+
+### Fixed
+
+ - Don't error in `process_interaction` when `twilight-standby` processed one
 
 ### Commit Details
 
 <details><summary>view details</summary>
 
+ * feat(tulpje-framework): add tracing spans to handlers ([`1d0e0d6`](https://github.com/tulpje/tulpje/commit/1d0e0d6891599d21e394a0b50668e6649fb5c1b3))
+ * chore(tulpje-framework): also log event type when an event handler fails to run ([`75289d8`](https://github.com/tulpje/tulpje/commit/75289d885d14016f957418c8a7af85ac38952a70))
+ * chore(tulpje-framework): lower log level for informative messages ([`dadacb0`](https://github.com/tulpje/tulpje/commit/dadacb084d701f189a0437537853435ccecd94c7))
+ * fix(tulpje-framework): don't error in `process_interaction` when `twilight-standby` processed one ([`2de03ab`](https://github.com/tulpje/tulpje/commit/2de03ab9192ae29e6d0233e41e04021c81f5a2b7))
  * refactor(framework): implement `EventContext::from_context` ([`8ac6848`](https://github.com/tulpje/tulpje/commit/8ac684857585bb956b0a7d01887d29fcbfda547a))
  * feat(tulpje-framework): add `twilight-standby` for waiting for events ([`a5330dd`](https://github.com/tulpje/tulpje/commit/a5330ddc76ac569262d6c7a15d1ee1b40ab11475))
 </details>

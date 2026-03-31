@@ -6,6 +6,61 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.23.0-rc.1] - 2026-10-04
+
+### Added
+
+ - Add tracing spans to handlers
+
+### Changed
+
+ - Link to new user guide in README
+ - Non-recursive `find_file_upwards`
+ - Split code in multiple modules
+ - Set up proper unit testing
+ - Only allow regular releases on main branch, also push current branch when releasing
+ - Explicitly type paths with PurePath
+ - Tweaked log messages
+ - Also log the event type of the event we just sent
+ - Don't store errors in a separate log field
+ - Make `metrics` a workspace dependency
+ - Make `sqlx` a workspace dependency
+ - Make `async-trait` a workspace dependency
+ - Make `pkrs-fork` a workspace dependency
+ - Reworked confirmation dialog code using traits
+
+### Fixed
+
+ - Only build docker images after other checks succeed
+ - Don't use tag name for crate path
+ - Fix confirmation check for existing channels
+ - Don't use shared deps for `tulpje-utils`
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * fix(ci): only build docker images after other checks succeed ([`d64d7aa`](https://github.com/tulpje/tulpje/commit/d64d7aac61723be5ec69bb242eba7c81a86f5c8a))
+ * chore(docs): link to new user guide in README ([`cadbc06`](https://github.com/tulpje/tulpje/commit/cadbc0642f8a7e3c8ca4c8197a3405f9f7f5e594))
+ * refactor(tools/release-tulpje): non-recursive `find_file_upwards` ([`80b6ad9`](https://github.com/tulpje/tulpje/commit/80b6ad97311f7d9d2e7d158caa48ff2d9db8b4b9))
+ * refactor(tools/release-tulpje): split code in multiple modules ([`74ea668`](https://github.com/tulpje/tulpje/commit/74ea6687007298e912b06a3e6c096e2bcd6cb7c3))
+ * chore(tools/release-tulpje): set up proper unit testing ([`66c4fa1`](https://github.com/tulpje/tulpje/commit/66c4fa12d16acba8b8a718a6d9b3ed7268516043))
+ * feat(tools/release-tulpje): only allow regular releases on main branch, also push current branch when releasing ([`97e94fe`](https://github.com/tulpje/tulpje/commit/97e94fe4166fd91e181671128680da791b7e7c9b))
+ * refactor(tools/release-tulpje): explicitly type paths with PurePath ([`7fbe021`](https://github.com/tulpje/tulpje/commit/7fbe02100b45d2a0af8cc50f684e185cbfad4096))
+ * fix(tools/release-tulpje): don't use tag name for crate path ([`c775e25`](https://github.com/tulpje/tulpje/commit/c775e256f3297224e97fc59988acd7f8a31d93c1))
+ * feat(tulpje-framework): add tracing spans to handlers ([`1d0e0d6`](https://github.com/tulpje/tulpje/commit/1d0e0d6891599d21e394a0b50668e6649fb5c1b3))
+ * fix(tulpje-mod-pluralkit): fix confirmation check for existing channels ([`c7e0df2`](https://github.com/tulpje/tulpje/commit/c7e0df28be807ff2b60635ee7d9e86a83b901645))
+ * chore(tulpje-mod-pluralkit): tweaked log messages ([`78ab8d0`](https://github.com/tulpje/tulpje/commit/78ab8d025b9cb5bb8aaf02e12756607a0d1f555d))
+ * chore(tulpje-gateway): also log the event type of the event we just sent ([`61efd97`](https://github.com/tulpje/tulpje/commit/61efd97c8a05ccc9a9cec9f191148ae086fd2113))
+ * chore(tulpje-gateway): don't store errors in a separate log field ([`a39adcc`](https://github.com/tulpje/tulpje/commit/a39adcce52940c24aefaea0dce7b0452108b74ef))
+ * chore(deps): make `metrics` a workspace dependency ([`afb8332`](https://github.com/tulpje/tulpje/commit/afb8332e0054d5951c1663082eb06708356daf64))
+ * chore(deps): make `sqlx` a workspace dependency ([`dc44153`](https://github.com/tulpje/tulpje/commit/dc441533237e20b00b805c3a6b58df2bbae0bbef))
+ * chore(deps): make `async-trait` a workspace dependency ([`0876215`](https://github.com/tulpje/tulpje/commit/0876215c4607a32dc34d759fb651167c0c169e4c))
+ * chore(deps): make `pkrs-fork` a workspace dependency ([`f4e26fa`](https://github.com/tulpje/tulpje/commit/f4e26fa8174e228b5c06848a0e7f0bc7b027491b))
+ * refactor: reworked confirmation dialog code using traits ([`9d3d3c4`](https://github.com/tulpje/tulpje/commit/9d3d3c42fa8527695dc493bd9749f4d5071a5550))
+ * fix(build): don't use shared deps for `tulpje-utils` ([`bf04fc6`](https://github.com/tulpje/tulpje/commit/bf04fc60cd684fbd4a4fb421c5108be7f08bfd48))
+</details>
+
 ## [0.22.1-rc.3] - 2026-10-04
 
 ### Added
