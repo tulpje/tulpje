@@ -6,6 +6,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.23.0-rc.2] - 2026-10-04
+
+### Changed
+
+ - Prompts and update progress for `/pk role update`
+ - Always build and push images so we don't need to push releases to test things in staging
+
+### Fixed
+
+ - Only log ids on failure of `/pk role update` command, not names
+ - Actually have image builds wait for binaries to finish building
+ - Only run `Continuous Integration` workflow on branches as tags are always pushed to branches anyway
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * feat(tulpje-mod-pluralkit): prompts and update progress for `/pk role update` ([`64bacd7`](https://github.com/tulpje/tulpje/commit/64bacd7aeecc3065231fbd0f366a46569a2db572))
+ * fix(tulpje-mod-pluralkit): only log ids on failure of `/pk role update` command, not names ([`a528fe8`](https://github.com/tulpje/tulpje/commit/a528fe839758b953e98e78ba81b8699a20056183))
+ * chore(ci): always build and push images so we don't need to push releases to test things in staging ([`84eb59b`](https://github.com/tulpje/tulpje/commit/84eb59b9a75d4f92cd8aa442147f29f8116b9910))
+ * fix(ci): actually have image builds wait for binaries to finish building ([`10e7d07`](https://github.com/tulpje/tulpje/commit/10e7d07129a6a7246242e41000d1418b35839a37))
+ * fix(ci): only run `Continuous Integration` workflow on branches as tags are always pushed to branches anyway ([`3b2113f`](https://github.com/tulpje/tulpje/commit/3b2113f3a09bdfb00bdfbc7ba179e3143183d552))
+</details>
+
 ## [0.23.0-rc.1] - 2026-10-04
 
 ### Added
