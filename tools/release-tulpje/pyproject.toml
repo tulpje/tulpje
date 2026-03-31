@@ -18,3 +18,8 @@ release-tulpje = "release_tulpje:entrypoint"
 [build-system]
 requires = ["uv_build>=0.11.2,<0.12"]
 build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+]
