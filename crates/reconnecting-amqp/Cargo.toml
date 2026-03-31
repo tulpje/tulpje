@@ -11,7 +11,7 @@ license.workspace = true
 
 [dependencies]
 amqprs = { version = "2.1.3", features = ["compliance_assert", "traces", "urispec"] }
-async-trait = "0.1.89"
+async-trait = { workspace = true }
 tokio = { workspace = true }
 tokio-util = { workspace = true }
 tracing = { workspace = true }
