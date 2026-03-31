@@ -1,20 +1,27 @@
 use twilight_model::{
     channel::{
         ChannelType,
-        message::component::ButtonStyle,
+        message::{
+            Component,
+            component::{Button, ButtonStyle},
+        },
         permission_overwrite::{PermissionOverwrite, PermissionOverwriteType},
     },
     guild::Permissions,
-    id::marker::GenericMarker,
+    id::{
+        Id,
+        marker::{ChannelMarker, GenericMarker},
+    },
 };
 
 use tulpje_framework::Error;
 use tulpje_lib::{
-    confirmation_dialog::{ConfirmationDialogBuilder, MessageStyle},
-    context::CommandContext,
+    ConfirmationDialog,
+    context::{CommandContext, Services},
     responses,
     util::{find_channel_by_name, handle_channel_from_id, handle_permissions, parse_channel_ref},
 };
+use twilight_util::builder::message::{ButtonBuilder, TextDisplayBuilder};
 
 use crate::notify::db;
 
@@ -52,8 +59,7 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
             .as_ref()
             .is_some_and(|chan| chan.id != *configured_channel)
         // show confirmation prompt, and if response is negative return
-        && !handle_overwrite_existing_channel(&ctx, &format!("<#{}>", configured_channel.get()))
-            .await?
+        && !ConfirmSetup::new(*configured_channel).run(&ctx).await?
     {
         // setup was canceled, return
         return Ok(());
@@ -104,32 +110,42 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
     Ok(())
 }
 
-async fn handle_overwrite_existing_channel(
-    ctx: &CommandContext,
-    channel_ref: &str,
-) -> Result<bool, Error> {
-    ConfirmationDialogBuilder::new()
-        .prompt_text(
-            MessageStyle::Warning,
-            &format!(
-                "### Warning\nTulpje already sends notifications to {}, are you sure you want to change it?",
-                channel_ref
-            ),
-        )
-        .cancel_text(
-            MessageStyle::Info,
-            &format!(
-                "### Canceled\nSetup canceled, keeping {} as notification channel for this server",
-                channel_ref
-            ),
-        )
-        .confirm_button(ButtonStyle::Danger, |builder| {
-            builder.label("Yes, change it")
-        })
-        .cancel_button(ButtonStyle::Secondary, |builder| {
-            builder.label("No, cancel")
-        })
-        .build()
-        .execute(ctx)
-        .await
+/// confirmation dialog for overwriting the existing channel
+struct ConfirmSetup {
+    channel_id: Id<ChannelMarker>,
+}
+
+impl ConfirmSetup {
+    fn new(channel_id: Id<ChannelMarker>) -> Self {
+        Self { channel_id }
+    }
+}
+
+#[async_trait::async_trait]
+impl ConfirmationDialog<Services> for ConfirmSetup {
+    async fn prompt_message(&self) -> Result<Vec<Component>, Error> {
+        Ok(vec![TextDisplayBuilder::new(format!(
+            "### Warning\nTulpje already sends notifications to <#{}>, are you sure you want to change it?",
+            self.channel_id
+        )).build().into()])
+    }
+
+    async fn deny_message(&self) -> Result<Vec<Component>, Error> {
+        Ok(vec![TextDisplayBuilder::new(format!(
+            "### Canceled\nSetup canceled, keeping <#{}> as notification channel for this server",
+            self.channel_id
+        )).build().into()])
+    }
+
+    async fn confirm_button(&self) -> Result<Button, Error> {
+        Ok(ButtonBuilder::new(ButtonStyle::Danger)
+            .label("Yes, change it")
+            .build())
+    }
+
+    async fn deny_button(&self) -> Result<Button, Error> {
+        Ok(ButtonBuilder::new(ButtonStyle::Secondary)
+            .label("No, cancel")
+            .build())
+    }
 }
