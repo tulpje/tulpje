@@ -12,7 +12,7 @@ edition.workspace = true
 
 [dependencies]
 async-trait = "0.1.89"
-pkrs-fork = { version = "0.8.1", default-features = false, features = ["reqwest-client", "rustls-tls", "metrics"] }
+pkrs-fork = { workspace = true }
 redis = { workspace = true }
 serde = { workspace = true }
 sqlx = { version = "0.8.6", features = ["runtime-tokio", "postgres", "chrono", "json", "macros", "uuid"] }

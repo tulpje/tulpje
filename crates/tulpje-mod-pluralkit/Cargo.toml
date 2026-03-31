@@ -15,7 +15,7 @@ edition.workspace = true
 async-trait = "0.1.89"
 chrono = { workspace = true }
 metrics = "0.24.3"
-pkrs-fork = { version = "0.8.1", default-features = false, features = ["reqwest-client", "rustls-tls", "metrics"] }
+pkrs-fork = { workspace = true }
 reqwest = { workspace = true, features = ["rustls", "charset", "http2"] }
 serde_either = "0.2.1"
 sqlx = { version = "0.8.6", features = ["runtime-tokio", "postgres", "chrono", "json", "macros", "uuid"] }
