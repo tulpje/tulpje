@@ -711,7 +711,9 @@ def process_dependencies(releases_by_deps: list[ReleaseInfo]) -> list[ReleaseInf
 
 
 # TODO: Enforce independent crates not depending on workspace crates
-def do_releases(releases_by_deps: list[ReleaseInfo], execute=False):
+def do_releases(
+    releases_by_deps: list[ReleaseInfo], current_branch: str, execute=False
+):
     if len(releases_by_deps) == 0:
         print(" [*] Nothing to release")
         return
@@ -814,7 +816,7 @@ def do_releases(releases_by_deps: list[ReleaseInfo], execute=False):
     check_output_dry(
         " [-] Pushing release...",
         execute,
-        ["git", "push", "origin", "main"]
+        ["git", "push", "origin", current_branch]
         + [release.curr_tag for release in filtered_releases],
     )
 
@@ -883,6 +885,15 @@ def main(args: argparse.Namespace) -> int:
         print(" [!] combining --skip-slow with --execute is disallowed")
         return 1
 
+    current_branch = (
+        subprocess.check_output(["git", "branch", "--show-current"]).decode().strip()
+    )
+    if args.execute and args.prerelease is None and current_branch != "main":
+        print(
+            f" [!] regular releases are only allowed on 'main' branch, currently on {current_branch} did you intend to use `--prelease`?"
+        )
+        return 1
+
     # exclude the workspace hack from processing
     crates = [c for c in gather_crates() if c.name != "workspace-hack"]
     independent_crates = [crate for crate in crates if crate.independent]
@@ -902,7 +913,7 @@ def main(args: argparse.Namespace) -> int:
         )
     releases_by_deps = sort_releases_by_deps(releases)
     releasable = process_dependencies(releases_by_deps)
-    do_releases(releasable, args.execute)
+    do_releases(releasable, current_branch, args.execute)
 
     return 0
 
