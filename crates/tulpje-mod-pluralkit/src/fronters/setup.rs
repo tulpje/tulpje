@@ -2,12 +2,16 @@ use tulpje_framework::Error;
 use twilight_model::{
     channel::{
         ChannelType,
-        message::component::ButtonStyle,
+        message::{
+            Component,
+            component::{Button, ButtonStyle},
+        },
         permission_overwrite::{PermissionOverwrite, PermissionOverwriteType},
     },
     guild::Permissions,
     id::marker::GenericMarker,
 };
+use twilight_util::builder::message::{ButtonBuilder, TextDisplayBuilder};
 
 use super::db;
 use crate::{
@@ -16,8 +20,8 @@ use crate::{
     util::SystemRef,
 };
 use tulpje_lib::{
-    confirmation_dialog::{ConfirmationDialogBuilder, MessageStyle},
-    context::CommandContext,
+    ConfirmationDialog,
+    context::{CommandContext, Services},
     responses,
     util::handle_permissions,
 };
@@ -58,7 +62,7 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
         && let Ok(channel) = channel_resp.model().await
         && let Some(channel_name) = channel.name
         // prompt the user for confirmation to overwrite
-        && !handle_overwrite_existing_category(&ctx, &channel_name).await.map_err(|err| format!("error handling confirmation dialog: {err}"))?
+        && !ConfirmOverwriteCategoryDialog::new(channel_name).run(&ctx).await.map_err(|err| format!("error handling confirmation dialog: {err}"))?
     {
         return Ok(());
     }
@@ -123,32 +127,43 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
     Ok(())
 }
 
-async fn handle_overwrite_existing_category(
-    ctx: &CommandContext,
-    name: &str,
-) -> Result<bool, Error> {
-    ConfirmationDialogBuilder::new()
-        .prompt_text(
-            MessageStyle::Warning,
-            &format!(
+struct ConfirmOverwriteCategoryDialog {
+    name: String,
+}
+
+impl ConfirmOverwriteCategoryDialog {
+    fn new(name: String) -> Self {
+        Self { name }
+    }
+}
+
+#[async_trait::async_trait]
+impl ConfirmationDialog<Services> for ConfirmOverwriteCategoryDialog {
+    async fn prompt_message(&self) -> Result<Vec<Component>, Error> {
+        Ok(vec![
+            TextDisplayBuilder::new(format!(
                 "### Warning\nTulpje already shows fronters under `{}`, are you sure you want to create a new fronter category?",
-                name
-            ),
-        )
-        .cancel_text(
-            MessageStyle::Info,
-            &format!(
+                self.name
+            ))
+            .build()
+            .into(),
+        ])
+    }
+
+    async fn deny_message(&self) -> Result<Vec<Component>, Error> {
+        Ok(vec![
+            TextDisplayBuilder::new(format!(
                 "### Canceled\nSetup canceled, keeping `{}` as fronter category this server",
-                name,
-            ),
-        )
-        .confirm_button(ButtonStyle::Danger, |builder| {
-            builder.label("Yes, create new category")
-        })
-        .cancel_button(ButtonStyle::Secondary, |builder| {
-            builder.label("No, cancel")
-        })
-        .build()
-        .execute(ctx)
-        .await
+                self.name,
+            ))
+            .build()
+            .into(),
+        ])
+    }
+
+    async fn confirm_button(&self) -> Result<Button, Error> {
+        Ok(ButtonBuilder::new(ButtonStyle::Danger)
+            .label("Yes, create new category")
+            .build())
+    }
 }

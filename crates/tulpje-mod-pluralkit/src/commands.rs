@@ -1,12 +1,16 @@
 use pkrs_fork::{client::PluralKitError, model::PkId};
 use tulpje_framework::Error;
-use twilight_model::channel::message::component::ButtonStyle;
+use twilight_model::channel::message::{
+    Component,
+    component::{Button, ButtonStyle},
+};
 
 use tulpje_lib::{
-    confirmation_dialog::{ConfirmationDialogBuilder, MessageStyle},
-    context::CommandContext,
+    ConfirmationDialog,
+    context::{CommandContext, Services},
     responses,
 };
+use twilight_util::builder::message::{ButtonBuilder, TextDisplayBuilder};
 
 use super::{
     db::{self, ModPkSystem},
@@ -49,7 +53,9 @@ pub async fn setup_pk(ctx: CommandContext) -> Result<(), Error> {
     };
 
     if let Some(existing_system) = db::get_system_for_guild(&ctx.services.db, guild.id).await?
-        && !handle_overwrite_existing_system(&ctx, &existing_system).await?
+        && !ConfirmOverwriteSystemDialog::new(existing_system)
+            .run(&ctx)
+            .await?
     {
         // setup was canceled, return
         return Ok(());
@@ -75,32 +81,49 @@ pub async fn setup_pk(ctx: CommandContext) -> Result<(), Error> {
     Ok(())
 }
 
-async fn handle_overwrite_existing_system(
-    ctx: &CommandContext,
-    system: &ModPkSystem,
-) -> Result<bool, Error> {
-    ConfirmationDialogBuilder::new()
-        .prompt_text(
-            MessageStyle::Warning,
-            &format!(
+struct ConfirmOverwriteSystemDialog {
+    system: ModPkSystem,
+}
+
+impl ConfirmOverwriteSystemDialog {
+    fn new(system: ModPkSystem) -> Self {
+        Self { system }
+    }
+}
+
+#[async_trait::async_trait]
+impl ConfirmationDialog<Services> for ConfirmOverwriteSystemDialog {
+    async fn prompt_message(&self) -> Result<Vec<Component>, Error> {
+        Ok(vec![
+            TextDisplayBuilder::new(format!(
                 "### Warning\nThis server is already configured for `{}`\nOverwrite?",
-                system.name.as_ref().unwrap_or(&system.id)
-            ),
-        )
-        .cancel_text(
-            MessageStyle::Info,
-            &format!(
+                self.system.name.as_ref().unwrap_or(&self.system.id)
+            ))
+            .build()
+            .into(),
+        ])
+    }
+
+    async fn deny_message(&self) -> Result<Vec<Component>, Error> {
+        Ok(vec![
+            TextDisplayBuilder::new(format!(
                 "### Canceled\nSetup canceled, keeping `{}` as configured system for this server",
-                system.name.as_ref().unwrap_or(&system.id)
-            ),
-        )
-        .confirm_button(ButtonStyle::Danger, |builder| {
-            builder.label("Yes, overwrite")
-        })
-        .cancel_button(ButtonStyle::Secondary, |builder| {
-            builder.label("No, cancel")
-        })
-        .build()
-        .execute(ctx)
-        .await
+                self.system.name.as_ref().unwrap_or(&self.system.id)
+            ))
+            .build()
+            .into(),
+        ])
+    }
+
+    async fn confirm_button(&self) -> Result<Button, Error> {
+        Ok(ButtonBuilder::new(ButtonStyle::Danger)
+            .label("Yes, overwrite")
+            .build())
+    }
+
+    async fn deny_button(&self) -> Result<Button, Error> {
+        Ok(ButtonBuilder::new(ButtonStyle::Secondary)
+            .label("No, cancel")
+            .build())
+    }
 }

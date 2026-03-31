@@ -3220,6 +3220,7 @@ dependencies = [
 name = "tulpje-lib"
 version = "0.22.1"
 dependencies = [
+ "async-trait",
  "pkrs-fork",
  "redis",
  "serde",
@@ -3270,6 +3271,7 @@ dependencies = [
 name = "tulpje-mod-pluralkit"
 version = "0.22.1"
 dependencies = [
+ "async-trait",
  "chrono",
  "metrics",
  "pkrs-fork",

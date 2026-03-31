@@ -1,59 +1,124 @@
+use std::slice;
+
+use tulpje_framework::{Error, context::CommandContext};
 use twilight_model::{
     application::interaction::{Interaction, InteractionData},
     channel::message::{
         Component, MessageFlags,
-        component::{ActionRow, Button, ButtonStyle},
+        component::{ActionRow, Button, ButtonStyle, Container, SeparatorSpacingSize},
     },
 };
-use twilight_util::builder::message::ButtonBuilder;
+use twilight_util::builder::message::{ButtonBuilder, SeparatorBuilder, TextDisplayBuilder};
 
-use tulpje_framework::Error;
+use crate::message_style::MessageStyle;
 
-use crate::{
-    context::CommandContext,
-    util::{error_message, info_message, success_message, warning_message},
-};
+#[async_trait::async_trait]
+pub trait ConfirmationDialog<T: Clone + Send + Sync> {
+    const PROMPT_STYLE: MessageStyle = MessageStyle::Warning;
+    const DENY_STYLE: MessageStyle = MessageStyle::Info;
 
-#[derive(Debug, Clone, Copy)]
-pub enum MessageStyle {
-    Success,
-    Info,
-    Warning,
-    Error,
-}
-
-pub struct ConfirmationDialog {
-    prompt: Vec<Component>,
-    cancel_response: Vec<Component>,
-    confirm_button: Button,
-    cancel_button: Button,
-}
-
-impl ConfirmationDialog {
-    pub fn builder() -> ConfirmationDialogBuilder {
-        ConfirmationDialogBuilder::new()
+    async fn prompt_message(&self) -> Result<Vec<Component>, Error> {
+        Ok(vec![
+            TextDisplayBuilder::new("### Warning\nAre you sure?")
+                .build()
+                .into(),
+        ])
     }
 
-    pub async fn execute(mut self, ctx: &CommandContext) -> Result<bool, Error> {
-        // hardcode the button ids
-        self.confirm_button.custom_id = Some("confirm".to_string());
-        self.cancel_button.custom_id = Some("cancel".to_string());
+    async fn deny_message(&self) -> Result<Vec<Component>, Error> {
+        Ok(vec![
+            TextDisplayBuilder::new("### Canceled\nAction canceled")
+                .build()
+                .into(),
+        ])
+    }
+
+    async fn confirm_button(&self) -> Result<Button, Error> {
+        Ok(ButtonBuilder::new(ButtonStyle::Danger)
+            .label("Confirm")
+            .build())
+    }
+
+    async fn deny_button(&self) -> Result<Button, Error> {
+        Ok(ButtonBuilder::new(ButtonStyle::Secondary)
+            .label("Cancel")
+            .build())
+    }
+
+    /// method that executes when the user denies the prompt
+    ///
+    /// Should result `false` if the calling function should early return, otherwise
+    /// true. Usually this is `false` when the user denies the prompt
+    async fn deny(&self, ctx: &CommandContext<T>) -> Result<bool, Error> {
+        let deny_container = Container {
+            id: None,
+            spoiler: None,
+
+            accent_color: Some(Some(Self::DENY_STYLE.into())),
+            components: self.deny_message().await?,
+        };
+
+        ctx.interaction()
+            .update_response(&ctx.event.token)
+            .flags(MessageFlags::IS_COMPONENTS_V2)
+            .components(Some(slice::from_ref(&deny_container.into())))
+            .await?;
+
+        Ok(false)
+    }
+
+    /// method to execute when the user confirms the prompt
+    ///
+    /// Should result `true` if the calling function should continue, otherwise
+    /// `false`. Usually this is `true` when the user confirms the prompt
+    async fn confirm(&self, _ctx: &CommandContext<T>) -> Result<bool, Error> {
+        Ok(true)
+    }
+
+    async fn run(&self, ctx: &CommandContext<T>) -> Result<bool, Error> {
+        let mut confirm_button = self.confirm_button().await?;
+        let mut deny_button = self.deny_button().await?;
+
+        // set button IDs if they're missing
+        let confirm_id = confirm_button
+            .custom_id
+            .get_or_insert_with(|| "confirm".to_string())
+            .clone();
+        let deny_id = deny_button
+            .custom_id
+            .get_or_insert_with(|| "deny".to_string())
+            .clone();
 
         // build the components
         let action_row = ActionRow {
             id: None,
-            components: vec![self.confirm_button.into(), self.cancel_button.into()],
+            components: vec![confirm_button.into(), deny_button.into()],
         };
 
-        let mut components = self.prompt.clone();
+        let mut components = self.prompt_message().await?.clone();
+        components.push(
+            SeparatorBuilder::new()
+                .divider(true)
+                .spacing(SeparatorSpacingSize::Large)
+                .build()
+                .into(),
+        );
         components.push(action_row.into());
+
+        let prompt_container = Container {
+            id: None,
+            spoiler: None,
+
+            accent_color: Some(Some(Self::PROMPT_STYLE.into())),
+            components,
+        };
 
         // get the response from discord
         let response = ctx
             .interaction()
             .update_response(&ctx.event.token)
             .flags(MessageFlags::IS_COMPONENTS_V2)
-            .components(Some(&components))
+            .components(Some(slice::from_ref(&prompt_container.into())))
             .await?
             .model()
             .await?;
@@ -66,105 +131,16 @@ impl ConfirmationDialog {
 
         // handle interaction data
         match interaction.data {
-            Some(InteractionData::MessageComponent(interaction)) => {
-                match interaction.custom_id.as_str() {
-                    "confirm" => Ok(true),
-                    "cancel" => {
-                        ctx.interaction()
-                            .update_response(&ctx.event.token)
-                            .flags(MessageFlags::IS_COMPONENTS_V2)
-                            .components(Some(&self.cancel_response))
-                            .await?;
-                        Ok(false)
-                    }
-                    _ => Err(format!("unknown button id: {}", interaction.custom_id).into()),
-                }
-            }
+            Some(InteractionData::MessageComponent(interaction)) => match interaction.custom_id {
+                custom_id if custom_id == *confirm_id => self.confirm(ctx).await,
+                custom_id if custom_id == *deny_id => self.deny(ctx).await,
+                _ => Err(format!("unknown button id: {}", interaction.custom_id).into()),
+            },
             _ => Err(format!(
                 "incorrect interaction kind received: {}",
                 interaction.kind.kind()
             )
             .into()),
-        }
-    }
-}
-
-#[derive(Default)]
-pub struct ConfirmationDialogBuilder {
-    prompt: Option<Vec<Component>>,
-    cancel_response: Option<Vec<Component>>,
-
-    confirm_button: Option<Button>,
-    cancel_button: Option<Button>,
-}
-
-impl ConfirmationDialogBuilder {
-    pub fn new() -> Self {
-        Self::default()
-    }
-
-    pub fn confirm_button<F>(mut self, style: ButtonStyle, cb: F) -> Self
-    where
-        F: FnOnce(ButtonBuilder) -> ButtonBuilder,
-    {
-        self.confirm_button = Some(cb(ButtonBuilder::new(style)).build());
-        self
-    }
-
-    pub fn cancel_button<F>(mut self, style: ButtonStyle, cb: F) -> Self
-    where
-        F: FnOnce(ButtonBuilder) -> ButtonBuilder,
-    {
-        self.cancel_button = Some(cb(ButtonBuilder::new(style)).build());
-        self
-    }
-
-    pub fn prompt_text(self, style: MessageStyle, text: &str) -> Self {
-        self.prompt(&[match style {
-            MessageStyle::Success => success_message(text),
-            MessageStyle::Info => info_message(text),
-            MessageStyle::Warning => warning_message(text),
-            MessageStyle::Error => error_message(text),
-        }])
-    }
-
-    pub fn prompt(mut self, components: &[Component]) -> Self {
-        self.prompt = Some(components.to_vec());
-        self
-    }
-
-    pub fn cancel_text(self, style: MessageStyle, text: &str) -> Self {
-        self.cancel_response(&[match style {
-            MessageStyle::Success => success_message(text),
-            MessageStyle::Info => info_message(text),
-            MessageStyle::Warning => warning_message(text),
-            MessageStyle::Error => error_message(text),
-        }])
-    }
-
-    pub fn cancel_response(mut self, components: &[Component]) -> Self {
-        self.cancel_response = Some(components.to_vec());
-        self
-    }
-
-    pub fn build(self) -> ConfirmationDialog {
-        ConfirmationDialog {
-            prompt: self
-                .prompt
-                .unwrap_or_else(|| vec![warning_message("### Warning\nAre you sure?")]),
-            cancel_response: self
-                .cancel_response
-                .unwrap_or_else(|| vec![info_message("### Canceled\nAction canceled")]),
-            confirm_button: self.confirm_button.unwrap_or_else(|| {
-                ButtonBuilder::new(ButtonStyle::Danger)
-                    .label("Confirm")
-                    .build()
-            }),
-            cancel_button: self.cancel_button.unwrap_or_else(|| {
-                ButtonBuilder::new(ButtonStyle::Secondary)
-                    .label("Cancel")
-                    .build()
-            }),
         }
     }
 }

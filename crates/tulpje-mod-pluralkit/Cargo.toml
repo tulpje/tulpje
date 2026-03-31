@@ -12,6 +12,7 @@ rust-version.workspace = true
 edition.workspace = true
 
 [dependencies]
+async-trait = "0.1.89"
 chrono = { workspace = true }
 metrics = "0.24.3"
 pkrs-fork = { version = "0.8.1", default-features = false, features = ["reqwest-client", "rustls-tls", "metrics"] }
