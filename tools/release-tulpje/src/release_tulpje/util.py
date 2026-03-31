@@ -1,20 +1,19 @@
 from pathlib import PurePath
 import subprocess
 from typing import Optional
+import itertools
 import os
 
 from termcolor import colored
 
 
-def find_file_upwards(path: PurePath, name: str) -> Optional[PurePath]:
-    full_path = path.joinpath(name)
-    if os.path.isfile(full_path):
-        return full_path
-    else:
-        if os.path.dirname(path) == path:
-            return None
-        else:
-            return find_file_upwards(path.parent, name)
+def find_file_upwards(start_dir: PurePath, name: str) -> Optional[PurePath]:
+    search_dirs = itertools.chain([start_dir], start_dir.parents)
+
+    for search_dir in search_dirs:
+        check_path = search_dir.joinpath(name)
+        if os.path.isfile(check_path):
+            return check_path
 
 
 def process_run(*args, **kwargs) -> str:
