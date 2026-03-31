@@ -6,25 +6,25 @@ use twilight_model::channel::message::{
 };
 use twilight_util::builder::message::{ButtonBuilder, TextDisplayBuilder};
 
-use crate::roles::{constants::DISCORD_ROLE_LIMIT, update_stats::UpdateStats};
+use crate::roles::{constants::DISCORD_ROLE_LIMIT, update_stats::UpdateCounts};
 
-pub(crate) fn role_change_message(stats: &UpdateStats, infix: &str) -> String {
+pub(crate) fn role_change_message(counts: &UpdateCounts, infix: &str) -> String {
     // all this code is just to get messages to look like
     //   1 role created, 2 updated, 1 assigned
     //   2 roles updated, 1 assigned
     //   etc
     let mut parts = Vec::<(u16, &'static str)>::new();
-    if stats.create.done > 0 {
-        parts.push((stats.create.done, "created"));
+    if counts.create > 0 {
+        parts.push((counts.create, "created"));
     }
-    if stats.update.done > 0 {
-        parts.push((stats.update.done, "updated"));
+    if counts.update > 0 {
+        parts.push((counts.update, "updated"));
     }
-    if stats.delete.done > 0 {
-        parts.push((stats.delete.done, "deleted"));
+    if counts.delete > 0 {
+        parts.push((counts.delete, "deleted"));
     }
-    if stats.assign.done > 0 {
-        parts.push((stats.assign.done, "assigned"));
+    if counts.assign > 0 {
+        parts.push((counts.assign, "assigned"));
     }
 
     let infix = if !infix.is_empty() {
@@ -116,12 +116,12 @@ impl ConfirmationDialog<Services> for NearRoleLimitWarningPrompt {
 }
 
 pub(crate) struct ConfirmUpdatePrompt {
-    stats: UpdateStats,
+    total: UpdateCounts,
 }
 
 impl ConfirmUpdatePrompt {
-    pub(crate) fn new(stats: UpdateStats) -> Self {
-        Self { stats }
+    pub(crate) fn new(total: UpdateCounts) -> Self {
+        Self { total }
     }
 }
 
@@ -133,7 +133,7 @@ impl ConfirmationDialog<Services> for ConfirmUpdatePrompt {
         Ok(vec![
             TextDisplayBuilder::new(format!(
                 "### Update Roles?\n{}",
-                role_change_message(&self.stats, "will be")
+                role_change_message(&self.total, "will be")
             ))
             .build()
             .into(),

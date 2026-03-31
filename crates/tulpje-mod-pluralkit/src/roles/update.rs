@@ -16,7 +16,7 @@ use uuid::Uuid;
 
 use crate::roles::constants::{DISCORD_ROLE_LIMIT, REMAINING_ROLE_WARNING};
 use crate::roles::prompts::{ConfirmUpdatePrompt, NearRoleLimitWarningPrompt, role_change_message};
-use crate::roles::update_stats::UpdateStats;
+use crate::roles::update_stats::{UpdateCounts, UpdateStats};
 use crate::{
     db::get_guild_settings_for_id,
     util::{SystemRef, get_member_name, pk_color_to_discord},
@@ -48,13 +48,13 @@ fn role_limit_message(member_count: usize, existing_role_count: usize) -> String
 
 async fn handle_update_success_message(
     ctx: &CommandContext,
-    stats: &UpdateStats,
+    counts: &UpdateCounts,
 ) -> Result<(), Error> {
     responses::success(
         ctx,
         &format!(
             "### Member Roles Updated\n{}",
-            role_change_message(stats, "")
+            role_change_message(counts, "")
         ),
     )
     .await?;
@@ -147,15 +147,15 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
         });
 
     let mut update_stats =
-        UpdateStats::new(create, delete, update, missing_user_role_names.len() as u16);
+        UpdateStats::new(create, update, delete, missing_user_role_names.len() as u16);
 
-    if update_stats.total().total == 0 {
+    if update_stats.total.sum() == 0 {
         responses::info(&ctx, "Member roles are already up-to-date").await?;
         return Ok(());
     }
 
     // prompt user if listed changes are okay
-    if !ConfirmUpdatePrompt::new(update_stats.clone())
+    if !ConfirmUpdatePrompt::new(update_stats.total.clone())
         .run(&ctx)
         .await?
     {
@@ -187,7 +187,7 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
                         format!("error updating role {} in guild {}: {}", id, guild.id, err)
                     })?;
 
-                update_stats.update.done += 1;
+                update_stats.done.update += 1;
                 tracing::debug!("updated role {} in guild {}", id, guild.id);
             }
             ChangeOperation::Create {
@@ -218,7 +218,7 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
 
                 role_name_id_map.insert(name.clone(), role.id);
 
-                update_stats.create.done += 1;
+                update_stats.done.create += 1;
                 tracing::debug!("created role {} in guild {}", role.id, guild.id);
             }
             ChangeOperation::Delete { id } => {
@@ -226,7 +226,7 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
                     format!("error deleting role {} in guild {}: {}", id, guild.id, err)
                 })?;
 
-                update_stats.delete.done += 1;
+                update_stats.done.delete += 1;
                 tracing::debug!("deleted role {} in {}", id, guild.id);
             }
         };
@@ -250,7 +250,7 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
                 format!("error assigning role {missing_role_name} ({role_id}): {err}")
             })?;
 
-        update_stats.assign.done += 1;
+        update_stats.done.assign += 1;
         tracing::debug!(
             "assigned role {} to user {} in guild {}",
             role_id,
@@ -265,7 +265,7 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
     }
 
     // send success message to user
-    handle_update_success_message(&ctx, &update_stats).await?;
+    handle_update_success_message(&ctx, &update_stats.done).await?;
 
     Ok(())
 }
@@ -335,17 +335,17 @@ enum ChangeOperation {
 
 async fn update_role_progress(ctx: &CommandContext, stats: &UpdateStats) {
     let mut parts = Vec::<(u16, u16, &'static str)>::new();
-    if stats.create.total > 0 {
-        parts.push((stats.create.done, stats.create.total, "create"));
+    if stats.total.create > 0 {
+        parts.push((stats.done.create, stats.total.create, "created"));
     }
-    if stats.update.total > 0 {
-        parts.push((stats.update.done, stats.update.total, "update"));
+    if stats.total.update > 0 {
+        parts.push((stats.done.update, stats.total.update, "updated"));
     }
-    if stats.delete.total > 0 {
-        parts.push((stats.delete.done, stats.delete.total, "delete"));
+    if stats.total.delete > 0 {
+        parts.push((stats.done.delete, stats.total.delete, "deleted"));
     }
-    if stats.assign.total > 0 {
-        parts.push((stats.assign.done, stats.assign.total, "assign"));
+    if stats.total.assign > 0 {
+        parts.push((stats.done.assign, stats.total.assign, "assigned"));
     }
 
     if let Err(err) = responses::info(
