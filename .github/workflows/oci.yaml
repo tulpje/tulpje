@@ -1,9 +1,27 @@
-name: "Build Docker Images"
+name: "Container Images"
 on:
   push:
-    tags: ["v*"]
+    # tags: ["v*"]
 jobs:
+  wait_for_build:
+    name: "Wait for build to finish"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      conclusion: ${{ steps.wait.conclusion }}
+    steps:
+      - name: "Wait for build to finish"
+        id: wait
+        uses: lucasssvaz/wait-on-workflow@676745e30db420704878817812d34d95e20a183d0 # v1.5.0
+        with:
+          sha: ${{ github.sha }}
+          interval: 60 # 60 seconds
+          timeout: 30 # 30 minutes
+          workflow: "build.yaml"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
   build:
+    name: "Build & Push Container Images"
     strategy:
       matrix:
         image:
@@ -15,13 +33,9 @@ jobs:
     permissions:
       contents: read
       packages: write
+    needs: wait_for_build
+    if: ${{ needs.wait_for_build.outputs.conclusion == 'success' || needs.wait_for_build.outputs.conclusion == 'neutral' }}
     steps:
-      - name: Waiting for all checks to finish
-        uses: lewagon/wait-on-check-action@74049309dfeff245fe8009a0137eacf28136cb3c # v1.5.0
-        with:
-          ref: ${{ github.sha }}
-          running-workflow-name: "Build Docker Images"
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Check out repository code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
@@ -39,6 +53,7 @@ jobs:
       - name: Build ${{ matrix.image.name }} image
         run: nix build -o ${{ matrix.image.output }}.tar.gz .#${{ matrix.image.output }}
       - name: Push ${{ matrix.image.name }} image
+        if: startsWith(github.ref, 'refs/tags/v')
         run: >
           skopeo --insecure-policy copy
           "docker-archive:${{ matrix.image.output }}.tar.gz"
