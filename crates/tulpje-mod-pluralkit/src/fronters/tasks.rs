@@ -160,7 +160,7 @@ async fn update_fronter_category(
         metrics::counter!("pk:front-category", "type" => "error").increment(1);
         tracing::error!(
             method = "update_fronter_category",
-            "error updating fronters for {} category {}: {}",
+            "error updating fronters for guild {} category {}: {}",
             guild_settings.guild_id,
             category_id,
             err
@@ -328,12 +328,12 @@ async fn process_system(
     };
     match changed {
         FrontChange::Changed(switch) => {
-            tracing::debug!("front changed for {}", system.uuid);
+            tracing::debug!("fronters changed for system {}", system.uuid);
             update_fronter_category(db, pk_client, discord_client, cache, system, &switch).await?;
             notify_front_change(db, discord_client, system, &switch).await?;
         }
         FrontChange::Unchanged => {
-            tracing::debug!("front unchanged for {}", system.uuid);
+            tracing::debug!("fronters unchanged for system {}", system.uuid);
         }
     }
     Ok(())
@@ -358,7 +358,7 @@ pub(crate) async fn update_fronters(ctx: TaskContext) -> Result<(), Error> {
         )
         .await
         {
-            tracing::warn!("error updating system with uuid {}, {}", system.uuid, err);
+            tracing::warn!("error updating system {}: {}", system.uuid, err);
         }
     }
 
@@ -403,8 +403,8 @@ async fn update_fronters_for_guild(
         Some(members),
     )
     .await
-    .map_err(|err| format!("error updating fronters for {}: {}", guild.id, err))?;
+    .map_err(|err| format!("error updating fronters for guild {}: {}", guild.id, err))?;
 
-    tracing::info!("fronters updated in {}", guild.id);
+    tracing::info!("fronters updated in guild {}", guild.id);
     Ok(())
 }
