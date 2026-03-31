@@ -14,6 +14,10 @@ pub struct ComponentInteractionHandler<T: Clone + Send + Sync> {
 }
 
 impl<T: Clone + Send + Sync> ComponentInteractionHandler<T> {
+    #[tracing::instrument(name="component-interaction-handler", skip_all, fields(
+        module=self.module,
+        custom_id=self.custom_id
+    ))]
     pub async fn run(&self, ctx: ComponentInteractionContext<T>) -> Result<(), Error> {
         // can add more handling/parsing/etc here in the future
         (self.func)(ctx).await

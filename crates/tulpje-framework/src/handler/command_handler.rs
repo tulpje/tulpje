@@ -18,6 +18,10 @@ pub struct CommandHandler<T: Clone + Send + Sync> {
 }
 
 impl<T: Clone + Send + Sync> CommandHandler<T> {
+    #[tracing::instrument(name="command-handler", skip_all, fields(
+        module=self.module,
+        name=self.name
+    ))]
     pub async fn run(&self, ctx: CommandContext<T>) -> Result<(), Error> {
         // TODO: More elegant way of handling command errors
         // TODO: Test if errors work in DMs
