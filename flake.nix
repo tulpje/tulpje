@@ -90,7 +90,9 @@
             # project binaries
             tulpje-handler = buildCrate "tulpje-handler";
             tulpje-gateway = buildCrate "tulpje-gateway";
-            tulpje-utils = buildCrate "tulpje-utils";
+            tulpje-utils = pkgs.callPackage ./nix/pkgs/tulpje-utils.nix {
+              inherit inputs craneLib;
+            };
 
             # third party binaries
             twilight-gateway-queue = pkgs.callPackage ./nix/pkgs/twilight-gateway-queue.nix {
