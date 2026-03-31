@@ -14,7 +14,7 @@ edition.workspace = true
 [dependencies]
 async-trait = { workspace = true }
 chrono = { workspace = true }
-metrics = "0.24.3"
+metrics = { workspace = true }
 pkrs-fork = { workspace = true }
 reqwest = { workspace = true, features = ["rustls", "charset", "http2"] }
 serde_either = "0.2.1"

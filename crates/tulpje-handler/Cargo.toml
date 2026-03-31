@@ -30,7 +30,7 @@ twilight-http = { workspace = true, features = ["decompression", "rustls-webpki-
 serde = { workspace = true }
 sqlx = { workspace = true, features = ["migrate"] }
 pkrs-fork = { workspace = true }
-metrics = "0.24.3"
+metrics = { workspace = true }
 metrics-exporter-prometheus = { workspace = true }
 redis = { workspace = true }
 figment = { version = "0.10.19", features = ["env"] }
