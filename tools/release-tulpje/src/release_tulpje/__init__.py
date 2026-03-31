@@ -463,7 +463,7 @@ def gather_release(
     skip_slow: bool,
 ) -> ReleaseInfo:
     independent_crate = len(crates) == 1
-    prefix = "" if not independent_crate else crates[0].name.removeprefix("tulpje-")
+    tag_prefix = "" if not independent_crate else crates[0].name.removeprefix("tulpje-")
 
     if independent_crate:
         log.info("gathering release for {} ...".format(crates[0].name))
@@ -474,7 +474,7 @@ def gather_release(
             RELEASE_FILENAME_MATCHLIST_WORKSPACE
         ).union({f"!{crate.path}/**/*" for crate in independent_crates})
 
-    latest_tag = get_latest_tag(f"{prefix}-" if len(prefix) > 0 else "", True)
+    latest_tag = get_latest_tag(f"{tag_prefix}-" if len(tag_prefix) > 0 else "", True)
     has_independent_tag = independent_crate and latest_tag is not None
 
     # fall back to main tag if there's none for the prefix yet
@@ -487,8 +487,13 @@ def gather_release(
     log.debug(f"latest tag: {latest_tag}, has_independent_tag: {has_independent_tag}")
 
     if independent_crate:
-        commits = filter_commits_by_path(get_commits_since_ref(latest_tag), [prefix])
+        # gather commits belonging to the independent crate
+        commits = filter_commits_by_path(
+            get_commits_since_ref(latest_tag), [crates[0].path]
+        )
     else:
+        # if this is part of the main release, filter any commits that belong
+        # to independent crates
         commits = filter_commits_by_path(
             get_commits_since_ref(latest_tag),
             [crate.path for crate in independent_crates],
@@ -510,11 +515,15 @@ def gather_release(
     if independent_crate:
         old_version = crates[0].version
     else:
-        old_version = Version.parse(latest_tag.removeprefix(prefix).removeprefix("v"))
+        old_version = Version.parse(
+            latest_tag.removeprefix(tag_prefix).removeprefix("v")
+        )
 
     # release if there's changes or we're going from prerelease -> regular release
     should_release = (
-        should_create_release(commits, file_whitelist, prefix)
+        should_create_release(
+            commits, file_whitelist, crates[0].path if independent_crate else ""
+        )
         or old_version.prerelease is not None
         and prerelease is None
     )
@@ -534,7 +543,7 @@ def gather_release(
 
     new_changelog = (
         create_changelog_update(
-            prefix, old_version, new_version, independent_crate, independent_crates
+            tag_prefix, old_version, new_version, independent_crate, independent_crates
         )
         if not skip_slow
         else ""
