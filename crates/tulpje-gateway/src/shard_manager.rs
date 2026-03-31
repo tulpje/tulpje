@@ -148,9 +148,9 @@ impl ShardManager {
         if let Some(text) = event.text
             && event.forward
         {
-            let event = DiscordEvent::new(self.shard.id().number(), text);
+            let discord_event = DiscordEvent::new(self.shard.id().number(), text);
 
-            let serialized_event = serde_json::to_vec(&event)
+            let serialized_event = serde_json::to_vec(&discord_event)
                 .map_err(|err| format!("error serializing event: {err}"))?;
 
             self.amqp_tx
@@ -158,9 +158,10 @@ impl ShardManager {
                 .map_err(|err| format!("error sending event to amqp: {err}"))?;
 
             tracing::debug!(
-                uuid = ?event.meta.uuid,
-                shard = event.meta.shard,
-                "event sent"
+                uuid = ?discord_event.meta.uuid,
+                shard = discord_event.meta.shard,
+                "{} event sent",
+                event.name.unwrap_or_else(|| "Unknown".into())
             );
         }
 
