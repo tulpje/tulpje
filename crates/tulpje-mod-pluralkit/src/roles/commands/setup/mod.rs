@@ -39,7 +39,8 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
 
     tracing::debug!("trying to fetch existing guild settings");
     let Some(guild_settings) = get_guild_settings_for_id(&ctx.services.db, guild.id).await? else {
-        // TODO: inform user they haven't set up the module, and offer to run the main setup
+        // TODO: Add button to start PluralKit setup
+        responses::error(&ctx, "PluralKit module not set-up, please run `/pk setup`").await?;
         return Ok(());
     };
 
