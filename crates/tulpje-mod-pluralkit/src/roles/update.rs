@@ -1,8 +1,6 @@
 use std::collections::{HashMap, HashSet};
 
-use pkrs_fork::client::PluralKitError;
 use pkrs_fork::model::Member;
-use pkrs_fork::{client::PkClient, model::PkId};
 use tulpje_cache::Cache;
 use tulpje_lib::ConfirmationDialog as _;
 use twilight_http::Client;
@@ -16,6 +14,7 @@ use uuid::Uuid;
 
 use crate::roles::constants::{DISCORD_ROLE_LIMIT, REMAINING_ROLE_WARNING};
 use crate::roles::prompts::{ConfirmUpdatePrompt, NearRoleLimitWarningPrompt, role_change_message};
+use crate::roles::shared::handle_get_system_members;
 use crate::roles::update_stats::{UpdateCounts, UpdateStats};
 use crate::{
     db::get_guild_settings_for_id,
@@ -84,7 +83,7 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
     let Some(members) = handle_get_system_members(
         &ctx,
         &ctx.services.pk.with_token(token.unwrap_or_default()),
-        system_ref,
+        &system_ref,
     )
     .await?
     else {
@@ -268,46 +267,6 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
     handle_update_success_message(&ctx, &update_stats.done).await?;
 
     Ok(())
-}
-
-async fn handle_get_system_members(
-    ctx: &CommandContext,
-    client: &PkClient,
-    system_ref: SystemRef,
-) -> Result<Option<Vec<Member>>, Error> {
-    match client
-        .get_system_members(&PkId(system_ref.clone().into()))
-        .await
-    {
-        Ok(members) => Ok(Some(members)),
-        // private member list
-        Err(PluralKitError::Pk(_, message))
-            // 30001 = unauthorized to view member list
-            if message.code == 30001 =>
-        {
-            // TODO: Try to fetch system name?
-            responses::error(
-                ctx,
-                &format!("### Error\nMember list for `{system_ref}` is private"),
-            )
-            .await?;
-            Ok(None)
-        }
-        // missing system
-        Err(PluralKitError::Pk(_, message))
-            // 20001 = missing system
-            if message.code == 20001 =>
-        {
-            responses::error(
-                    ctx,
-                    &format!("### Error\nPluralKit can't find this system, does `{system_ref}` exist?"),
-                )
-                .await?;
-            Ok(None)
-        }
-        // miscellaneous errors
-        Err(err) => Err(err.into()),
-    }
 }
 
 #[derive(Debug, Hash, Eq, PartialEq)]

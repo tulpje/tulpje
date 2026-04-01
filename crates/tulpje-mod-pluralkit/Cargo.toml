@@ -16,6 +16,7 @@ async-trait = { workspace = true }
 chrono = { workspace = true }
 metrics = { workspace = true }
 pkrs-fork = { workspace = true }
+pluralizer = "0.5.0"
 reqwest = { workspace = true, features = ["rustls", "charset", "http2"] }
 serde = { workspace = true }
 serde_either = "0.2.1"
