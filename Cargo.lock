@@ -3280,6 +3280,7 @@ dependencies = [
  "metrics",
  "pkrs-fork",
  "reqwest 0.13.1",
+ "serde",
  "serde_either",
  "sqlx",
  "thiserror 2.0.18",

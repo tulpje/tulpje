@@ -17,6 +17,7 @@ chrono = { workspace = true }
 metrics = { workspace = true }
 pkrs-fork = { workspace = true }
 reqwest = { workspace = true, features = ["rustls", "charset", "http2"] }
+serde = { workspace = true }
 serde_either = "0.2.1"
 sqlx = { workspace = true }
 thiserror = { workspace = true }
