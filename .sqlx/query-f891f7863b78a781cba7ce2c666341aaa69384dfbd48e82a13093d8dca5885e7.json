@@ -1,0 +1,52 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                id,\n\n                guild_id,\n                role_id,\n                member_uuid,\n\n                created_at,\n                updated_at\n            FROM\n                pk_guild_roles\n            WHERE\n                guild_id = $1;\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "guild_id",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 2,
+        "name": "role_id",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 3,
+        "name": "member_uuid",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 4,
+        "name": "created_at",
+        "type_info": "Timestamp"
+      },
+      {
+        "ordinal": 5,
+        "name": "updated_at",
+        "type_info": "Timestamp"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int8"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "f891f7863b78a781cba7ce2c666341aaa69384dfbd48e82a13093d8dca5885e7"
+}
