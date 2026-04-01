@@ -8,7 +8,9 @@ use tulpje_lib::context::Services;
 
 mod commands;
 mod constants;
+mod db;
 mod prompts;
+mod role_limit;
 mod settings;
 mod shared;
 mod update;
