@@ -1,4 +1,9 @@
-use std::{fmt::Display, num::NonZeroI64, ops::Deref};
+use std::{
+    fmt::Display,
+    hash::{Hash, Hasher},
+    num::NonZeroI64,
+    ops::Deref,
+};
 
 use serde::{Deserialize, Serialize};
 use sqlx::{Decode, Encode, Postgres};
@@ -72,5 +77,11 @@ impl<T> From<i64> for DbId<T> {
 impl<T> From<DbId<T>> for i64 {
     fn from(value: DbId<T>) -> Self {
         value.0.get() as Self
+    }
+}
+
+impl<T> Hash for DbId<T> {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        state.write_u64(self.get());
     }
 }
