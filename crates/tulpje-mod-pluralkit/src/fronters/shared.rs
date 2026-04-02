@@ -25,7 +25,10 @@ pub(super) async fn get_desired_fronters(
 ) -> Result<Vec<String>, Error> {
     Ok(pk
         .get_system_fronters(system)
-        .await?
+        .await
+        .map_err(|err| {
+            format!("error fetching fronters for system {system} from PluralKit: {err}")
+        })?
         .map_or_else(Vec::new, |switch| {
             switch
                 .members
@@ -83,9 +86,11 @@ pub(super) async fn get_fronter_channels(
     } else {
         Ok(client
             .guild_channels(guild)
-            .await?
+            .await
+            .map_err(|err| format!("error fetching guild channels for {guild}: {err}"))?
             .models()
-            .await?
+            .await
+            .map_err(|err| format!("error deserialising guild channels for {guild}: {err}"))?
             .into_iter()
             .filter(|c| c.parent_id.is_some_and(|parent_id| parent_id == cat_id))
             .collect())
