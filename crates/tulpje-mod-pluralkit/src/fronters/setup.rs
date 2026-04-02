@@ -92,7 +92,7 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
     // define required permissions
     let permission_overwrites = vec![
         PermissionOverwrite {
-            deny: Permissions::VIEW_CHANNEL,
+            deny: Permissions::CONNECT,
             allow: Permissions::empty(),
             id: guild.id.cast(),
             kind: PermissionOverwriteType::Role,

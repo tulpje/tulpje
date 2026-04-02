@@ -7,11 +7,10 @@ use serde_either::StringOrStruct;
 use tracing::Level;
 use tulpje_cache::Cache;
 use twilight_http::Client;
-use twilight_model::channel::permission_overwrite::{PermissionOverwrite, PermissionOverwriteType};
 use twilight_model::channel::{Channel, ChannelType};
-use twilight_model::guild::{Guild, Permissions};
+use twilight_model::guild::Guild;
 use twilight_model::id::Id;
-use twilight_model::id::marker::{ChannelMarker, GenericMarker, GuildMarker};
+use twilight_model::id::marker::{ChannelMarker, GuildMarker};
 
 use tulpje_framework::Error;
 
@@ -142,9 +141,6 @@ pub(super) async fn update_fronter_channels(
     cat: Channel,
     members: Option<&[Member]>,
 ) -> Result<(), Error> {
-    // get the bot's user id
-    let user_id = client.current_user().await?.model().await?.id;
-
     let fronter_channels = get_fronter_channels(client, cache, guild.id, cat.id).await?;
     let desired_fronters = if let Some(members) = members {
         members.iter().map(get_member_name).collect()
@@ -215,24 +211,8 @@ pub(super) async fn update_fronter_channels(
             .get(fronter)
             .expect("couldn't get position for fronter, this should never happen!");
 
-        let permissions = vec![
-            PermissionOverwrite {
-                deny: Permissions::CONNECT,
-                allow: Permissions::empty(),
-                id: guild.id.cast(),
-                kind: PermissionOverwriteType::Role,
-            },
-            PermissionOverwrite {
-                allow: Permissions::CONNECT,
-                deny: Permissions::empty(),
-                id: user_id.cast::<GenericMarker>(),
-                kind: PermissionOverwriteType::Member,
-            },
-        ];
-
         let channel = client
             .create_guild_channel(guild.id, fronter)
-            .permission_overwrites(&permissions)
             .position(u64::from(*pos))
             .parent_id(cat.id)
             .kind(ChannelType::GuildVoice)
