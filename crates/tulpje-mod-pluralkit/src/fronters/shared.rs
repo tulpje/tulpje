@@ -53,8 +53,16 @@ pub(super) async fn get_fronter_channels(
             let channel = if let Some(channel) = cache.channels.get(&channel_id).await? {
                 channel
             } else {
-                match client.channel(channel_id).await?.model().await {
-                    Ok(channel) => channel,
+                match client.channel(channel_id).await {
+                    Ok(channel_resp) => match channel_resp.model().await {
+                        Ok(channel) => channel,
+                        Err(err) => {
+                            tracing::warn!(
+                                "error deserialising channel {channel_id} for guild {guild}: {err}"
+                            );
+                            continue;
+                        }
+                    },
                     Err(err) => {
                         tracing::warn!(
                             "channel {channel_id} in `guild_channels` cache but error occured when fetching from discord: {err}"
