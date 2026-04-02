@@ -6,6 +6,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.23.1-rc.1] - 2026-10-04
+
+### Changed
+
+ - Better error messages in fronter update process
+
+### Fixed
+
+ - Handle fronter category permissions differently allowing for private fronter list
+ - Don't error in `get_fronter_channels` if fetching channel fails, only log
+ - Normal for channel to be in `guild_channels` but not `channels` don't log
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * fix(tulpje-mod-pluralkit): handle fronter category permissions differently allowing for private fronter list ([`8872eaf`](https://github.com/tulpje/tulpje/commit/8872eafac45e801f111f6047d29df7189b131de6))
+ * chore(tulpje-mod-pluralkit): better error messages in fronter update process ([`f91e5f5`](https://github.com/tulpje/tulpje/commit/f91e5f51c2ba6115c640125db0224dbbb6751f7a))
+ * fix(tulpje-mod-pluralkit): don't error in `get_fronter_channels` if fetching channel fails, only log ([`8680585`](https://github.com/tulpje/tulpje/commit/8680585864a38d0c1e3445d4a7f18ab40c1e9e44))
+ * fix(tulpje-mod-pluralkit): normal for channel to be in `guild_channels` but not `channels` don't log ([`976892f`](https://github.com/tulpje/tulpje/commit/976892fa5fe44fb529457e2f696017d621f601e9))
+</details>
+
 ## [0.23.0-rc.3] - 2026-10-04
 
 ### Fixed
