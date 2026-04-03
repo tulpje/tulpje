@@ -13,8 +13,9 @@ pub async fn touch_guild(db: &sqlx::PgPool, guild_id: Id<GuildMarker>) -> Result
                 ($1, NOW(), NOW())
             ON CONFLICT
                 (guild_id)
-            DO UPDATE
-                SET updated_at = NOW()
+            DO UPDATE SET
+                updated_at = NOW(),
+                deleted_at = NULL
         "#,
         i64::from(DbId(guild_id))
     )
