@@ -1,0 +1,28 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                pk_fronters.guild_id, category_id\n            FROM\n                pk_fronters\n            INNER JOIN\n                pk_guilds\n            ON\n                pk_guilds.guild_id = pk_fronters.guild_id\n            WHERE\n                system_uuid = $1\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "guild_id",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 1,
+        "name": "category_id",
+        "type_info": "Int8"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false
+    ]
+  },
+  "hash": "b7b5010ab3ea37b0bca06059245ebbe3e1ec8d55dc9c3b46d649b10b1acc935c"
+}

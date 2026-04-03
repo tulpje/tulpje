@@ -35,6 +35,7 @@ pub(crate) async fn save_guild_settings(
     Ok(())
 }
 
+#[expect(dead_code, reason = "useful utility function")]
 pub(crate) async fn get_guild_settings_for_system(
     db: &sqlx::PgPool,
     system_uuid: Uuid,

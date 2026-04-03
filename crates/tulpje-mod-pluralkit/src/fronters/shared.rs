@@ -1,8 +1,11 @@
 use std::collections::{HashMap, HashSet};
 
+use chrono::DateTime;
+use chrono::NaiveDateTime;
+use pkrs_fork::client::PkClient;
 use pkrs_fork::client::PluralKitError;
 use pkrs_fork::model::Member;
-use pkrs_fork::{client::PkClient, model::PkId};
+use pkrs_fork::model::PkId;
 use serde_either::StringOrStruct;
 use tracing::Level;
 use tulpje_cache::Cache;
@@ -13,32 +16,13 @@ use twilight_model::id::Id;
 use twilight_model::id::marker::{ChannelMarker, GuildMarker};
 
 use tulpje_framework::Error;
+use uuid::Uuid;
 
+use super::db;
+use crate::db::ModPkSystem;
 use crate::util::SystemRef;
-use crate::{db::ModPkGuildRow, util::get_member_name};
+use crate::util::get_member_name;
 use tulpje_lib::{context::CommandContext, responses};
-
-pub(super) async fn get_desired_fronters(
-    pk: &PkClient,
-    system: &PkId,
-) -> Result<Vec<String>, Error> {
-    Ok(pk
-        .get_system_fronters(system)
-        .await
-        .map_err(|err| {
-            format!("error fetching fronters for system {system} from PluralKit: {err}")
-        })?
-        .map_or_else(Vec::new, |switch| {
-            switch
-                .members
-                .into_iter()
-                .filter_map(|m| match m {
-                    StringOrStruct::String(_) => None,
-                    StringOrStruct::Struct(member) => Some(get_member_name(&member)),
-                })
-                .collect()
-        }))
-}
 
 pub(super) async fn get_fronter_channels(
     client: &Client,
@@ -134,19 +118,13 @@ fn debug_fronter_order(
 
 pub(super) async fn update_fronter_channels(
     client: &Client,
-    pk: &PkClient,
     cache: &Cache,
     guild: Guild,
-    gs: &ModPkGuildRow,
     cat: Channel,
-    members: Option<&[Member]>,
+    members: &[Member],
 ) -> Result<(), Error> {
     let fronter_channels = get_fronter_channels(client, cache, guild.id, cat.id).await?;
-    let desired_fronters = if let Some(members) = members {
-        members.iter().map(get_member_name).collect()
-    } else {
-        get_desired_fronters(pk, &PkId(gs.system_uuid.to_string())).await?
-    };
+    let desired_fronters: Vec<_> = members.iter().map(get_member_name).collect();
 
     let current_fronters: HashSet<String> = fronter_channels
         .iter()
@@ -269,5 +247,118 @@ pub(crate) async fn handle_private_front(
             Ok(true)
         }
         Err(err) => Err(err.into()),
+    }
+}
+
+#[derive(thiserror::Error, Debug)]
+pub(crate) enum GetSystemFrontersError {
+    #[error("fronters for system {0} are private")]
+    Private(Uuid),
+    #[error(transparent)]
+    Other(#[from] Error),
+}
+
+pub(crate) struct Fronters {
+    pub(crate) members: Vec<Member>,
+    pub(crate) timestamp: chrono::NaiveDateTime,
+}
+
+pub(crate) async fn get_system_fronters(
+    client: &PkClient,
+    system_uuid: Uuid,
+) -> Result<Option<Fronters>, GetSystemFrontersError> {
+    let switch = match client
+        .get_system_fronters(&PkId(system_uuid.to_string()))
+        .await
+    {
+        Ok(front) => Ok::<_, GetSystemFrontersError>(front),
+        // handle private fronters
+        Err(PluralKitError::Pk(_, error))
+            // 30004 = private fronters
+            if error.code == 30004 =>
+        {
+            Err(GetSystemFrontersError::Private(system_uuid))
+        }
+        // directly return any other errors
+        Err(err) => Err(GetSystemFrontersError::Other(err.into())),
+    }?;
+
+    let Some(switch) = switch else {
+        return Ok(None);
+    };
+
+    let mut members = Vec::<Member>::new();
+    for member in switch.members {
+        match member {
+            StringOrStruct::String(_) => Err(GetSystemFrontersError::Other(
+                format!("system {system_uuid} returned uuids instead of member structs",).into(),
+            ))?,
+            StringOrStruct::Struct(member) => members.push(member),
+        };
+    }
+
+    let timestamp = DateTime::from_timestamp(switch.timestamp.to_utc().unix_timestamp(), 0)
+        .ok_or_else(|| {
+            GetSystemFrontersError::Other(
+                format!(
+                    "timestamp out of range: {}",
+                    switch.timestamp.to_utc().unix_timestamp()
+                )
+                .into(),
+            )
+        })?
+        .naive_utc();
+
+    Ok(Some(Fronters { members, timestamp }))
+}
+
+pub(crate) enum FrontChange {
+    Unchanged,
+    Changed(Switch),
+}
+
+pub(crate) struct Switch {
+    pub(crate) fronters: Vec<Member>,
+    pub(crate) timestamp: NaiveDateTime,
+}
+
+pub(crate) async fn update_system_fronters(
+    db: &sqlx::PgPool,
+    system: &ModPkSystem,
+    client: &PkClient,
+) -> Result<FrontChange, GetSystemFrontersError> {
+    let fronters: Option<Fronters> = match get_system_fronters(client, system.uuid).await {
+        Ok(fronters) => Ok(fronters),
+        Err(GetSystemFrontersError::Private(uuid)) => {
+            // NOTE: if the fronters are private we still want to update the last_updated
+            //       timestamp to avoid getting stuck on trying to update private fronts
+            db::update_fronters_timestamp(db, uuid)
+                .await
+                .map_err(|err| -> Error {
+                    format!("error updating fronter timestamp in db for system {uuid}: {err}")
+                        .into()
+                })?;
+            Err(GetSystemFrontersError::Private(uuid))
+        }
+        Err(err) => Err(err),
+    }?;
+
+    let fronter_uuids: Vec<_> = fronters
+        .as_ref()
+        .map_or_else(Vec::new, |f| f.members.iter().map(|f| f.uuid).collect());
+
+    if db::did_fronters_change(db, system.uuid, &fronter_uuids).await? {
+        // update the fronters in the db if they changed
+        db::update_fronters(db, system.uuid, &fronter_uuids).await?;
+        Ok(FrontChange::Changed(Switch {
+            timestamp: fronters
+                .as_ref()
+                .map_or_else(|| chrono::Utc::now().naive_utc(), |f| f.timestamp),
+            fronters: fronters.map_or_else(Vec::new, |f| f.members),
+        }))
+    } else {
+        // otherwise just update the `updated_at` timestamp
+        db::update_fronters_timestamp(db, system.uuid).await?;
+        Ok(FrontChange::Unchanged)
     }
 }
