@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.23.2-rc.1] - 2026-04-03
+
+### Changed
+
+ - Skip nix in `just gateway` and `just handler` tasks
+
+### Fixed
+
+ - Don't only update fronter category in one guild system is configured in
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * chore(build): skip nix in `just gateway` and `just handler` tasks ([`a12584a`](https://github.com/tulpje/tulpje/commit/a12584ad7145be3cbef1d004381998716aa21aca))
+ * fix(tulpje-mod-pluralkit): don't only update fronter category in one guild system is configured in ([`897a68e`](https://github.com/tulpje/tulpje/commit/897a68e25c740dd23977fb921e4fa823cb816300))
+</details>
+
 ## [0.23.1] - 2026-04-02
 
 ### Commit Details
