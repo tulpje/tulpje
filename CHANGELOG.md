@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.23.3] - 2026-10-04
+
+### Changed
+
+ - Enable old guild deletion
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * chore(tulpje-mod-core): enable old guild deletion ([`6f8b236`](https://github.com/tulpje/tulpje/commit/6f8b2369806b148f3b520a7892a7628c749524c2))
+</details>
+
 ## [0.23.2-rc.2] - 2026-10-04
 
 ### Fixed
