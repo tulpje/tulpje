@@ -4,14 +4,15 @@ build:
 check:
   contrib/check.sh
 
-gateway: (run-local "nix run .#tulpje-gateway")
-handler: (run-local "nix run .#tulpje-handler")
+gateway:
+  contrib/run-local.sh cargo run -p tulpje-gateway
+handler:
+  # specify METRICS_LISTEN_ADDR to avoid clashing with gateway
+  METRICS_LISTEN_ADDR=0.0.0.0:9001 \
+    contrib/run-local.sh cargo run -p tulpje-handler
 
 release *args:
   uv --project tools/release-tulpje run release-tulpje {{ args }}
-
-run-local +command:
-  contrib/run-local.sh {{ command }}
 
 sqlx-migrate: database-up
   contrib/run-local.sh sqlx migrate run --source migrations
