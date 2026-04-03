@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.23.2-rc.2] - 2026-04-03
+
+### Fixed
+
+ - Set `guilds.deleted_at` to NULL if we see a guild again
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * fix(tulpje-lib/db): set `guilds.deleted_at` to NULL if we see a guild again ([`211528e`](https://github.com/tulpje/tulpje/commit/211528e81702ca56ef52156e5af6382dd68a0c49))
+</details>
+
 ## [0.23.2-rc.1] - 2026-04-03
 
 ### Changed
