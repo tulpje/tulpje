@@ -12,7 +12,6 @@ use uuid::Uuid;
 
 use crate::db::ModPkSystem;
 
-#[expect(dead_code, reason = "reflects db structure, keep intact")]
 pub(crate) struct ModPkFrontersRow {
     pub(crate) guild_id: DbId<GuildMarker>,
     pub(crate) category_id: DbId<ChannelMarker>,
@@ -25,6 +24,30 @@ pub(crate) async fn get_fronter_categories(
     Ok(sqlx::query_as!(
         ModPkFrontersRow,
         "SELECT guild_id, category_id FROM pk_fronters"
+    )
+    .fetch_all(db)
+    .await?)
+}
+
+pub(crate) async fn get_fronter_categories_for_system(
+    db: &sqlx::PgPool,
+    system_uuid: Uuid,
+) -> Result<Vec<ModPkFrontersRow>, Error> {
+    Ok(sqlx::query_as!(
+        ModPkFrontersRow,
+        r#"
+            SELECT
+                pk_fronters.guild_id, category_id
+            FROM
+                pk_fronters
+            INNER JOIN
+                pk_guilds
+            ON
+                pk_guilds.guild_id = pk_fronters.guild_id
+            WHERE
+                system_uuid = $1
+        "#,
+        system_uuid
     )
     .fetch_all(db)
     .await?)

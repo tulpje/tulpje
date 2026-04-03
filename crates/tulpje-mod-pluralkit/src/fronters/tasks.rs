@@ -1,173 +1,79 @@
 use std::{slice, sync::Arc};
 
-use chrono::{DateTime, NaiveDateTime, Utc};
-use pkrs_fork::{
-    client::{PkClient, PluralKitError},
-    model::{Member, PkId, Switch as PkSwitch},
-};
-use serde_either::StringOrStruct;
+use pkrs_fork::{client::PkClient, model::Member};
+use tracing::instrument;
 use tulpje_cache::Cache;
 use tulpje_lib::{context::TaskContext, util::warning_message};
 use twilight_http::Client;
 use twilight_model::{
     channel::message::{Embed, MessageFlags},
-    id::{Id, marker::ChannelMarker},
+    id::{
+        Id,
+        marker::{ChannelMarker, GuildMarker},
+    },
     util::Timestamp,
 };
 
 use tulpje_framework::Error;
 use twilight_util::builder::embed::EmbedBuilder;
-use uuid::Uuid;
 
 use crate::{
-    db::{self as pk_db, ModPkGuildRow, ModPkSystem},
-    fronters::db,
+    db::ModPkSystem,
+    fronters::{
+        db,
+        shared::{FrontChange, GetSystemFrontersError, Switch, update_system_fronters},
+    },
     notify::db::{self as notify_db, get_notify_channel},
     util::get_member_name,
 };
 
-enum FrontChange {
-    Unchanged,
-    Changed(Switch),
-}
-
-struct Switch {
-    pub(crate) fronters: Vec<Member>,
-    pub(crate) timestamp: NaiveDateTime,
-}
-
-#[derive(thiserror::Error, Debug)]
-enum UpdateSystemFrontersError {
-    #[error("fronters for system {0} are private")]
-    Private(Uuid),
-    #[error(transparent)]
-    Other(#[from] Error),
-}
-
-async fn update_system_fronters(
+async fn update_fronter_categories(
     db: &sqlx::PgPool,
-    system: &ModPkSystem,
-    client: &PkClient,
-) -> Result<FrontChange, UpdateSystemFrontersError> {
-    let latest_switch = match client
-        .get_system_fronters(&PkId(system.uuid.to_string()))
-        .await
-    {
-        Ok(front) => Ok::<_, UpdateSystemFrontersError>(front),
-        // handle private fronters
-        Err(PluralKitError::Pk(_, error))
-            // 30004 = private fronters
-            if error.code == 30004 =>
-        {
-            db::update_fronters_timestamp(db, system.uuid).await?;
-            Err(UpdateSystemFrontersError::Private(system.uuid))
-        }
-        // directly return any other errors
-        Err(err) => Err(UpdateSystemFrontersError::Other(err.into())),
-    }?;
-
-    let timestamp = if let Some(ref switch) = latest_switch {
-        DateTime::from_timestamp(switch.timestamp.to_utc().unix_timestamp(), 0)
-            .ok_or_else(|| {
-                UpdateSystemFrontersError::Other(
-                    format!(
-                        "timestamp out of range: {}",
-                        switch.timestamp.to_utc().unix_timestamp()
-                    )
-                    .into(),
-                )
-            })?
-            .naive_utc()
-    } else {
-        Utc::now().naive_utc()
-    };
-    let fronters = gather_fronters_from_switch(system.uuid, latest_switch)?;
-    let fronter_uuids: Vec<_> = fronters.iter().map(|f| f.uuid).collect();
-
-    if db::did_fronters_change(db, system.uuid, &fronter_uuids).await? {
-        // update the fronters in the db if they changed
-        db::update_fronters(db, system.uuid, &fronter_uuids).await?;
-        Ok(FrontChange::Changed(Switch {
-            fronters,
-            timestamp,
-        }))
-    } else {
-        // otherwise just update the `updated_at` timestamp
-        db::update_fronters_timestamp(db, system.uuid).await?;
-        Ok(FrontChange::Unchanged)
-    }
-}
-
-fn gather_fronters_from_switch(
-    system_uuid: Uuid,
-    switch: Option<PkSwitch>,
-) -> Result<Vec<Member>, Error> {
-    let Some(switch) = switch else {
-        return Ok(Vec::new());
-    };
-
-    let mut fronters = Vec::<Member>::new();
-    for member in switch.members {
-        match member {
-            StringOrStruct::String(_) => Err(format!(
-                "system {system_uuid} returned uuids instead of member structs",
-            ))?,
-            StringOrStruct::Struct(member) => fronters.push(member),
-        };
-    }
-
-    Ok(fronters)
-}
-
-async fn update_fronter_category(
-    db: &sqlx::PgPool,
-    pk: &PkClient,
     discord_client: &Arc<Client>,
     cache: &Cache,
     system: &ModPkSystem,
     switch: &Switch,
 ) -> Result<(), Error> {
-    let Some(guild_settings) = pk_db::get_guild_settings_for_system(db, system.uuid).await? else {
-        tracing::debug!(
-            method = "update_fronter_category",
-            "no guild with system {}, skipping",
-            system.id
-        );
-        return Ok(());
-    };
+    let guild_categories = db::get_fronter_categories_for_system(db, system.uuid)
+        .await
+        .map_err(|err| {
+            format!(
+                "error fetching guilds for system {} from db: {}",
+                system.uuid, err
+            )
+        })?;
 
-    metrics::counter!("pk:front-category", "type" => "total").increment(1);
-    let Some(category_id) = db::get_fronter_category(db, *guild_settings.guild_id).await? else {
-        metrics::counter!("pk:front-category", "type" => "category-missing").increment(1);
-        tracing::debug!(
-            method = "update_fronter_category",
-            "no fronter category configured for guild {}, skipping",
-            guild_settings.guild_id
-        );
-        return Ok(());
-    };
+    tracing::debug!(
+        "updating front categories for system {} in {} guilds",
+        system.uuid,
+        guild_categories.len(),
+    );
 
-    if let Err(err) = update_fronters_for_guild(
-        discord_client,
-        pk,
-        cache,
-        &guild_settings,
-        *category_id,
-        &switch.fronters,
-    )
-    .await
-    {
-        metrics::counter!("pk:front-category", "type" => "error").increment(1);
-        tracing::error!(
-            method = "update_fronter_category",
-            "error updating fronters for guild {} category {}: {}",
-            guild_settings.guild_id,
-            category_id,
-            err
-        );
-    } else {
-        metrics::counter!("pk:front-category", "type" => "success").increment(1);
+    for guild_category in guild_categories {
+        metrics::counter!("pk:front-category", "type" => "total").increment(1);
+
+        if let Err(err) = update_fronters_for_guild(
+            discord_client,
+            cache,
+            *guild_category.guild_id,
+            *guild_category.category_id,
+            &switch.fronters,
+        )
+        .await
+        {
+            metrics::counter!("pk:front-category", "type" => "error").increment(1);
+            tracing::error!(
+                method = "update_fronter_category",
+                "error updating fronters for guild {} category {}: {}",
+                guild_category.guild_id,
+                guild_category.category_id,
+                err
+            );
+        } else {
+            metrics::counter!("pk:front-category", "type" => "success").increment(1);
+        }
     }
+
     Ok(())
 }
 
@@ -311,6 +217,7 @@ async fn notify_front_change(
     Ok(())
 }
 
+#[instrument("process-system", skip_all, fields(system=?system.uuid))]
 async fn process_system(
     db: &sqlx::PgPool,
     pk_client: &PkClient,
@@ -320,7 +227,7 @@ async fn process_system(
 ) -> Result<(), Error> {
     let changed = match update_system_fronters(db, system, pk_client).await {
         Ok(changed) => changed,
-        Err(UpdateSystemFrontersError::Private(_)) => {
+        Err(GetSystemFrontersError::Private(_)) => {
             notify_front_private(db, discord_client, system).await?;
             return Ok(());
         }
@@ -329,7 +236,7 @@ async fn process_system(
     match changed {
         FrontChange::Changed(switch) => {
             tracing::debug!("fronters changed for system {}", system.uuid);
-            update_fronter_category(db, pk_client, discord_client, cache, system, &switch).await?;
+            update_fronter_categories(db, discord_client, cache, system, &switch).await?;
             notify_front_change(db, discord_client, system, &switch).await?;
         }
         FrontChange::Unchanged => {
@@ -367,17 +274,12 @@ pub(crate) async fn update_fronters(ctx: TaskContext) -> Result<(), Error> {
 
 async fn update_fronters_for_guild(
     client: &Client,
-    pk: &PkClient,
     cache: &Cache,
-    guild_settings: &ModPkGuildRow,
+    guild_id: Id<GuildMarker>,
     category_id: Id<ChannelMarker>,
     members: &[Member],
 ) -> Result<(), Error> {
-    let guild = client
-        .guild(*guild_settings.guild_id)
-        .await?
-        .model()
-        .await?;
+    let guild = client.guild(guild_id).await?.model().await?;
 
     let category = client
         .channel(category_id)
@@ -393,17 +295,9 @@ async fn update_fronters_for_guild(
         )
     })?;
 
-    super::shared::update_fronter_channels(
-        client,
-        pk,
-        cache,
-        guild.clone(),
-        guild_settings,
-        category,
-        Some(members),
-    )
-    .await
-    .map_err(|err| format!("error updating fronters for guild {}: {}", guild.id, err))?;
+    super::shared::update_fronter_channels(client, cache, guild.clone(), category, members)
+        .await
+        .map_err(|err| format!("error updating fronters for guild {}: {}", guild.id, err))?;
 
     tracing::info!("fronters updated in guild {}", guild.id);
     Ok(())

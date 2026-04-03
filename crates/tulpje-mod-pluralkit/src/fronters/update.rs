@@ -2,7 +2,10 @@ use tulpje_framework::Error;
 use tulpje_lib::{context::CommandContext, responses};
 
 use super::{db, shared::update_fronter_channels};
-use crate::db::get_guild_settings_for_id;
+use crate::{
+    db::{get_guild_settings_for_id, get_system},
+    fronters::shared::{GetSystemFrontersError, get_system_fronters},
+};
 
 pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
     let Some(guild) = ctx.guild().await? else {
@@ -30,16 +33,48 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
     cat.guild_id
         .ok_or_else(|| format!("channel {} isn't a guild channel", cat_id))?;
 
-    update_fronter_channels(
-        &ctx.client(),
-        &ctx.services.pk,
-        &ctx.services.cache,
-        guild,
-        &gs,
-        cat,
-        None,
-    )
-    .await?;
+    let system = get_system(&ctx.services.db, &gs.system_uuid.into())
+        .await
+        .map_err(|err| format!("error fetching system {}: {}", gs.system_uuid, err))?;
+    let display_name =
+        system.map_or_else(|| gs.system_uuid.to_string(), |s| s.name.unwrap_or(s.id));
+
+    // TODO: Fix horrible deduplication between this and `update_system_fronters`
+    let members = match get_system_fronters(&ctx.services.pk, gs.system_uuid).await {
+        Ok(Some(fronters)) => fronters.members,
+        Ok(None) => Vec::new(),
+        Err(GetSystemFrontersError::Private(_)) => {
+            responses::error(
+                &ctx,
+                &format!(
+                    "Fronters for system `{display_name}` are private, \
+                    please set them to public to use the fronter category"
+                ),
+            )
+            .await?;
+
+            if let Err(err) = db::update_fronters_timestamp(&ctx.services.db, gs.system_uuid).await
+            {
+                tracing::warn!(
+                    "error updating fronter timestamp in db for system {}: {}",
+                    gs.system_uuid,
+                    err
+                );
+            }
+            return Ok(());
+        }
+        Err(err) => return Err(err.into()),
+    };
+
+    update_fronter_channels(&ctx.client(), &ctx.services.cache, guild, cat, &members).await?;
+    let fronter_uuids: Vec<_> = members.iter().map(|m| m.uuid).collect();
+    if let Err(err) = db::update_fronters(&ctx.services.db, gs.system_uuid, &fronter_uuids).await {
+        tracing::warn!(
+            "error updating fronter timestamp in db for system {}: {}",
+            gs.system_uuid,
+            err
+        );
+    }
 
     responses::success(&ctx, "Fronter category updated!").await?;
     Ok(())
