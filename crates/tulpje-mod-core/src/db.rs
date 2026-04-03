@@ -103,7 +103,7 @@ pub(super) async fn leave_guild(db: &sqlx::PgPool, guild_id: Id<GuildMarker>) ->
     Ok(())
 }
 
-pub(super) async fn _delete_guild(
+pub(super) async fn delete_guild(
     db: &sqlx::PgPool,
     guild_id: Id<GuildMarker>,
 ) -> Result<bool, Error> {
