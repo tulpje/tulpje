@@ -6,17 +6,14 @@ use twilight_util::builder::command::StringBuilder;
 
 use tulpje_lib::context::Services;
 
-mod commands;
 mod constants;
 mod db;
 mod prompts;
 mod role_limit;
-mod settings;
+pub(crate) mod setup;
 mod shared;
 mod update;
 mod update_stats;
-
-use self::commands::setup;
 
 pub(crate) fn commands() -> SubCommandGroupBuilder<Services> {
     SubCommandGroupBuilder::new("roles", "manage member roles")
