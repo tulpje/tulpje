@@ -4,32 +4,12 @@ use pkrs_fork::{
 };
 use tulpje_framework::Error;
 use tulpje_lib::{context::CommandContext, responses};
-use twilight_model::channel::message::Component;
-use twilight_util::builder::message::TextDisplayBuilder;
 
 use crate::util::SystemRef;
 
-use super::settings::Settings;
+pub(crate) mod settings;
 
-pub(super) fn settings_display(settings: &Settings) -> Vec<Component> {
-    vec![
-        TextDisplayBuilder::new(format!(
-            "\
-                Member Suffix: {}\n\
-                -# Text added at the end of system member names\
-            ",
-            settings
-                .suffix
-                .clone()
-                .map(|s| format!("`{s}`"))
-                .unwrap_or_else(|| "*`empty`*".into())
-        ))
-        .build()
-        .into(),
-    ]
-}
-
-pub(super) async fn handle_get_system_members(
+pub(crate) async fn handle_get_system_members(
     ctx: &CommandContext,
     client: &PkClient,
     system_ref: &SystemRef,
