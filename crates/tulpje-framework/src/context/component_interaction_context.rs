@@ -3,12 +3,14 @@ use std::sync::Arc;
 use twilight_http::{Client, client::InteractionClient, response::marker::EmptyBody};
 use twilight_model::{
     application::interaction::message_component::MessageComponentInteractionData,
+    channel::message::MessageFlags,
     gateway::payload::incoming::InteractionCreate,
     guild::Guild,
-    http::interaction::InteractionResponse,
+    http::interaction::{InteractionResponse, InteractionResponseType},
     id::{Id, marker::ApplicationMarker},
 };
 use twilight_standby::Standby;
+use twilight_util::builder::InteractionResponseDataBuilder;
 
 use super::Context;
 use crate::{Error, Metadata};
@@ -42,6 +44,28 @@ impl<T: Clone + Send + Sync> ComponentInteractionContext<T> {
             interaction,
             event,
         }
+    }
+
+    pub async fn defer(&self) -> Result<twilight_http::Response<EmptyBody>, twilight_http::Error> {
+        self.response(InteractionResponse {
+            kind: InteractionResponseType::DeferredUpdateMessage,
+            data: None,
+        })
+        .await
+    }
+
+    pub async fn defer_ephemeral(
+        &self,
+    ) -> Result<twilight_http::Response<EmptyBody>, twilight_http::Error> {
+        self.response(InteractionResponse {
+            kind: InteractionResponseType::DeferredUpdateMessage,
+            data: Some(
+                InteractionResponseDataBuilder::new()
+                    .flags(MessageFlags::EPHEMERAL)
+                    .build(),
+            ),
+        })
+        .await
     }
 
     pub fn interaction(&self) -> InteractionClient<'_> {
