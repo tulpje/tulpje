@@ -16,6 +16,7 @@ pkrs-fork = { workspace = true }
 redis = { workspace = true }
 serde = { workspace = true }
 sqlx = { workspace = true }
+tracing = { workspace = true }
 tulpje-cache = { version = "0.5.2", path = "../tulpje-cache" }
 tulpje-framework = { version = "0.17.2", path = "../tulpje-framework" }
 twilight-http = { workspace = true, features = ["decompression", "rustls-webpki-roots"] }

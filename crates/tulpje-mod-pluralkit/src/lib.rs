@@ -9,7 +9,7 @@ use tulpje_framework::{
     module::command_builder::{CommandBuilder, SubCommandBuilder},
 };
 
-use tulpje_lib::context::Services;
+use tulpje_lib::{context::Services, wizard_component, wizard_modal};
 
 mod commands;
 mod db;
@@ -18,6 +18,7 @@ mod notify;
 mod roles;
 mod tasks;
 mod util;
+mod wizard;
 
 pub fn build() -> Module<Services> {
     // define metrics
@@ -42,6 +43,25 @@ pub fn build() -> Module<Services> {
                 .group(roles::commands())
                 .group(fronters::commands())
                 .group(notify::commands()),
+        )
+        .command(
+            CommandBuilder::new(
+                "wizard-test",
+                "Testing wizard stufff",
+                CommandType::ChatInput,
+            )
+            .default_member_permissions(Permissions::MANAGE_GUILD)
+            .contexts([InteractionContextType::Guild])
+            .handler(handler_func!(wizard::handle)),
+        )
+        // example wizard
+        .component(
+            wizard::COMPONENT_CLEANUP_WIZARD_CONFIRM,
+            wizard_component!(wizard::ConfirmStep),
+        )
+        .component(
+            wizard::COMPONENT_CLEANUP_WIZARD_DENY,
+            wizard_component!(wizard::DenyStep),
         )
         // tasks
         .task(
