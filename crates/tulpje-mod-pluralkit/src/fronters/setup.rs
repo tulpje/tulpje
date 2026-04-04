@@ -26,6 +26,15 @@ use tulpje_lib::{
     util::handle_permissions,
 };
 
+// NOTE: Workaround because | operator isn't const
+//       see: https://github.com/bitflags/bitflags/issues/180
+const REQUIRED_CATEGORY_PERMISSIONS: Permissions = Permissions::from_bits_truncate(
+    Permissions::empty().bits()
+        | Permissions::MANAGE_CHANNELS.bits()
+        | Permissions::VIEW_CHANNEL.bits()
+        | Permissions::CONNECT.bits(),
+);
+
 pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
     let Some(guild) = ctx.guild().await? else {
         unreachable!("command is guild_only");
@@ -44,9 +53,15 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
         guild.id,
     );
     let bot_user = ctx.client.current_user().await?.model().await?;
-    let required_permissions =
-        Permissions::MANAGE_CHANNELS | Permissions::VIEW_CHANNEL | Permissions::CONNECT;
-    if !handle_permissions(&ctx, guild.id, bot_user.id, None, required_permissions).await? {
+    if !handle_permissions(
+        &ctx,
+        guild.id,
+        bot_user.id,
+        None,
+        REQUIRED_CATEGORY_PERMISSIONS,
+    )
+    .await?
+    {
         return Ok(());
     }
 
@@ -89,26 +104,29 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
 
     let category_title = ctx.get_arg_string("title")?;
 
+    tracing::debug!(
+        "/pk fronters setup, creating category for guild {}",
+        guild.id
+    );
+
     // define required permissions
     let permission_overwrites = vec![
+        // deny @everyone connect permissions
         PermissionOverwrite {
             deny: Permissions::CONNECT,
             allow: Permissions::empty(),
             id: guild.id.cast(),
             kind: PermissionOverwriteType::Role,
         },
+        // give bot required permissions to operate
         PermissionOverwrite {
-            allow: required_permissions,
+            allow: REQUIRED_CATEGORY_PERMISSIONS,
             deny: Permissions::empty(),
             id: bot_user.id.cast::<GenericMarker>(),
             kind: PermissionOverwriteType::Member,
         },
     ];
 
-    tracing::debug!(
-        "/pk fronters setup, creating category for guild {}",
-        guild.id
-    );
     // create the category
     let fronters_category = ctx
         .client
