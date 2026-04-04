@@ -54,6 +54,27 @@ pub fn build() -> Module<Services> {
             .contexts([InteractionContextType::Guild])
             .handler(handler_func!(wizard::handle)),
         )
+        // role setup
+        .component(
+            roles::setup::custom_ids::COMPONENT_NEAR_ROLE_LIMIT_ACCEPT,
+            wizard_component!(roles::setup::wizard::AcceptNearRoleLimit),
+        )
+        .component(
+            roles::setup::custom_ids::COMPONENT_NEAR_ROLE_LIMIT_DENY,
+            wizard_component!(roles::setup::wizard::DenyNearRoleLimit),
+        )
+        .component(
+            roles::setup::custom_ids::COMPONENT_LEGACY_ROLE_CLEANUP_ACCEPT,
+            wizard_component!(roles::setup::wizard::AcceptLegacyRolesCleanup),
+        )
+        .component(
+            roles::setup::custom_ids::COMPONENT_LEGACY_ROLE_CLEANUP_DENY,
+            wizard_component!(roles::setup::wizard::DenyLegacyRolesCleanup),
+        )
+        .modal(
+            roles::setup::custom_ids::MODAL_ROLE_SUFFIX_SUBMIT,
+            wizard_modal!(roles::setup::wizard::AnswerRoleSuffix),
+        )
         // example wizard
         .component(
             wizard::COMPONENT_CLEANUP_WIZARD_CONFIRM,
