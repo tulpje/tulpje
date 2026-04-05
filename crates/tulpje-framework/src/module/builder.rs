@@ -9,6 +9,7 @@ use crate::handler::{
     command_handler::CommandHandler,
     component_interaction_handler::{ComponentInteractionFunc, ComponentInteractionHandler},
     event_handler::{EventFunc, EventHandler},
+    modal_handler::{ModalFunc, ModalHandler},
     task_handler::{TaskFunc, TaskHandler},
 };
 
@@ -20,6 +21,7 @@ pub struct ModuleBuilder<T: Clone + Send + Sync> {
     command_definitions: Vec<Command>,
 
     components: HashMap<String, ComponentInteractionHandler<T>>,
+    modals: HashMap<String, ModalHandler<T>>,
     events: HashMap<EventType, HashSet<EventHandler<T>>>,
     tasks: HashMap<String, TaskHandler<T>>,
 }
@@ -34,6 +36,7 @@ impl<T: Clone + Send + Sync> ModuleBuilder<T> {
             command_definitions: Vec::new(),
 
             components: HashMap::new(),
+            modals: HashMap::new(),
             events: HashMap::new(),
             tasks: HashMap::new(),
         }
@@ -49,6 +52,7 @@ impl<T: Clone + Send + Sync> ModuleBuilder<T> {
             command_definitions: self.command_definitions,
 
             components: self.components,
+            modals: self.modals,
             events: self.events,
             tasks: self.tasks,
         }
@@ -120,6 +124,19 @@ impl<T: Clone + Send + Sync> ModuleBuilder<T> {
         self.components.insert(
             custom_id.to_string(),
             ComponentInteractionHandler {
+                module: self.name.clone(),
+                custom_id: custom_id.to_string(),
+                func,
+            },
+        );
+        self
+    }
+
+    #[must_use]
+    pub fn modal(mut self, custom_id: &str, func: ModalFunc<T>) -> Self {
+        self.modals.insert(
+            custom_id.to_string(),
+            ModalHandler {
                 module: self.name.clone(),
                 custom_id: custom_id.to_string(),
                 func,
