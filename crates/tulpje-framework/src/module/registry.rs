@@ -6,7 +6,7 @@ use twilight_model::application::command::Command;
 use super::Module;
 use crate::handler::{
     command_handler::CommandHandler, component_interaction_handler::ComponentInteractionHandler,
-    event_handler::EventHandler, task_handler::TaskHandler,
+    event_handler::EventHandler, modal_handler::ModalHandler, task_handler::TaskHandler,
 };
 
 #[derive(Clone)]
@@ -18,6 +18,7 @@ pub struct Registry<T: Clone + Send + Sync> {
     modules: HashMap<String, Module<T>>,
 
     pub(crate) commands: HashMap<String, CommandHandler<T>>,
+    pub(crate) modals: HashMap<String, ModalHandler<T>>,
     pub(crate) components: HashMap<String, ComponentInteractionHandler<T>>,
     pub(crate) events: HashMap<EventType, HashSet<EventHandler<T>>>,
     pub tasks: HashMap<String, TaskHandler<T>>,
@@ -28,6 +29,7 @@ impl<T: Clone + Send + Sync> Registry<T> {
         Self {
             modules: HashMap::new(),
             commands: HashMap::new(),
+            modals: HashMap::new(),
             components: HashMap::new(),
             events: HashMap::new(),
             tasks: HashMap::new(),
@@ -36,6 +38,7 @@ impl<T: Clone + Send + Sync> Registry<T> {
 
     pub fn register(&mut self, module: Module<T>) {
         self.commands.extend(module.commands.clone());
+        self.modals.extend(module.modals.clone());
         self.components.extend(module.components.clone());
         self.events.extend(module.events.clone());
         self.tasks.extend(module.tasks.clone());

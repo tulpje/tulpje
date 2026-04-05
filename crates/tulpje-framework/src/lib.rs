@@ -60,8 +60,25 @@ pub async fn handle_interaction<T: Clone + Send + Sync + 'static>(
                 .into());
             }
         }
-        Ok(InteractionContext::Modal(_modal_context)) => {
-            todo!()
+        Ok(InteractionContext::Modal(ctx)) => {
+            let Some(modal) = registry.modals.get(&ctx.data.custom_id) else {
+                // twilight-standby already handled this interaction as well, so
+                // we don't wanna error for it
+                if processed.matched() > 0 {
+                    return Ok(());
+                }
+
+                // otherwise do error so the missing handler gets logged
+                return Err(format!("no handler for modal {}", ctx.data.custom_id).into());
+            };
+
+            if let Err(err) = modal.run(ctx.clone()).await {
+                return Err(format!(
+                    "error handling component interaction {}: {}",
+                    ctx.data.custom_id, err
+                )
+                .into());
+            }
         }
         Err(err) => return Err(format!("error handling interaction: {}", err).into()),
     };
