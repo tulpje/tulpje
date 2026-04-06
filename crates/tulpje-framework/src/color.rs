@@ -1,10 +1,11 @@
+use serde::{Deserialize, Serialize};
 use std::{fmt::Formatter, num::ParseIntError, ops::Deref, str::FromStr};
 
 ////////////////////////////////////
 // largely inspired by https://github.com/serenity-rs/serenity/blob/current/src/model/colour.rs
 ////////////////////////////////////
 
-#[derive(Debug, Eq, PartialEq, Clone, Copy)]
+#[derive(Debug, Eq, PartialEq, Clone, Copy, Serialize, Deserialize)]
 pub struct Color(pub u32);
 
 impl Color {
