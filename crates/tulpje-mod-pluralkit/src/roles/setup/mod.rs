@@ -92,6 +92,13 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
         system_members.len(),
     );
 
+    let state = SetupState::with_member_data(&system_members).map_err(|err| {
+        format!(
+            "error during `SetupState::with_member_data` \
+            did PluralKit return an invalid color?: {err}"
+        )
+    })?;
+
     tracing::debug!("checking role limits");
     match role_limit_data.check() {
         RoleLimitResult::Over => {
@@ -101,7 +108,7 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
         }
         RoleLimitResult::Near => {
             // near role limit, ask user if they're okay with that
-            start_wizard(ctx, PromptNearRoleLimit::new(role_limit_data), None).await?;
+            start_wizard(ctx, PromptNearRoleLimit::new(role_limit_data), Some(state)).await?;
             return Ok(());
         }
         RoleLimitResult::Ok => {}
@@ -113,13 +120,13 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
             PromptLegacyRolesCleanup,
             Some(SetupState {
                 legacy_roles: role_limit_data.legacy_member_roles,
-                ..Default::default()
+                ..state
             }),
         )
         .await?;
         return Ok(());
     }
 
-    start_wizard(ctx, PromptRoleSuffix, None).await?;
+    start_wizard(ctx, PromptRoleSuffix, Some(state)).await?;
     Ok(())
 }
