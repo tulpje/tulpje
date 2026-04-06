@@ -7,14 +7,16 @@ use tulpje_lib::{
     context::Services,
     wizard::{WizardContext, WizardStep},
 };
+use twilight_model::id::{Id, marker::InteractionMarker};
 use uuid::Uuid;
 
 use crate::{
     roles::{
+        constants::DISCORD_MAX_ROLE_NAME_LENGTH,
         role_limit::RoleLimitData,
         setup::{
             custom_ids,
-            view::{legacy_roles, near_role_limit, role_suffix},
+            view::{legacy_roles, names_over_limit, near_role_limit, role_suffix},
         },
     },
     util::get_member_name,
@@ -26,6 +28,7 @@ pub(crate) struct SetupState {
     pub(super) member_data: Vec<(Uuid, String, Option<Color>)>,
     pub(super) legacy_roles: usize,
     pub(super) cleanup_legacy: bool,
+    pub(super) prev_interaction: Option<(Id<InteractionMarker>, String)>,
 }
 impl SetupState {
     pub(super) fn with_member_data(members: &[Member]) -> Result<Self, ParseIntError> {
@@ -129,6 +132,7 @@ impl WizardStep<SetupState> for AcceptLegacyRolesCleanup {
     ) -> Result<Option<SetupState>, Error> {
         role_suffix::view(ctx, &state.role_suffix).await?;
         Ok(Some(SetupState {
+            prev_interaction: Some((ctx.interaction_id, ctx.interaction_token.clone())),
             cleanup_legacy: true,
             ..state
         }))
@@ -146,6 +150,7 @@ impl WizardStep<SetupState> for DenyLegacyRolesCleanup {
     ) -> Result<Option<SetupState>, Error> {
         role_suffix::view(ctx, &state.role_suffix).await?;
         Ok(Some(SetupState {
+            prev_interaction: Some((ctx.interaction_id, ctx.interaction_token.clone())),
             cleanup_legacy: false,
             ..state
         }))
@@ -162,7 +167,11 @@ impl WizardStep<SetupState> for PromptRoleSuffix {
         state: SetupState,
     ) -> Result<Option<SetupState>, Error> {
         role_suffix::view(ctx, &state.role_suffix).await?;
-        Ok(Some(state))
+        // TODO: Don't pass WizardContext by reference so we can avoid the clone
+        Ok(Some(SetupState {
+            prev_interaction: Some((ctx.interaction_id, ctx.interaction_token.clone())),
+            ..state
+        }))
     }
 }
 
@@ -176,9 +185,39 @@ impl WizardStep<SetupState> for AnswerRoleSuffix {
         state: SetupState,
     ) -> Result<Option<SetupState>, Error> {
         let role_suffix = ctx.get_form_field_text(custom_ids::INPUT_ROLE_SUFFIX)?;
+        let role_suffix_len = role_suffix.encode_utf16().count();
         println!("role suffix: {role_suffix}");
 
-        // NEXT STEP
+        let members_over_limit: Vec<_> = state
+            .member_data
+            .iter()
+            .filter_map(|(_, name, _)| {
+                // check max length in utf16
+                (name.encode_utf16().count() + role_suffix_len > DISCORD_MAX_ROLE_NAME_LENGTH)
+                    .then_some(name)
+            })
+            .collect();
+
+        let Some(ref prev_interaction) = state.prev_interaction else {
+            return Err(
+                "missing previous interaction data in state, required to follow up on modal".into(),
+            );
+        };
+
+        // needed cus the modal interaction can't update a previous message
+        let mut prev_ctx = ctx.clone();
+        prev_ctx.interaction_id = prev_interaction.0;
+        prev_ctx.interaction_token = prev_interaction.1.clone();
+
+        if !members_over_limit.is_empty() {
+            ctx.acknowledge_modal().await?;
+            names_over_limit::view(&prev_ctx, &members_over_limit, &role_suffix).await?;
+        } else {
+            // show settings
+            // amount of roles this would create
+            // how many legacy roles it would clean up
+            // and a preview of 5 (random) member roles
+        }
 
         Ok(Some(SetupState {
             role_suffix,
