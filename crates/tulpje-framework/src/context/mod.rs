@@ -47,3 +47,21 @@ pub enum InteractionContext<T: Clone + Send + Sync> {
     ComponentInteraction(ComponentInteractionContext<T>),
     Modal(ModalContext<T>),
 }
+
+impl<T: Clone + Send + Sync> From<CommandContext<T>> for InteractionContext<T> {
+    fn from(ctx: CommandContext<T>) -> Self {
+        Self::Command(ctx)
+    }
+}
+
+impl<T: Clone + Send + Sync> From<ComponentInteractionContext<T>> for InteractionContext<T> {
+    fn from(ctx: ComponentInteractionContext<T>) -> Self {
+        Self::ComponentInteraction(ctx)
+    }
+}
+
+impl<T: Clone + Send + Sync> From<ModalContext<T>> for InteractionContext<T> {
+    fn from(ctx: ModalContext<T>) -> Self {
+        Self::Modal(ctx)
+    }
+}
