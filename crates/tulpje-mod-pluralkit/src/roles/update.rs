@@ -8,11 +8,11 @@ use twilight_model::guild::{Guild, Role};
 use twilight_model::id::Id;
 use twilight_model::id::marker::{GuildMarker, RoleMarker, UserMarker};
 
-use tulpje_framework::Error;
+use tulpje_framework::{Error, constants::DISCORD_ROLE_LIMIT};
 use tulpje_lib::{context::CommandContext, responses};
 use uuid::Uuid;
 
-use crate::roles::constants::{DISCORD_ROLE_LIMIT, REMAINING_ROLE_WARNING};
+use crate::roles::constants::REMAINING_ROLE_WARNING;
 use crate::roles::prompts::{ConfirmUpdatePrompt, NearRoleLimitWarningPrompt, role_change_message};
 use crate::roles::shared::handle_get_system_members;
 use crate::roles::update_stats::{UpdateCounts, UpdateStats};
