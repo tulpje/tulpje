@@ -42,6 +42,61 @@ impl<T: Clone + Send + Sync> Clone for Context<T> {
     }
 }
 
+impl<T: Clone + Send + Sync> From<CommandContext<T>> for Context<T> {
+    fn from(ctx: CommandContext<T>) -> Self {
+        Self {
+            application_id: ctx.application_id,
+            services: Arc::clone(&ctx.services),
+            client: Arc::clone(&ctx.client),
+            standby: Arc::clone(&ctx.standby),
+        }
+    }
+}
+
+impl<T: Clone + Send + Sync> From<ComponentInteractionContext<T>> for Context<T> {
+    fn from(ctx: ComponentInteractionContext<T>) -> Self {
+        Self {
+            application_id: ctx.application_id,
+            services: Arc::clone(&ctx.services),
+            client: Arc::clone(&ctx.client),
+            standby: Arc::clone(&ctx.standby),
+        }
+    }
+}
+
+impl<T: Clone + Send + Sync> From<ModalContext<T>> for Context<T> {
+    fn from(ctx: ModalContext<T>) -> Self {
+        Self {
+            application_id: ctx.application_id,
+            services: Arc::clone(&ctx.services),
+            client: Arc::clone(&ctx.client),
+            standby: Arc::clone(&ctx.standby),
+        }
+    }
+}
+
+impl<T: Clone + Send + Sync> From<EventContext<T>> for Context<T> {
+    fn from(ctx: EventContext<T>) -> Self {
+        Self {
+            application_id: ctx.application_id,
+            services: Arc::clone(&ctx.services),
+            client: Arc::clone(&ctx.client),
+            standby: Arc::clone(&ctx.standby),
+        }
+    }
+}
+
+impl<T: Clone + Send + Sync> From<TaskContext<T>> for Context<T> {
+    fn from(ctx: TaskContext<T>) -> Self {
+        Self {
+            application_id: ctx.application_id,
+            services: Arc::clone(&ctx.services),
+            client: Arc::clone(&ctx.client),
+            standby: Arc::clone(&ctx.standby),
+        }
+    }
+}
+
 pub enum InteractionContext<T: Clone + Send + Sync> {
     Command(CommandContext<T>),
     ComponentInteraction(ComponentInteractionContext<T>),
