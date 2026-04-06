@@ -2,7 +2,7 @@ use std::{num::ParseIntError, str::FromStr as _};
 
 use pkrs_fork::model::Member;
 use serde::{Deserialize, Serialize};
-use tulpje_framework::{Error, color::Color};
+use tulpje_framework::{Error, color::Color, constants::DISCORD_MAX_ROLE_NAME_LENGTH};
 use tulpje_lib::{
     context::Services,
     wizard::{WizardContext, WizardStep},
@@ -12,7 +12,6 @@ use uuid::Uuid;
 
 use crate::{
     roles::{
-        constants::DISCORD_MAX_ROLE_NAME_LENGTH,
         role_limit::RoleLimitData,
         setup::{
             custom_ids,
