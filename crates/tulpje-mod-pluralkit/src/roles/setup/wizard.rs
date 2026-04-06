@@ -1,23 +1,50 @@
+use std::{num::ParseIntError, str::FromStr as _};
+
+use pkrs_fork::model::Member;
 use serde::{Deserialize, Serialize};
-use tulpje_framework::Error;
+use tulpje_framework::{Error, color::Color};
 use tulpje_lib::{
     context::Services,
     wizard::{WizardContext, WizardStep},
 };
+use uuid::Uuid;
 
-use crate::roles::{
-    role_limit::RoleLimitData,
-    setup::{
-        custom_ids,
-        view::{legacy_roles, near_role_limit, role_suffix},
+use crate::{
+    roles::{
+        role_limit::RoleLimitData,
+        setup::{
+            custom_ids,
+            view::{legacy_roles, near_role_limit, role_suffix},
+        },
     },
+    util::get_member_name,
 };
 
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub(crate) struct SetupState {
     pub(super) role_suffix: String,
+    pub(super) member_data: Vec<(Uuid, String, Option<Color>)>,
     pub(super) legacy_roles: usize,
     pub(super) cleanup_legacy: bool,
+}
+impl SetupState {
+    pub(super) fn with_member_data(members: &[Member]) -> Result<Self, ParseIntError> {
+        let member_data: Vec<_> = members
+            .iter()
+            .map(|m| {
+                Ok((
+                    m.uuid,
+                    get_member_name(m),
+                    m.color.as_ref().map(|c| Color::from_str(c)).transpose()?,
+                ))
+            })
+            .collect::<Result<_, _>>()?;
+
+        Ok(Self {
+            member_data,
+            ..Default::default()
+        })
+    }
 }
 
 #[derive(Debug)]
