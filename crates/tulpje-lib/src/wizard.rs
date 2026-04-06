@@ -13,6 +13,7 @@ use twilight_model::{
         message::{Component, MessageFlags},
     },
     gateway::payload::incoming::InteractionCreate,
+    http::interaction::{InteractionResponse, InteractionResponseType},
     id::{
         Id,
         marker::{ApplicationMarker, GuildMarker, InteractionMarker, MessageMarker},
@@ -21,6 +22,7 @@ use twilight_model::{
 
 use crate::{context::Services, db::interaction_state};
 
+#[derive(Clone)]
 pub struct WizardContext<T>
 where
     T: Clone + Send + Sync,
@@ -125,6 +127,23 @@ where
             .model()
             .await
             .map_err(|err| format!("error deserializing response: {err}"))?)
+    }
+
+    pub async fn acknowledge_modal(&self) -> Result<(), Error> {
+        self.client
+            .interaction(self.application_id)
+            .create_response(
+                self.interaction_id,
+                &self.interaction_token,
+                &InteractionResponse {
+                    kind: InteractionResponseType::UpdateMessage,
+                    data: None,
+                },
+            )
+            .await
+            .map_err(|err| format!("error acknowledging modal: {err}"))?;
+
+        Ok(())
     }
 }
 
