@@ -1,6 +1,7 @@
 use pluralizer::pluralize;
+use tulpje_framework::constants::DISCORD_ROLE_LIMIT;
 
-use crate::roles::constants::{DISCORD_ROLE_LIMIT, REMAINING_ROLE_WARNING};
+use crate::roles::constants::REMAINING_ROLE_WARNING;
 
 #[derive(Debug, Clone, PartialEq)]
 pub(super) enum RoleLimitResult {

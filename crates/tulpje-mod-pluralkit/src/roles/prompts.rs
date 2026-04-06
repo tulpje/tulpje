@@ -1,4 +1,4 @@
-use tulpje_framework::Error;
+use tulpje_framework::{Error, constants::DISCORD_ROLE_LIMIT};
 use tulpje_lib::{ConfirmationDialog, context::Services, message_style::MessageStyle};
 use twilight_model::channel::message::{
     Component,
@@ -6,7 +6,7 @@ use twilight_model::channel::message::{
 };
 use twilight_util::builder::message::{ButtonBuilder, TextDisplayBuilder};
 
-use crate::roles::{constants::DISCORD_ROLE_LIMIT, update_stats::UpdateCounts};
+use crate::roles::update_stats::UpdateCounts;
 
 pub(crate) fn role_change_message(counts: &UpdateCounts, infix: &str) -> String {
     // all this code is just to get messages to look like
