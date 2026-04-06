@@ -8,6 +8,7 @@ pub use module::{Module, builder::ModuleBuilder, registry::Registry};
 
 mod builder;
 pub mod color;
+pub mod constants;
 pub mod context;
 pub mod framework;
 pub mod handler;

@@ -1,16 +1,13 @@
 use pluralizer::pluralize;
 use rand::prelude::IndexedRandom as _;
-use tulpje_framework::Error;
+use tulpje_framework::{Error, constants::DISCORD_MAX_ROLE_NAME_LENGTH};
 use tulpje_lib::{context::Services, message_style::MessageStyle, wizard::WizardContext};
 use twilight_model::channel::message::component::{
     ActionRow, ButtonStyle, Container, Separator, SeparatorSpacingSize, TextDisplay,
 };
 use twilight_util::builder::message::ButtonBuilder;
 
-use crate::{
-    roles::{constants::DISCORD_MAX_ROLE_NAME_LENGTH, setup::custom_ids},
-    util::discord_ellipsize,
-};
+use crate::{roles::setup::custom_ids, util::discord_ellipsize};
 
 pub(crate) async fn view(
     ctx: &WizardContext<Services>,
