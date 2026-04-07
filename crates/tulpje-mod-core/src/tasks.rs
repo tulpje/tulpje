@@ -22,10 +22,6 @@ pub(super) async fn delete_guild(
     deleted_at: NaiveDateTime,
 ) -> Result<(), Error> {
     tracing::info!("deleting guild {guild_id} which was deleted at {deleted_at}");
-    tracing::warn!(
-        "delete_guild is running in dry run mode until foreign keys and cascades are configured correctly"
-    );
-
     if !db::delete_guild(db, guild_id).await? {
         tracing::warn!("tried deleting guild {guild_id} but nothing was deleted");
     }
