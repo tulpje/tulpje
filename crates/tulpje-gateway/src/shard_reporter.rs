@@ -11,7 +11,7 @@ use twilight_gateway::{Event, EventType, EventTypeFlags, Latency};
 use tulpje_common::shard_state::ShardState;
 use twilight_model::gateway::payload::incoming::{GuildCreate, GuildDelete, Hello, Ready};
 
-use crate::metrics::track_guild_count;
+use crate::metrics::{track_guild_count, track_latency};
 
 pub(crate) const SHARD_REPORTER_EVENTS: EventTypeFlags = EventTypeFlags::from_bits_truncate(
     EventTypeFlags::GATEWAY_HEARTBEAT_ACK.bits()
@@ -265,6 +265,8 @@ impl ShardReporter {
             .as_millis()
             .try_into()
             .expect("couldn't convert into u64");
+
+        track_latency(self.shard.shard_id, latency);
 
         self.save_shard().await
     }
