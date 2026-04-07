@@ -1,5 +1,4 @@
 use serde::de::DeserializeSeed as _;
-use std::error::Error;
 use twilight_gateway::{Event, EventTypeFlags, Message};
 use twilight_model::gateway::{OpCode, event::GatewayEventDeserializer};
 
@@ -12,6 +11,18 @@ pub(crate) const WANTED_EVENTS: EventTypeFlags = EventTypeFlags::from_bits_trunc
         | EventTypeFlags::GATEWAY_RECONNECT.bits()
         | EventTypeFlags::GATEWAY_INVALIDATE_SESSION.bits(),
 );
+
+#[derive(Debug, thiserror::Error)]
+pub(crate) enum MessageParseError {
+    #[error("couldn't deserialize gateway event")]
+    Deserialize,
+    #[error("couldn't deserialize event: {0}")]
+    DeserializeEvent(serde_json::Error),
+    #[error("unknown opcode: {0}")]
+    UnknownOpCode(u8),
+    #[error("unknown event: ({0:?}, {1:?})")]
+    UnknownEvent(OpCode, Option<String>),
+}
 
 pub(crate) struct ParsedEvent {
     pub(crate) forward: bool,
@@ -39,22 +50,25 @@ impl ParsedEvent {
         }
     }
 
-    pub(crate) fn from_message(value: Message) -> Result<Self, Box<dyn Error>> {
+    pub(crate) fn from_message(value: Message) -> Result<Self, MessageParseError> {
         match value {
             Message::Close(frame) => Ok(Self::from_event(false, Event::GatewayClose(frame), None)),
             Message::Text(text) => {
                 let Some(deserialize) = GatewayEventDeserializer::from_json(&text) else {
-                    return Err(format!("couldn't deserialize event: {text}").into());
+                    return Err(MessageParseError::Deserialize);
                 };
 
                 let numeric_opcode = deserialize.op();
                 let Some(opcode) = OpCode::from(numeric_opcode) else {
-                    return Err(format!("unknown opcode ({numeric_opcode}) in: {text}").into());
+                    return Err(MessageParseError::UnknownOpCode(numeric_opcode));
                 };
 
                 let event_type = deserialize.event_type();
                 let Ok(event_type_flags) = EventTypeFlags::try_from((opcode, event_type)) else {
-                    return Err(format!("unknown event ({opcode:?}): {event_type:?}").into());
+                    return Err(MessageParseError::UnknownEvent(
+                        opcode,
+                        event_type.map(String::from),
+                    ));
                 };
 
                 if WANTED_EVENTS.contains(event_type_flags) {
@@ -63,7 +77,7 @@ impl ParsedEvent {
                         opcode == OpCode::Dispatch,
                         deserialize
                             .deserialize(&mut json_deserializer)
-                            .map_err(|err| format!("error deserialising event: {err},{text}"))?
+                            .map_err(MessageParseError::DeserializeEvent)?
                             .into(),
                         Some(text),
                     ))
