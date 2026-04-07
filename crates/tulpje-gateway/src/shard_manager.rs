@@ -10,7 +10,7 @@ use twilight_gateway::{CloseFrame, Message, Shard};
 
 use crate::{
     metrics,
-    parsed_event::ParsedEvent,
+    parsed_event::{MessageParseError, ParsedEvent},
     shard_reporter::{ReporterEvent, ShardReporterHandle},
 };
 
@@ -126,8 +126,17 @@ impl ShardManager {
     }
 
     fn handle_message(&mut self, message: Message) -> Result<bool, Box<dyn Error>> {
-        let event = ParsedEvent::from_message(message)
-            .map_err(|err| format!("error parsing gateway message: {err}"))?;
+        let event = match ParsedEvent::from_message(message) {
+            Ok(event) => event,
+            Err(err) => match err {
+                // skip unknown opcode and unknown event errors
+                MessageParseError::UnknownOpCode(_) | MessageParseError::UnknownEvent(_, _) => {
+                    return Ok(false);
+                }
+                // passthrough other errors
+                err => return Err(err.into()),
+            },
+        };
 
         // if this is a close frame and we're shutting, we break at the
         // end of the loop, checking it here to avoid having to clone `event`
