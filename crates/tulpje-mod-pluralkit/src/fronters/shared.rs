@@ -173,10 +173,8 @@ pub(super) async fn update_fronter_channels(
 
         client.delete_channel(channel.id).await.map_err(|err| {
             format!(
-                "error deleting channel '{}' ({}): {}",
-                channel.name.clone().unwrap_or_default(),
-                channel.id,
-                err
+                "error deleting fronter channel {} in guild {}: {}",
+                channel.id, guild.id, err
             )
         })?;
 
@@ -195,10 +193,20 @@ pub(super) async fn update_fronter_channels(
             .parent_id(cat.id)
             .kind(ChannelType::GuildVoice)
             .await
-            .map_err(|err| format!("error creating fronter channel `{fronter}`: {err}"))?
+            .map_err(|err| {
+                format!(
+                    "error creating fronter channel for member {} in guild {}: {}",
+                    fronter, guild.id, err
+                )
+            })?
             .model()
             .await
-            .map_err(|err| format!("error deserialising new channel for `{fronter}`: {err}"))?;
+            .map_err(|err| {
+                format!(
+                    "error deserialising new fronter channel for member {} in guild {}: {}",
+                    fronter, guild.id, err
+                )
+            })?;
 
         fronter_channel_map.insert(fronter.to_owned(), channel);
     }
@@ -218,7 +226,12 @@ pub(super) async fn update_fronter_channels(
             .update_channel(channel.id)
             .position(u64::from(position))
             .await
-            .map_err(|err| format!("error moving channel `{}` ({}): {}", name, channel.id, err))?;
+            .map_err(|err| {
+                format!(
+                    "error moving fronter channel {} in guild {}: {}",
+                    channel.id, guild.id, err
+                )
+            })?;
     }
 
     Ok(())
