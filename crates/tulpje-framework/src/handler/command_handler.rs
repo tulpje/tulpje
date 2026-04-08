@@ -21,7 +21,7 @@ impl<T: Clone + Send + Sync> CommandHandler<T> {
     pub async fn run(&self, ctx: CommandContext<T>) -> Result<(), Error> {
         if let Err(err) = (self.func)(ctx.clone()).await {
             tracing::error!(
-                "error during command `{}`, sending reference to client: {}",
+                "error during command `/{}`, sending reference to client: {}",
                 self.name,
                 err
             );
