@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 
 use async_cron_scheduler::cron::Schedule;
 use twilight_gateway::EventType;
@@ -22,7 +22,7 @@ pub struct ModuleBuilder<T: Clone + Send + Sync> {
 
     components: HashMap<String, ComponentInteractionHandler<T>>,
     modals: HashMap<String, ModalHandler<T>>,
-    events: HashMap<EventType, HashSet<EventHandler<T>>>,
+    events: HashMap<EventType, Vec<EventHandler<T>>>,
     tasks: HashMap<String, TaskHandler<T>>,
 }
 
@@ -147,9 +147,8 @@ impl<T: Clone + Send + Sync> ModuleBuilder<T> {
 
     #[must_use]
     pub fn event(mut self, event: EventType, func: EventFunc<T>) -> Self {
-        self.events.entry(event).or_default().insert(EventHandler {
+        self.events.entry(event).or_default().push(EventHandler {
             module: self.name.clone(),
-            uuid: uuid::Uuid::now_v7().to_string(),
             event,
             func,
         });

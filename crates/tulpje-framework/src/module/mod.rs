@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 
 use twilight_gateway::EventType;
 use twilight_model::application::command::Command;
@@ -22,6 +22,6 @@ pub struct Module<T: Clone + Send + Sync> {
 
     pub(crate) components: HashMap<String, ComponentInteractionHandler<T>>,
     pub(crate) modals: HashMap<String, ModalHandler<T>>,
-    pub(crate) events: HashMap<EventType, HashSet<EventHandler<T>>>,
+    pub(crate) events: HashMap<EventType, Vec<EventHandler<T>>>,
     pub(crate) tasks: HashMap<String, TaskHandler<T>>,
 }

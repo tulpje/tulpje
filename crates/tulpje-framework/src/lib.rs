@@ -108,8 +108,8 @@ pub async fn handle<T: Clone + Send + Sync + 'static>(
 
             if let Err(err) = handler.run(event_ctx).await {
                 tracing::warn!(
-                    "error running event handler {} for event {:?}: {}",
-                    handler.uuid,
+                    "error running event handler for event {:?} in module {:?}: {}",
+                    handler.module,
                     event.kind(),
                     err
                 );
