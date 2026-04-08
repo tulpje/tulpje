@@ -101,7 +101,11 @@ pub async fn handle<T: Clone + Send + Sync + 'static>(
     }
 
     if let Some(handlers) = registry.events.get(&event.kind()) {
-        tracing::debug!("running event handlers for {:?}", event.kind());
+        tracing::debug!(
+            "running {} event handlers for event {:?}",
+            handlers.len(),
+            event.kind()
+        );
 
         for handler in handlers {
             let event_ctx = EventContext::from_context(ctx.clone(), meta.clone(), event.clone());
