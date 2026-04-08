@@ -5,6 +5,42 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.23.4-rc.1] - 2026-04-08
+
+### Added
+
+ - Add a `MessageParseError` for `ParsedEvent`
+
+### Changed
+
+ - Tweak log messages for `update_fronter_channels`
+ - Expose shard latency metrics
+ - Make `thiserror` a workspace dependency
+ - Implement Hash on DbId
+ - Various tweaks/cleanups
+
+### Fixed
+
+ - Don't log unknown opcode and unknown event errors
+
+### Removed
+
+ - Remove dry run warning in `delete_guild` as it's no longer a dry run
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * chore(tulpje-mod-pluralkit): tweak log messages for `update_fronter_channels` ([`c46b5f7`](https://github.com/tulpje/tulpje/commit/c46b5f7cc1dead109b423730735968f9e08240cd))
+ * feat(tulpje-gateway): expose shard latency metrics ([`75f24db`](https://github.com/tulpje/tulpje/commit/75f24db85294d8b51cce11f79fbb32511b642e8f))
+ * fix(tulpje-gateway): don't log unknown opcode and unknown event errors ([`7caa9bb`](https://github.com/tulpje/tulpje/commit/7caa9bb048cbf51b5b7de0f05e4103750504b409))
+ * chore(deps): make `thiserror` a workspace dependency ([`a360006`](https://github.com/tulpje/tulpje/commit/a36000626f0c093e9aa5be5562809fe4564cb5e7))
+ * feat(tulpje-gateway): add a `MessageParseError` for `ParsedEvent` ([`69c8987`](https://github.com/tulpje/tulpje/commit/69c8987d0aee821f1aa135c1819ea8ae3bc9348d))
+ * fix(tulpje-mod-core): remove dry run warning in `delete_guild` as it's no longer a dry run ([`d021a5b`](https://github.com/tulpje/tulpje/commit/d021a5b0eb70685e184daf9ea14e31aceea189aa))
+ * feat(tulpje-lib): implement Hash on DbId ([`e3e4e12`](https://github.com/tulpje/tulpje/commit/e3e4e127e4e1de511c2d299628e4cffc7895cdac))
+ * refactor(tulpje-mod-pluralkit/fronters): various tweaks/cleanups ([`71a4848`](https://github.com/tulpje/tulpje/commit/71a484833422d2839a7f658d1d3e6c8227a1ee06))
+</details>
+
 ## [0.23.3] - 2026-04-03
 
 ### Changed

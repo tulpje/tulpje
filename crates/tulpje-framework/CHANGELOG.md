@@ -5,6 +5,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.17.1-rc.1] - 2026-04-08
+
+### Added
+
+ - Add `From` traits for all other contexts types to `Context<T>`
+ - Add `From` traits to `InteractionContext` for all subtypes
+
+### Changed
+
+ - Tweak command error logging
+ - Implement `defer` and `defer_ephemeral` on `ComponentInteractionContext`
+ - Also report errors to user in `ModalHandler` and `ComponentInteractionHandler`
+ - Implement modal handling
+ - Split internal error handling into separate function
+
+### Fixed
+
+ - Derive `Serialize` and `Deserialize` for `Color`
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * chore(tulpje-framework): tweak command error logging ([`ae4b5aa`](https://github.com/tulpje/tulpje/commit/ae4b5aa909186884e0185e9353dc9c2d781742bb))
+ * fix(tulpje-framework): derive `Serialize` and `Deserialize` for `Color` ([`82dc08a`](https://github.com/tulpje/tulpje/commit/82dc08a77657585cadd99dc15125abe3bbe64b16))
+ * feat(tulpje-framework): implement `defer` and `defer_ephemeral` on `ComponentInteractionContext` ([`4f98231`](https://github.com/tulpje/tulpje/commit/4f982315851a69a2bf6a2b95ac641ccc71bf0396))
+ * feat(tulpje-framework): also report errors to user in `ModalHandler` and `ComponentInteractionHandler` ([`f812c70`](https://github.com/tulpje/tulpje/commit/f812c70dff629fa3ac8d02ecc697f0e1c5da70f5))
+ * feat(tulpje-framework): add `From` traits for all other contexts types to `Context<T>` ([`a2525cd`](https://github.com/tulpje/tulpje/commit/a2525cd7cda8828e614bfac9b54b67fb87438d56))
+ * feat(tulpje-framework): add `From` traits to `InteractionContext` for all subtypes ([`2ee06c8`](https://github.com/tulpje/tulpje/commit/2ee06c804525b2a1a8b914f9b49077687ce16dbb))
+ * feat(tulpje-framework): implement modal handling ([`92cd565`](https://github.com/tulpje/tulpje/commit/92cd5655bc5a12a0b551d44c8759078f60067484))
+ * refactor(tulpje-framework): split internal error handling into separate function ([`bac9f01`](https://github.com/tulpje/tulpje/commit/bac9f01be6bcb966a6549502981ca60356b1cd72))
+</details>
+
 ## [0.17.0] - 2026-04-01
 
 ### Commit Details
