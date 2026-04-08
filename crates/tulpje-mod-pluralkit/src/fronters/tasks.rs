@@ -231,7 +231,7 @@ async fn process_system(
             notify_front_private(db, discord_client, system).await?;
             return Ok(());
         }
-        Err(err) => return Err(err.into()),
+        Err(err) => return Err(format!("error updating system fronters: {err}").into()),
     };
     match changed {
         FrontChange::Changed(switch) => {
