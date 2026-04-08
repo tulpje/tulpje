@@ -6,6 +6,56 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.23.4-rc.1] - 2026-10-04
+
+### Added
+
+ - Add a `MessageParseError` for `ParsedEvent`
+ - Add `From` traits for all other contexts types to `Context<T>`
+ - Add `From` traits to `InteractionContext` for all subtypes
+
+### Changed
+
+ - Tweak log messages for `update_fronter_channels`
+ - Tweak command error logging
+ - Expose shard latency metrics
+ - Make `thiserror` a workspace dependency
+ - Implement Hash on DbId
+ - Implement `defer` and `defer_ephemeral` on `ComponentInteractionContext`
+ - Also report errors to user in `ModalHandler` and `ComponentInteractionHandler`
+ - Implement modal handling
+ - Various tweaks/cleanups
+ - Split internal error handling into separate function
+
+### Fixed
+
+ - Don't log unknown opcode and unknown event errors
+
+### Removed
+
+ - Remove dry run warning in `delete_guild` as it's no longer a dry run
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * chore(tulpje-mod-pluralkit): tweak log messages for `update_fronter_channels` ([`b33f375`](https://github.com/tulpje/tulpje/commit/b33f375c83bee1ccafb618498d2e6ca2f087c97f))
+ * chore(tulpje-framework): tweak command error logging ([`b64714c`](https://github.com/tulpje/tulpje/commit/b64714cf3647f98fc19505dcf913eb98073ed65b))
+ * feat(tulpje-gateway): expose shard latency metrics ([`6957d46`](https://github.com/tulpje/tulpje/commit/6957d464d2897f207375fce35778becd58b550dc))
+ * fix(tulpje-gateway): don't log unknown opcode and unknown event errors ([`13085db`](https://github.com/tulpje/tulpje/commit/13085db56db2cb7269dbc7e97b9da2fbb1b9cb7e))
+ * chore(deps): make `thiserror` a workspace dependency ([`1867397`](https://github.com/tulpje/tulpje/commit/18673973fdd32d80c1ef84e4b38f66445d82ba0f))
+ * feat(tulpje-gateway): add a `MessageParseError` for `ParsedEvent` ([`99aa787`](https://github.com/tulpje/tulpje/commit/99aa78708817ac368c55bc3e6c21a5c3711be0dc))
+ * fix(tulpje-mod-core): remove dry run warning in `delete_guild` as it's no longer a dry run ([`7fcb271`](https://github.com/tulpje/tulpje/commit/7fcb2713aefff69bc82ca0300d9e4aa91f5b51bc))
+ * feat(tulpje-lib): implement Hash on DbId ([`1e18fc5`](https://github.com/tulpje/tulpje/commit/1e18fc5f0608ddb97feccad3787a7d0ee9587cae))
+ * feat(tulpje-framework): implement `defer` and `defer_ephemeral` on `ComponentInteractionContext` ([`b0b6c6a`](https://github.com/tulpje/tulpje/commit/b0b6c6a5996b7fd659ffa807112b527c0ee83171))
+ * feat(tulpje-framework): also report errors to user in `ModalHandler` and `ComponentInteractionHandler` ([`59959ca`](https://github.com/tulpje/tulpje/commit/59959cae7a481776e1af920a258191809ddc808d))
+ * feat(tulpje-framework): add `From` traits for all other contexts types to `Context<T>` ([`28bb42f`](https://github.com/tulpje/tulpje/commit/28bb42fc7b4ac8c6ce9a1c66252db23a60415516))
+ * feat(tulpje-framework): add `From` traits to `InteractionContext` for all subtypes ([`579a507`](https://github.com/tulpje/tulpje/commit/579a507b0849adcecad159e1f24b9e69f7c01c2b))
+ * feat(tulpje-framework): implement modal handling ([`a3f1974`](https://github.com/tulpje/tulpje/commit/a3f1974c2146845cf0f54a27bef3e8103e017767))
+ * refactor(tulpje-mod-pluralkit/fronters): various tweaks/cleanups ([`873bf67`](https://github.com/tulpje/tulpje/commit/873bf678b5cf8e52f34b773c40483d8f04b5a9d9))
+ * refactor(tulpje-framework): split internal error handling into separate function ([`1af4cb2`](https://github.com/tulpje/tulpje/commit/1af4cb266f56d5c2de4bf5c770734df81b2ca8fd))
+</details>
+
 ## [0.23.3] - 2026-10-04
 
 ### Changed
