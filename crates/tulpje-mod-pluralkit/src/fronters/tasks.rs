@@ -2,7 +2,10 @@ use std::{slice, sync::Arc};
 
 use pkrs_fork::{client::PkClient, model::Member};
 use tracing::instrument;
-use tulpje_lib::{context::TaskContext, util::warning_message};
+use tulpje_lib::{
+    context::TaskContext,
+    util::{ERROR_UNKNOWN_CHANNEL, get_json_error_code, warning_message},
+};
 use twilight_http::Client;
 use twilight_model::{
     channel::message::{Embed, MessageFlags},
@@ -19,7 +22,7 @@ use twilight_util::builder::embed::EmbedBuilder;
 use crate::{
     db::ModPkSystem,
     fronters::{
-        db,
+        db::{self, delete_fronter_category},
         shared::{FrontChange, GetSystemFrontersError, Switch, update_system_fronters},
     },
     notify::db::{self as notify_db, get_notify_channel},
@@ -51,6 +54,7 @@ async fn update_fronter_categories(
         metrics::counter!("pk:front-category", "type" => "total").increment(1);
 
         if let Err(err) = update_fronters_for_guild(
+            db,
             discord_client,
             *guild_category.guild_id,
             *guild_category.category_id,
@@ -263,6 +267,7 @@ pub(crate) async fn update_fronters(ctx: TaskContext) -> Result<(), Error> {
 }
 
 async fn update_fronters_for_guild(
+    db: &sqlx::PgPool,
     client: &Client,
     guild_id: Id<GuildMarker>,
     category_id: Id<ChannelMarker>,
@@ -270,12 +275,30 @@ async fn update_fronters_for_guild(
 ) -> Result<(), Error> {
     let guild = client.guild(guild_id).await?.model().await?;
 
-    let category = client
-        .channel(category_id)
-        .await
-        .map_err(|err| format!("couldn't find category for guild {}: {}", guild.id, err))?
-        .model()
-        .await?;
+    let category = match client.channel(category_id).await {
+        Ok(response) => response.model().await?,
+        Err(err) if get_json_error_code(&err).is_some_and(|code| code == ERROR_UNKNOWN_CHANNEL) => {
+            // channel was deleted removed it from fronter_categories
+            tracing::info!(
+                "received ERROR_UNKNOWN_CHANNEL for category {category_id} \
+                in guild {guild_id}, removing from fronter category config"
+            );
+            delete_fronter_category(db, category_id)
+                .await
+                .map_err(|err| {
+                    format!(
+                        "error deleting fronter category {category_id} for guild {guild_id}: {err}"
+                    )
+                })?;
+            return Ok(());
+        }
+        Err(err) => {
+            return Err(format!(
+                "error fetching fronter category {category_id} for guild {guild_id}: {err}",
+            )
+            .into());
+        }
+    };
 
     category.guild_id.ok_or_else(|| {
         format!(
