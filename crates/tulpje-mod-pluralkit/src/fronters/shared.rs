@@ -8,7 +8,6 @@ use pkrs_fork::model::Member;
 use pkrs_fork::model::PkId;
 use serde_either::StringOrStruct;
 use tracing::Level;
-use tulpje_cache::Cache;
 use twilight_http::Client;
 use twilight_model::channel::{Channel, ChannelType};
 use twilight_model::guild::Guild;
@@ -26,58 +25,19 @@ use tulpje_lib::{context::CommandContext, responses};
 
 pub(super) async fn get_fronter_channels(
     client: &Client,
-    cache: &Cache,
     guild: Id<GuildMarker>,
     cat_id: Id<ChannelMarker>,
 ) -> Result<Vec<Channel>, Error> {
-    // try fetching channels from cache first
-    let channel_ids = cache.guild_channels.members(&guild).await?;
-    if !channel_ids.is_empty() {
-        let mut channels = Vec::new();
-        for channel_id in channel_ids {
-            // if the channel isn't in the cache log a warning and try to fetch it from discord
-            let channel = if let Some(channel) = cache.channels.get(&channel_id).await? {
-                channel
-            } else {
-                match client.channel(channel_id).await {
-                    Ok(channel_resp) => match channel_resp.model().await {
-                        Ok(channel) => channel,
-                        Err(err) => {
-                            tracing::warn!(
-                                "error deserialising channel {channel_id} for guild {guild}: {err}"
-                            );
-                            continue;
-                        }
-                    },
-                    Err(err) => {
-                        tracing::warn!(
-                            "channel {channel_id} in `guild_channels` cache but error occured when fetching from discord: {err}"
-                        );
-                        continue;
-                    }
-                }
-            };
-            if channel
-                .parent_id
-                .is_some_and(|parent_id| parent_id == cat_id)
-            {
-                channels.push(channel);
-            }
-        }
-
-        Ok(channels)
-    } else {
-        Ok(client
-            .guild_channels(guild)
-            .await
-            .map_err(|err| format!("error fetching guild channels for {guild}: {err}"))?
-            .models()
-            .await
-            .map_err(|err| format!("error deserialising guild channels for {guild}: {err}"))?
-            .into_iter()
-            .filter(|c| c.parent_id.is_some_and(|parent_id| parent_id == cat_id))
-            .collect())
-    }
+    Ok(client
+        .guild_channels(guild)
+        .await
+        .map_err(|err| format!("error fetching channels for {guild}: {err}"))?
+        .models()
+        .await
+        .map_err(|err| format!("error deserialising channels for {guild}: {err}"))?
+        .into_iter()
+        .filter(|c| c.parent_id.is_some_and(|id| id == cat_id))
+        .collect())
 }
 
 /// output additional debugging information to debug issues with fronter order
@@ -118,12 +78,11 @@ fn debug_fronter_order(
 
 pub(super) async fn update_fronter_channels(
     client: &Client,
-    cache: &Cache,
     guild: Guild,
     cat: Channel,
     members: &[Member],
 ) -> Result<(), Error> {
-    let fronter_channels = get_fronter_channels(client, cache, guild.id, cat.id).await?;
+    let fronter_channels = get_fronter_channels(client, guild.id, cat.id).await?;
     let desired_fronters: Vec<_> = members.iter().map(get_member_name).collect();
 
     let current_fronters: HashSet<String> = fronter_channels

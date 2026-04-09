@@ -2,7 +2,6 @@ use std::{slice, sync::Arc};
 
 use pkrs_fork::{client::PkClient, model::Member};
 use tracing::instrument;
-use tulpje_cache::Cache;
 use tulpje_lib::{context::TaskContext, util::warning_message};
 use twilight_http::Client;
 use twilight_model::{
@@ -30,7 +29,6 @@ use crate::{
 async fn update_fronter_categories(
     db: &sqlx::PgPool,
     discord_client: &Arc<Client>,
-    cache: &Cache,
     system: &ModPkSystem,
     switch: &Switch,
 ) -> Result<(), Error> {
@@ -54,7 +52,6 @@ async fn update_fronter_categories(
 
         if let Err(err) = update_fronters_for_guild(
             discord_client,
-            cache,
             *guild_category.guild_id,
             *guild_category.category_id,
             &switch.fronters,
@@ -222,7 +219,6 @@ async fn process_system(
     db: &sqlx::PgPool,
     pk_client: &PkClient,
     discord_client: &Arc<Client>,
-    cache: &Cache,
     system: &ModPkSystem,
 ) -> Result<(), Error> {
     let changed = match update_system_fronters(db, system, pk_client).await {
@@ -236,7 +232,7 @@ async fn process_system(
     match changed {
         FrontChange::Changed(switch) => {
             tracing::debug!("fronters changed for system {}", system.uuid);
-            update_fronter_categories(db, discord_client, cache, system, &switch).await?;
+            update_fronter_categories(db, discord_client, system, &switch).await?;
             notify_front_change(db, discord_client, system, &switch).await?;
         }
         FrontChange::Unchanged => {
@@ -256,14 +252,8 @@ pub(crate) async fn update_fronters(ctx: TaskContext) -> Result<(), Error> {
     let systems_to_update = db::get_systems_to_update(&ctx.services.db).await?;
 
     for system in &systems_to_update {
-        if let Err(err) = process_system(
-            &ctx.services.db,
-            &ctx.services.pk,
-            &ctx.client,
-            &ctx.services.cache,
-            system,
-        )
-        .await
+        if let Err(err) =
+            process_system(&ctx.services.db, &ctx.services.pk, &ctx.client, system).await
         {
             tracing::warn!("error updating system {}: {}", system.uuid, err);
         }
@@ -274,7 +264,6 @@ pub(crate) async fn update_fronters(ctx: TaskContext) -> Result<(), Error> {
 
 async fn update_fronters_for_guild(
     client: &Client,
-    cache: &Cache,
     guild_id: Id<GuildMarker>,
     category_id: Id<ChannelMarker>,
     members: &[Member],
@@ -295,7 +284,7 @@ async fn update_fronters_for_guild(
         )
     })?;
 
-    super::shared::update_fronter_channels(client, cache, guild.clone(), category, members)
+    super::shared::update_fronter_channels(client, guild.clone(), category, members)
         .await
         .map_err(|err| format!("error updating fronters for guild {}: {}", guild.id, err))?;
 
