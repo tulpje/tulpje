@@ -67,6 +67,25 @@ pub(crate) async fn get_fronter_category(
     Ok(result.map(Into::into))
 }
 
+pub(crate) async fn delete_fronter_category(
+    db: &sqlx::PgPool,
+    category_id: Id<ChannelMarker>,
+) -> Result<bool, Error> {
+    Ok(sqlx::query!(
+        r#"
+            DELETE FROM
+                pk_fronters
+            WHERE
+                category_id = $1
+        "#,
+        i64::from(DbId(category_id))
+    )
+    .execute(db)
+    .await?
+    .rows_affected()
+        > 0)
+}
+
 pub(crate) async fn save_fronter_category(
     db: &sqlx::PgPool,
     guild_id: Id<GuildMarker>,
