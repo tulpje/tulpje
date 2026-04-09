@@ -16,7 +16,10 @@ use twilight_util::builder::message::{ButtonBuilder, TextDisplayBuilder};
 use super::db;
 use crate::{
     db::{get_guild_settings_for_id, get_system},
-    fronters::{db::get_fronter_category, shared::handle_private_front},
+    fronters::{
+        db::get_fronter_category,
+        shared::{GetSystemFrontersError, get_system_fronters, update_fronter_channels},
+    },
     util::SystemRef,
 };
 use tulpje_lib::{
@@ -85,22 +88,39 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
     let system_ref = SystemRef::Uuid(guild_settings.system_uuid);
 
     tracing::debug!("/pk fronters setup, fetching system {system_ref}");
-    let system = get_system(&ctx.services.db, &system_ref)
+    let Some(system) = get_system(&ctx.services.db, &system_ref)
         .await
-        .map_err(|err| format!("error fetching system {}: {}", system_ref, err))?;
-    let display_name = system.map_or_else(|| system_ref.to_string(), |s| s.name.unwrap_or(s.id));
+        .map_err(|err| format!("error fetching system {}: {}", system_ref, err))?
+    else {
+        return Err("system {system_ref} missing from database".into());
+    };
+    let display_name = system.name.unwrap_or(system.id);
 
-    // inform the user if their front is private
-    tracing::debug!("/pk fronters setup, handling potential private front for system {system_ref}");
-    if handle_private_front(
-        &ctx,
-        system_ref.clone(),
-        &format!("Front for system `{display_name}` is private, please set it to public to use the fronter list")
-    )
-    .await?
-    {
-        return Ok(());
-    }
+    // TODO: Fix horrible deduplication between this and `update_system_fronters`
+    let members = match get_system_fronters(&ctx.services.pk, system.uuid).await {
+        Ok(Some(fronters)) => fronters.members,
+        Ok(None) => Vec::new(),
+        Err(GetSystemFrontersError::Private(_)) => {
+            responses::error(
+                &ctx,
+                &format!(
+                    "Fronters for system `{display_name}` are private, \
+                    please set them to public to use the fronter category"
+                ),
+            )
+            .await?;
+
+            if let Err(err) = db::update_fronters_timestamp(&ctx.services.db, system.uuid).await {
+                tracing::warn!(
+                    "error updating fronter timestamp in db for system {}: {}",
+                    system.uuid,
+                    err
+                );
+            }
+            return Ok(());
+        }
+        Err(err) => return Err(err.into()),
+    };
 
     let category_title = ctx.get_arg_string("title")?;
 
@@ -137,7 +157,12 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
         .model()
         .await?;
 
+    // update fronters
+    update_fronter_channels(&ctx.client, &guild, &fronters_category, &members).await?;
+
     // Save category into db
+    // NOTE: We do this after updating fronter channels so we don't have a race
+    //       condition with the auto updating job
     db::save_fronter_category(&ctx.services.db, guild.id, fronters_category.id).await?;
 
     // Inform user of success

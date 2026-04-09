@@ -307,7 +307,7 @@ async fn update_fronters_for_guild(
         )
     })?;
 
-    super::shared::update_fronter_channels(client, guild.clone(), category, members)
+    super::shared::update_fronter_channels(client, &guild, &category, members)
         .await
         .map_err(|err| format!("error updating fronters for guild {}: {}", guild.id, err))?;
 
