@@ -229,6 +229,9 @@ impl Cache {
     }
 
     pub(crate) async fn cache_guild(&self, mut guild: Guild) -> Result<(), Error> {
+        // we have the full guild so clear existing channels
+        self.guild_channels.clear(&guild.id).await?;
+
         for channel in &mut guild.channels {
             channel.guild_id = Some(guild.id);
         }
