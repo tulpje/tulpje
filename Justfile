@@ -20,6 +20,9 @@ sqlx-migrate: database-up
 sqlx-prepare: database-up
   contrib/run-local.py cargo sqlx prepare --workspace
 
+reset-db: database-up
+  contrib/run-local.py sqlx database reset
+
 up: build-docker
   docker compose --profile=full up
 
