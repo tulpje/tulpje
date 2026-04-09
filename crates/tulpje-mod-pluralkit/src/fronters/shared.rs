@@ -78,8 +78,8 @@ fn debug_fronter_order(
 
 pub(super) async fn update_fronter_channels(
     client: &Client,
-    guild: Guild,
-    cat: Channel,
+    guild: &Guild,
+    cat: &Channel,
     members: &[Member],
 ) -> Result<(), Error> {
     let fronter_channels = get_fronter_channels(client, guild.id, cat.id).await?;
@@ -110,7 +110,7 @@ pub(super) async fn update_fronter_channels(
 
     if tracing::event_enabled!(Level::TRACE) {
         debug_fronter_order(
-            &guild,
+            guild,
             &fronter_channels,
             &desired_fronters,
             &fronter_pos_map,
