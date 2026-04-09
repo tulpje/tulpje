@@ -66,7 +66,7 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
         Err(err) => return Err(err.into()),
     };
 
-    update_fronter_channels(&ctx.client(), &ctx.services.cache, guild, cat, &members).await?;
+    update_fronter_channels(&ctx.client(), guild, cat, &members).await?;
     let fronter_uuids: Vec<_> = members.iter().map(|m| m.uuid).collect();
     if let Err(err) = db::update_fronters(&ctx.services.db, gs.system_uuid, &fronter_uuids).await {
         tracing::warn!(
