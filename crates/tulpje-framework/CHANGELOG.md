@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.18.0-rc.1] - 2026-04-09
+
+### Changed
+
+ - Log event handlers count on execution
+
+### Removed
+
+ - Remove `uuid` from event handlers and store them in a `Vec` instead of `HashSet`
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * chore(tulpje-framework): log event handlers count on execution ([`cc2cdb3`](https://github.com/tulpje/tulpje/commit/cc2cdb30caf6331bf1af24cccf76c47c48c6d244))
+ * refactor(tulpje-framework): remove `uuid` from event handlers and store them in a `Vec` instead of `HashSet` ([`263d828`](https://github.com/tulpje/tulpje/commit/263d828474c9951312b38deea453d94eff0d5963))
+</details>
+
 ## [0.17.1] - 2026-04-08
 
 ### Commit Details

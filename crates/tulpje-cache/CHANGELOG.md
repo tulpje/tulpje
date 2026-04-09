@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.2-rc.1] - 2026-04-09
+
+### Fixed
+
+ - Clear old `guild_channels` when caching a guild
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * fix(tulpje-cache): clear old `guild_channels` when caching a guild ([`05c634c`](https://github.com/tulpje/tulpje/commit/05c634cae4ea42f1848d762c983db2a5e5b3db11))
+</details>
+
 ## [0.5.1] - 2026-03-28
 
 ### Commit Details

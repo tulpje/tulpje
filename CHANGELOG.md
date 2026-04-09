@@ -5,6 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.24.0-rc.1] - 2026-04-09
+
+### Added
+
+ - Add `reset-db` task
+
+### Changed
+
+ - Immediately create fronter channels in `/pk fronters setup`
+ - Handle fronter category no longer existing
+ - Tweak log message in `process_system`
+
+### Fixed
+
+ - Don't use cache when fetching fronter channels
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * feat(tulpje-mod-pluralkit/roles): immediately create fronter channels in `/pk fronters setup` ([`50695be`](https://github.com/tulpje/tulpje/commit/50695bee7069a7e1c5e136ad39abee680a18965f))
+ * feat(tulpje-mod-pluralkit/roles): handle fronter category no longer existing ([`3dda368`](https://github.com/tulpje/tulpje/commit/3dda36809f63237f4ef056c4409769c9721761b0))
+ * feat(build): add `reset-db` task ([`aae80ed`](https://github.com/tulpje/tulpje/commit/aae80ed4b52c9b8d904fc1bc3d9052c7f0aacb79))
+ * fix(tulpje-mod-pluralkit): don't use cache when fetching fronter channels ([`27fac62`](https://github.com/tulpje/tulpje/commit/27fac629611713af3c1848e962441f540d03070c))
+ * chore(tulpje-mod-pluralkit): tweak log message in `process_system` ([`fb40b29`](https://github.com/tulpje/tulpje/commit/fb40b2930e3edcc1906833052e4925a249ccbd24))
+</details>
+
 ## [0.23.4] - 2026-04-08
 
 ### Changed
