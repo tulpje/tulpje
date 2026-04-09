@@ -4,7 +4,7 @@ use tulpje_framework::{
     color::{self, Color},
 };
 
-use twilight_http::{Client, error::ErrorType, response::StatusCode};
+use twilight_http::{Client, api_error::ApiError, error::ErrorType, response::StatusCode};
 use twilight_model::{
     channel::{Channel, ChannelType, message::Component},
     guild::{Permissions, Role},
@@ -258,6 +258,17 @@ pub fn format_significant_duration(total_secs: u64) -> String {
 
 pub fn is_pk_proxy(application_id: &Option<Id<ApplicationMarker>>) -> bool {
     application_id.is_some_and(|id| id.get() == 466378653216014359) // PluralKit Application ID
+}
+
+pub const ERROR_UNKNOWN_CHANNEL: u64 = 10003;
+pub fn get_json_error_code(error: &twilight_http::Error) -> Option<u64> {
+    match error.kind() {
+        ErrorType::Response {
+            error: ApiError::General(error),
+            ..
+        } => Some(error.code),
+        _ => None,
+    }
 }
 
 #[cfg(test)]

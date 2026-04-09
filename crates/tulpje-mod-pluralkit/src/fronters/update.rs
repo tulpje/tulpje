@@ -1,5 +1,9 @@
 use tulpje_framework::Error;
-use tulpje_lib::{context::CommandContext, responses};
+use tulpje_lib::{
+    context::CommandContext,
+    responses,
+    util::{ERROR_UNKNOWN_CHANNEL, get_json_error_code},
+};
 
 use super::{db, shared::update_fronter_channels};
 use crate::{
@@ -28,7 +32,26 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
         return Ok(());
     };
 
-    let cat = ctx.client().channel(*cat_id).await?.model().await?;
+    let cat = match ctx.client.channel(*cat_id).await {
+        Ok(response) => response.model().await?,
+        Err(err) if get_json_error_code(&err).is_some_and(|code| code == ERROR_UNKNOWN_CHANNEL) => {
+            responses::error(
+                &ctx,
+                "### Error\nTulpje can't find the fronter channel,did you delete it?\n\n\
+                If this was unintentional please run `/pk fronters setup` again \
+                and create a new category",
+            )
+            .await?;
+            return Ok(());
+        }
+        Err(err) => {
+            return Err(format!(
+                "error fetching fronter category {} for guild {}: {}",
+                cat_id, guild.id, err
+            )
+            .into());
+        }
+    };
 
     cat.guild_id
         .ok_or_else(|| format!("channel {} isn't a guild channel", cat_id))?;

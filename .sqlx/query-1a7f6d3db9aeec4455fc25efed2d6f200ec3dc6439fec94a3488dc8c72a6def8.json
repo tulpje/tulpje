@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            DELETE FROM\n                pk_fronters\n            WHERE\n                category_id = $1\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int8"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "1a7f6d3db9aeec4455fc25efed2d6f200ec3dc6439fec94a3488dc8c72a6def8"
+}
