@@ -1,5 +1,6 @@
 use base64::{Engine as _, prelude::BASE64_STANDARD};
 use futures_util::StreamExt as _;
+use tulpje_common::version;
 use twilight_http::Client;
 
 use tulpje_framework::Error;
@@ -103,23 +104,22 @@ pub(crate) async fn context_command(ctx: CommandContext) -> Result<(), Error> {
 }
 
 async fn download_emoji(id: Id<EmojiMarker>, animated: bool) -> Result<String, reqwest::Error> {
-    reqwest::get(format!(
-        "https://cdn.discordapp.com/emojis/{}.{}",
-        id,
-        if animated { "gif" } else { "webp" },
-    ))
-    .await?
-    .error_for_status()? // error if we don't get a 200 status
-    .bytes()
-    .await
-    .map(|b| {
-        // convert to a data uri
-        format!(
-            "data:{};base64,{}",
-            if animated { "image/gif" } else { "image/webp" },
-            BASE64_STANDARD.encode(b),
-        )
-    })
+    let client = reqwest::Client::builder()
+        .user_agent(format!("Tulpje {}", version!()))
+        .build()?;
+
+    client
+        .get(format!("https://cdn.discordapp.com/emojis/{id}.webp"))
+        .query(&[("animated", animated)])
+        .send()
+        .await?
+        .error_for_status()?
+        .bytes()
+        .await
+        .map(|b| {
+            // convert to a data uri
+            format!("data:image/webp;base64,{}", BASE64_STANDARD.encode(b),)
+        })
 }
 
 async fn clone_emojis(
@@ -132,18 +132,12 @@ async fn clone_emojis(
 
     // what a fucken mess to have async map, but it works :)
     let emoji_results: Vec<Result<Emoji, EmojiError>> =
-            futures_util::stream::iter(
-                emojis.into_iter().map(|e| {
-                    let prefix = prefix.clone();
-
-                    async move {
-                        clone_emoji(client, guild_id, &e, &format!("{}{}", &prefix, e.name)).await
-                    }
-                }),
-            )
-            .buffered(1)
-            .collect()
-            .await;
+        futures_util::stream::iter(emojis.into_iter().map(async |e| {
+            clone_emoji(client, guild_id, &e, &format!("{}{}", &prefix, e.name)).await
+        }))
+        .buffered(1)
+        .collect()
+        .await;
 
     let emojis_added: Vec<String> = emoji_results
         .iter()
