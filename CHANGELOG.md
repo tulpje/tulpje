@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.24.0-rc.2] - 2026-04-13
+
+### Fixed
+
+ - New discord emoji urls, send user agent
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * fix(tulpje-mod-emoji): new discord emoji urls, send user agent ([`ba28f00`](https://github.com/z0w13/tulpje/commit/ba28f009bc236fcd523aaeab342e9d25020e9154))
+</details>
+
 ## [0.24.0-rc.1] - 2026-04-09
 
 ### Added
