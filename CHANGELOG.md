@@ -6,6 +6,42 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.25.0] - 2026-10-04
+
+### Added
+
+ - Add `reset-db` task
+
+### Changed
+
+ - Immediately create fronter channels in `/pk fronters setup`
+ - Handle fronter category no longer existing
+ - Tweak log message in `process_system`
+
+### Fixed
+
+ - New discord emoji urls, send user agent
+ - Don't use cache when fetching fronter channels
+ - Clear old `guild_channels` when caching a guild
+
+### Removed
+
+ - Remove `uuid` from event handlers and store them in a `Vec` instead of `HashSet`
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * fix(tulpje-mod-emoji): new discord emoji urls, send user agent ([`42d05ea`](https://github.com/tulpje/tulpje/commit/42d05ea6c2c136d5487bdfb44c86dae4e2450dad))
+ * feat(tulpje-mod-pluralkit/roles): immediately create fronter channels in `/pk fronters setup` ([`67242bf`](https://github.com/tulpje/tulpje/commit/67242bf14cd6d8e346893ace4e10c08f1c643eec))
+ * feat(tulpje-mod-pluralkit/roles): handle fronter category no longer existing ([`4881a0b`](https://github.com/tulpje/tulpje/commit/4881a0b79c11494f897617ea5f8fb7c9364151b8))
+ * feat(build): add `reset-db` task ([`33be2ed`](https://github.com/tulpje/tulpje/commit/33be2edbab137fb6cf24d733ed275907f4da53a4))
+ * fix(tulpje-mod-pluralkit): don't use cache when fetching fronter channels ([`9a69447`](https://github.com/tulpje/tulpje/commit/9a69447aba0054c45eb081da4f19b184743296db))
+ * fix(tulpje-cache): clear old `guild_channels` when caching a guild ([`6aab3cb`](https://github.com/tulpje/tulpje/commit/6aab3cb02f0c4ee3cfaa5d991e633ed626a7f9ad))
+ * chore(tulpje-mod-pluralkit): tweak log message in `process_system` ([`a646ae9`](https://github.com/tulpje/tulpje/commit/a646ae937fdb474d77ca5adb75293438f9720420))
+ * refactor(tulpje-framework): remove `uuid` from event handlers and store them in a `Vec` instead of `HashSet` ([`538a78f`](https://github.com/tulpje/tulpje/commit/538a78fe19cb12f532860d6266cc75c4d26cf8c9))
+</details>
+
 ## [0.23.4] - 2026-10-04
 
 ### Changed
