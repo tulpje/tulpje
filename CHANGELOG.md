@@ -5,6 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.25.0] - 2026-04-13
+
+### Added
+
+ - Add `reset-db` task
+
+### Changed
+
+ - Immediately create fronter channels in `/pk fronters setup`
+ - Handle fronter category no longer existing
+ - Tweak log message in `process_system`
+
+### Fixed
+
+ - New discord emoji urls, send user agent
+ - Don't use cache when fetching fronter channels
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * fix(tulpje-mod-emoji): new discord emoji urls, send user agent ([`2ac8b2a`](https://github.com/z0w13/tulpje/commit/2ac8b2afbbd94b99a06e94859e38b09746886b04))
+ * feat(tulpje-mod-pluralkit/roles): immediately create fronter channels in `/pk fronters setup` ([`59f2e0b`](https://github.com/z0w13/tulpje/commit/59f2e0be3ad437b4bcba8d6b728516b16eb4e5f8))
+ * feat(tulpje-mod-pluralkit/roles): handle fronter category no longer existing ([`9a9f2e3`](https://github.com/z0w13/tulpje/commit/9a9f2e3fab9d58ef0d51fba97aaa5bbc740144a6))
+ * feat(build): add `reset-db` task ([`8f4e4de`](https://github.com/z0w13/tulpje/commit/8f4e4de8426c8315a4e999d6e1c0acffec167f39))
+ * fix(tulpje-mod-pluralkit): don't use cache when fetching fronter channels ([`9ef9ab1`](https://github.com/z0w13/tulpje/commit/9ef9ab129330cf2472cf2a0912e82743d8e43c9a))
+ * chore(tulpje-mod-pluralkit): tweak log message in `process_system` ([`414e520`](https://github.com/z0w13/tulpje/commit/414e520a876240d2e46b58312f91116c12911cd4))
+</details>
+
 ## [0.24.0] - 2026-04-13
 
 ### Commit Details
