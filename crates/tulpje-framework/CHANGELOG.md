@@ -19,8 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <details><summary>view details</summary>
 
- * chore(tulpje-framework): log event handlers count on execution ([`9cf950b`](https://github.com/z0w13/tulpje/commit/9cf950b58e0ec6237e256d6009b88952d5bd975c))
- * refactor(tulpje-framework): remove `uuid` from event handlers and store them in a `Vec` instead of `HashSet` ([`53f6ed8`](https://github.com/z0w13/tulpje/commit/53f6ed873e3c5d5e2256ded4e68f63fa8135e1bf))
+ * chore(tulpje-framework): log event handlers count on execution ([`9cf950b`](https://github.com/tulpje/tulpje/commit/9cf950b58e0ec6237e256d6009b88952d5bd975c))
+ * refactor(tulpje-framework): remove `uuid` from event handlers and store them in a `Vec` instead of `HashSet` ([`53f6ed8`](https://github.com/tulpje/tulpje/commit/53f6ed873e3c5d5e2256ded4e68f63fa8135e1bf))
 </details>
 
 ## [0.17.1] - 2026-04-08
@@ -162,8 +162,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <details><summary>view details</summary>
 
- * fix: correctly use `Span`s with async functions ([`b99f172`](https://github.com/z0w13/tulpje/commit/b99f172eee7c140ad55a2a5378bac1f63c23fc1f))
- * fix(framework): remove stray log statement ([`b3183d4`](https://github.com/z0w13/tulpje/commit/b3183d48bb265a7cd7c3346553ca44b6a6c35941))
+ * fix: correctly use `Span`s with async functions ([`b99f172`](https://github.com/tulpje/tulpje/commit/b99f172eee7c140ad55a2a5378bac1f63c23fc1f))
+ * fix(framework): remove stray log statement ([`b3183d4`](https://github.com/tulpje/tulpje/commit/b3183d48bb265a7cd7c3346553ca44b6a6c35941))
 </details>
 
 ## [0.16.0-rc.1] - 2026-03-22
@@ -183,11 +183,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <details><summary>view details</summary>
 
- * feat(framework): configurable extra data in error message ([`0d8dcf4`](https://github.com/z0w13/tulpje/commit/0d8dcf4ce4a41c745bd38f9ea8ccb27be6ea0aec))
- * feat(framework): send an error reference to discord instead of the actual error message ([`436a1d3`](https://github.com/z0w13/tulpje/commit/436a1d3cd7263fea208f5a43ad50164699f9d9b9))
- * feat(framework): add tracing::span to event handling ([`af95661`](https://github.com/z0w13/tulpje/commit/af9566109fb612ca637b1b8a2cda2d3520f2e974))
- * feat(pluralkit): front change notifications ([`09e7223`](https://github.com/z0w13/tulpje/commit/09e72236515752c1645fcb2aa7877742a8cb8f7d))
- * refactor: switch to using `mod.rs` files ([`26a61a2`](https://github.com/z0w13/tulpje/commit/26a61a23019ee851f397a7721ec2eaafb638e9e5))
+ * feat(framework): configurable extra data in error message ([`0d8dcf4`](https://github.com/tulpje/tulpje/commit/0d8dcf4ce4a41c745bd38f9ea8ccb27be6ea0aec))
+ * feat(framework): send an error reference to discord instead of the actual error message ([`436a1d3`](https://github.com/tulpje/tulpje/commit/436a1d3cd7263fea208f5a43ad50164699f9d9b9))
+ * feat(framework): add tracing::span to event handling ([`af95661`](https://github.com/tulpje/tulpje/commit/af9566109fb612ca637b1b8a2cda2d3520f2e974))
+ * feat(pluralkit): front change notifications ([`09e7223`](https://github.com/tulpje/tulpje/commit/09e72236515752c1645fcb2aa7877742a8cb8f7d))
+ * refactor: switch to using `mod.rs` files ([`26a61a2`](https://github.com/tulpje/tulpje/commit/26a61a23019ee851f397a7721ec2eaafb638e9e5))
 </details>
 
 ## [0.15.1] - 2026-03-20
@@ -205,12 +205,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <details><summary>view details</summary>
 
- * feat(framework): send command errors to discord ([`8cb2da7`](https://github.com/z0w13/tulpje/commit/8cb2da7285e49e6a95e3b34f45c8d773fea740bd))
- * chore(deps): make `chrono` a workspace dependency ([`6655349`](https://github.com/z0w13/tulpje/commit/6655349c6920104e65e1aea5d1489bd8a1388867))
- * chore(deps): make `tracing` and `tracing-subscriber` workspace dependencies ([`62a6950`](https://github.com/z0w13/tulpje/commit/62a6950943e202c33b8ba46e1f8e6122c335801a))
- * chore(deps): make `serde` and `serde_json` workspace dependencies ([`46e7099`](https://github.com/z0w13/tulpje/commit/46e7099adb6eb81d51d7011d42fde7e0fd2f5be6))
- * chore(deps): bump uuid from 1.18.1 to 1.19.0 ([`433398e`](https://github.com/z0w13/tulpje/commit/433398e0488af1aab163556512004573f4829c9e))
- * chore(deps): bump tracing from 0.1.41 to 0.1.43 ([`da00e55`](https://github.com/z0w13/tulpje/commit/da00e5546f4541271d8827c9f7bae8d5d4d449bf))
+ * feat(framework): send command errors to discord ([`8cb2da7`](https://github.com/tulpje/tulpje/commit/8cb2da7285e49e6a95e3b34f45c8d773fea740bd))
+ * chore(deps): make `chrono` a workspace dependency ([`6655349`](https://github.com/tulpje/tulpje/commit/6655349c6920104e65e1aea5d1489bd8a1388867))
+ * chore(deps): make `tracing` and `tracing-subscriber` workspace dependencies ([`62a6950`](https://github.com/tulpje/tulpje/commit/62a6950943e202c33b8ba46e1f8e6122c335801a))
+ * chore(deps): make `serde` and `serde_json` workspace dependencies ([`46e7099`](https://github.com/tulpje/tulpje/commit/46e7099adb6eb81d51d7011d42fde7e0fd2f5be6))
+ * chore(deps): bump uuid from 1.18.1 to 1.19.0 ([`433398e`](https://github.com/tulpje/tulpje/commit/433398e0488af1aab163556512004573f4829c9e))
+ * chore(deps): bump tracing from 0.1.41 to 0.1.43 ([`da00e55`](https://github.com/tulpje/tulpje/commit/da00e5546f4541271d8827c9f7bae8d5d4d449bf))
 </details>
 
 ## [0.15.0-rc.1] - 2025-11-15
@@ -246,62 +246,62 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <details><summary>view details</summary>
 
- * chore(deps): make `tokio-util` a workspace dependency ([`ebd429b`](https://github.com/z0w13/tulpje/commit/ebd429be53f9df0477154aaad445bbcdab9f28c9))
- * chore(deps): make `tokio` a workspace dependency ([`1a2f46a`](https://github.com/z0w13/tulpje/commit/1a2f46aecb624069c466738891ba905e446a1637))
- * chore: configure tls correctly for 0.17 ([`76d856f`](https://github.com/z0w13/tulpje/commit/76d856f79ba957985b8f7151c7109d643a00cf65))
- * fix: remove tls feature flags that got removed in twilight 0.17 ([`1c1bf24`](https://github.com/z0w13/tulpje/commit/1c1bf24dc2048e2089e0a4ef87493a7a55872460))
- * fix(framework): unbox modal interaction data ([`765d7a0`](https://github.com/z0w13/tulpje/commit/765d7a09c59d74ab13dcc6ea73f330fcea47b6b0))
- * chore(deps): bump `serde` from 1.0.219 to 1.0.228 ([`5b1f399`](https://github.com/z0w13/tulpje/commit/5b1f39919a293e04bb34b12a6e843b044f7ebe2d))
- * build(deps): bump tokio from 1.44.2 to 1.47.1 ([`44d256f`](https://github.com/z0w13/tulpje/commit/44d256fe7de24db17b823dd5f67176e278e7f154))
- * build(deps): bump tokio-util from 0.7.14 to 0.7.16 ([`b084877`](https://github.com/z0w13/tulpje/commit/b084877909230c68857b633a8581ce425a45f67a))
- * build(deps): bump chrono from 0.4.40 to 0.4.42 ([`df640ec`](https://github.com/z0w13/tulpje/commit/df640ec19e6b7ffcb735170d5e605d0143ac53a0))
- * chore(deps): bump `uuid` from 0.16.0 to 0.18.1 ([`bb59882`](https://github.com/z0w13/tulpje/commit/bb5988295d34695f9356211a9f86439e44388877))
- * chore(build): update to rust 1.90.0, fix lint warnings, `cargo fmt` ([`4a93c3b`](https://github.com/z0w13/tulpje/commit/4a93c3be063b99cbf6f4cd773e4b6fcf60f0b9bc))
- * fix(lint): fix large enum variant warning on `SchedulerTaskMessage::Enable` ([`fca6406`](https://github.com/z0w13/tulpje/commit/fca64067c96f9aefaf4a503b5c8db18af1695bd0))
- * fix(lint): box large error variants ([`b1f3e1d`](https://github.com/z0w13/tulpje/commit/b1f3e1dd089768f04bf4b0c052ccf38f1ed33556))
- * chore(lint): `clippy::collapsible_if` ([`5c9d89e`](https://github.com/z0w13/tulpje/commit/5c9d89e3def56d8672cfa5399ced073f28884e99))
- * chore: `cargo fmt` ([`e76d893`](https://github.com/z0w13/tulpje/commit/e76d893b5102eca310144ab258e79553cb5b2f41))
- * refactor(build): specify edition on workspace level ([`f5b7a79`](https://github.com/z0w13/tulpje/commit/f5b7a79c4d5c5051e9dc3cc8b0def19fe22c63a6))
- * chore(deps): move twilight-* crates to workspace deps ([`f23e379`](https://github.com/z0w13/tulpje/commit/f23e37987e31d52258c6f6a5a4b856b33e2756ef))
- * fix(gateway): hanging connections ([`dc44437`](https://github.com/z0w13/tulpje/commit/dc44437096a4792f9782ccc219ce2f29d7c221c3))
+ * chore(deps): make `tokio-util` a workspace dependency ([`ebd429b`](https://github.com/tulpje/tulpje/commit/ebd429be53f9df0477154aaad445bbcdab9f28c9))
+ * chore(deps): make `tokio` a workspace dependency ([`1a2f46a`](https://github.com/tulpje/tulpje/commit/1a2f46aecb624069c466738891ba905e446a1637))
+ * chore: configure tls correctly for 0.17 ([`76d856f`](https://github.com/tulpje/tulpje/commit/76d856f79ba957985b8f7151c7109d643a00cf65))
+ * fix: remove tls feature flags that got removed in twilight 0.17 ([`1c1bf24`](https://github.com/tulpje/tulpje/commit/1c1bf24dc2048e2089e0a4ef87493a7a55872460))
+ * fix(framework): unbox modal interaction data ([`765d7a0`](https://github.com/tulpje/tulpje/commit/765d7a09c59d74ab13dcc6ea73f330fcea47b6b0))
+ * chore(deps): bump `serde` from 1.0.219 to 1.0.228 ([`5b1f399`](https://github.com/tulpje/tulpje/commit/5b1f39919a293e04bb34b12a6e843b044f7ebe2d))
+ * build(deps): bump tokio from 1.44.2 to 1.47.1 ([`44d256f`](https://github.com/tulpje/tulpje/commit/44d256fe7de24db17b823dd5f67176e278e7f154))
+ * build(deps): bump tokio-util from 0.7.14 to 0.7.16 ([`b084877`](https://github.com/tulpje/tulpje/commit/b084877909230c68857b633a8581ce425a45f67a))
+ * build(deps): bump chrono from 0.4.40 to 0.4.42 ([`df640ec`](https://github.com/tulpje/tulpje/commit/df640ec19e6b7ffcb735170d5e605d0143ac53a0))
+ * chore(deps): bump `uuid` from 0.16.0 to 0.18.1 ([`bb59882`](https://github.com/tulpje/tulpje/commit/bb5988295d34695f9356211a9f86439e44388877))
+ * chore(build): update to rust 1.90.0, fix lint warnings, `cargo fmt` ([`4a93c3b`](https://github.com/tulpje/tulpje/commit/4a93c3be063b99cbf6f4cd773e4b6fcf60f0b9bc))
+ * fix(lint): fix large enum variant warning on `SchedulerTaskMessage::Enable` ([`fca6406`](https://github.com/tulpje/tulpje/commit/fca64067c96f9aefaf4a503b5c8db18af1695bd0))
+ * fix(lint): box large error variants ([`b1f3e1d`](https://github.com/tulpje/tulpje/commit/b1f3e1dd089768f04bf4b0c052ccf38f1ed33556))
+ * chore(lint): `clippy::collapsible_if` ([`5c9d89e`](https://github.com/tulpje/tulpje/commit/5c9d89e3def56d8672cfa5399ced073f28884e99))
+ * chore: `cargo fmt` ([`e76d893`](https://github.com/tulpje/tulpje/commit/e76d893b5102eca310144ab258e79553cb5b2f41))
+ * refactor(build): specify edition on workspace level ([`f5b7a79`](https://github.com/tulpje/tulpje/commit/f5b7a79c4d5c5051e9dc3cc8b0def19fe22c63a6))
+ * chore(deps): move twilight-* crates to workspace deps ([`f23e379`](https://github.com/tulpje/tulpje/commit/f23e37987e31d52258c6f6a5a4b856b33e2756ef))
+ * fix(gateway): hanging connections ([`dc44437`](https://github.com/tulpje/tulpje/commit/dc44437096a4792f9782ccc219ce2f29d7c221c3))
 </details>
 
 ## [0.14.2] - 2025-04-02
 
 ### Changed
 
- - Bump tokio-util from 0.7.13 to 0.7.14 in [#19](https://github.com/z0w13/tulpje/pull/19)
- - Bump chrono from 0.4.39 to 0.4.40 in [#17](https://github.com/z0w13/tulpje/pull/17)
- - Bump uuid from 1.15.1 to 1.16.0 in [#16](https://github.com/z0w13/tulpje/pull/16)
+ - Bump tokio-util from 0.7.13 to 0.7.14 in [#19](https://github.com/tulpje/tulpje/pull/19)
+ - Bump chrono from 0.4.39 to 0.4.40 in [#17](https://github.com/tulpje/tulpje/pull/17)
+ - Bump uuid from 1.15.1 to 1.16.0 in [#16](https://github.com/tulpje/tulpje/pull/16)
 
 ### Commit Details
 
 <details><summary>view details</summary>
 
- * build(deps): bump tokio-util from 0.7.13 to 0.7.14 ([`bf5a40c`](https://github.com/z0w13/tulpje/commit/bf5a40cbcb61972300bde05ce833e12a8fcc0f6c))
- * build(deps): bump chrono from 0.4.39 to 0.4.40 ([`65a2452`](https://github.com/z0w13/tulpje/commit/65a2452173fec94286489bde93caad9af5b02ae8))
- * build(deps): bump uuid from 1.15.1 to 1.16.0 ([`7cc4bd4`](https://github.com/z0w13/tulpje/commit/7cc4bd428166d713690c8e6a6b6cc3cc77099d61))
+ * build(deps): bump tokio-util from 0.7.13 to 0.7.14 ([`bf5a40c`](https://github.com/tulpje/tulpje/commit/bf5a40cbcb61972300bde05ce833e12a8fcc0f6c))
+ * build(deps): bump chrono from 0.4.39 to 0.4.40 ([`65a2452`](https://github.com/tulpje/tulpje/commit/65a2452173fec94286489bde93caad9af5b02ae8))
+ * build(deps): bump uuid from 1.15.1 to 1.16.0 ([`7cc4bd4`](https://github.com/tulpje/tulpje/commit/7cc4bd428166d713690c8e6a6b6cc3cc77099d61))
 </details>
 
 ## [0.14.1] - 2025-03-10
 
 ### Changed
 
- - Bump uuid from 1.13.2 to 1.15.1 in [#12](https://github.com/z0w13/tulpje/pull/12)
- - Bump serde from 1.0.216 to 1.0.219 in [#14](https://github.com/z0w13/tulpje/pull/14)
- - Bump uuid from 1.11.0 to 1.13.2 in [#2](https://github.com/z0w13/tulpje/pull/2)
- - Bump tokio from 1.42.0 to 1.43.0 in [#3](https://github.com/z0w13/tulpje/pull/3)
+ - Bump uuid from 1.13.2 to 1.15.1 in [#12](https://github.com/tulpje/tulpje/pull/12)
+ - Bump serde from 1.0.216 to 1.0.219 in [#14](https://github.com/tulpje/tulpje/pull/14)
+ - Bump uuid from 1.11.0 to 1.13.2 in [#2](https://github.com/tulpje/tulpje/pull/2)
+ - Bump tokio from 1.42.0 to 1.43.0 in [#3](https://github.com/tulpje/tulpje/pull/3)
  - Disable chrono wasmbind feature for our code
 
 ### Commit Details
 
 <details><summary>view details</summary>
 
- * build(deps): bump uuid from 1.13.2 to 1.15.1 ([`03bd122`](https://github.com/z0w13/tulpje/commit/03bd122951b391c4c56b233e7745f230925bf167))
- * build(deps): bump serde from 1.0.216 to 1.0.219 ([`2d4e975`](https://github.com/z0w13/tulpje/commit/2d4e975abe6f93c8e06ef20d63928f0156d4389f))
- * build(deps): bump uuid from 1.11.0 to 1.13.2 ([`723de3d`](https://github.com/z0w13/tulpje/commit/723de3d1e143c95a1d9c6013905a2a4d81070854))
- * build(deps): bump tokio from 1.42.0 to 1.43.0 ([`d4e6ba6`](https://github.com/z0w13/tulpje/commit/d4e6ba620d929564a901dbdba7e73796e07b33b6))
- * chore: disable chrono wasmbind feature for our code ([`429b4a4`](https://github.com/z0w13/tulpje/commit/429b4a4a6513837d5cd22ce5bcaad4ea04bab40a))
+ * build(deps): bump uuid from 1.13.2 to 1.15.1 ([`03bd122`](https://github.com/tulpje/tulpje/commit/03bd122951b391c4c56b233e7745f230925bf167))
+ * build(deps): bump serde from 1.0.216 to 1.0.219 ([`2d4e975`](https://github.com/tulpje/tulpje/commit/2d4e975abe6f93c8e06ef20d63928f0156d4389f))
+ * build(deps): bump uuid from 1.11.0 to 1.13.2 ([`723de3d`](https://github.com/tulpje/tulpje/commit/723de3d1e143c95a1d9c6013905a2a4d81070854))
+ * build(deps): bump tokio from 1.42.0 to 1.43.0 ([`d4e6ba6`](https://github.com/tulpje/tulpje/commit/d4e6ba620d929564a901dbdba7e73796e07b33b6))
+ * chore: disable chrono wasmbind feature for our code ([`429b4a4`](https://github.com/tulpje/tulpje/commit/429b4a4a6513837d5cd22ce5bcaad4ea04bab40a))
 </details>
 
 ## [0.14.0] - 2025-01-16
@@ -318,8 +318,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <details><summary>view details</summary>
 
- * fix(framework): remove unnecessary logging of unhandled events ([`0ec373f`](https://github.com/z0w13/tulpje/commit/0ec373f8bb8cc2ff5a0ae7d00a78d8e30dec981a))
- * chore!: update twilight to 0.16.0 ([`a974856`](https://github.com/z0w13/tulpje/commit/a9748566df2e386a97c6921c649cec57879fc456))
+ * fix(framework): remove unnecessary logging of unhandled events ([`0ec373f`](https://github.com/tulpje/tulpje/commit/0ec373f8bb8cc2ff5a0ae7d00a78d8e30dec981a))
+ * chore!: update twilight to 0.16.0 ([`a974856`](https://github.com/tulpje/tulpje/commit/a9748566df2e386a97c6921c649cec57879fc456))
 </details>
 
 ## [0.13.0] - 2025-01-12
@@ -336,8 +336,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <details><summary>view details</summary>
 
- * feat(framework)!: added support for subcommands and subcommand groups ([`007709f`](https://github.com/z0w13/tulpje/commit/007709f5a27dfa44e961653d134ece2e4820f3e1))
- * chore: remove unused file module/module.rs ([`a514ee2`](https://github.com/z0w13/tulpje/commit/a514ee27c975c5487c88f18c296fca59f7fbdff9))
+ * feat(framework)!: added support for subcommands and subcommand groups ([`007709f`](https://github.com/tulpje/tulpje/commit/007709f5a27dfa44e961653d134ece2e4820f3e1))
+ * chore: remove unused file module/module.rs ([`a514ee2`](https://github.com/tulpje/tulpje/commit/a514ee27c975c5487c88f18c296fca59f7fbdff9))
 </details>
 
 ## [0.11.1] - 2025-01-08
@@ -354,8 +354,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <details><summary>view details</summary>
 
- * docs: add CHANGELOG.md ([`0d202e7`](https://github.com/z0w13/tulpje/commit/0d202e7782b924955891541eb824b1026104be14))
- * chore: version tulpje-framework separately from the bot ([`916f1ff`](https://github.com/z0w13/tulpje/commit/916f1ff26bfd4687953f5435c61005f3cc5b444e))
+ * docs: add CHANGELOG.md ([`0d202e7`](https://github.com/tulpje/tulpje/commit/0d202e7782b924955891541eb824b1026104be14))
+ * chore: version tulpje-framework separately from the bot ([`916f1ff`](https://github.com/tulpje/tulpje/commit/916f1ff26bfd4687953f5435c61005f3cc5b444e))
 </details>
 
 ## [0.11.0] - 2025-01-05
@@ -377,10 +377,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <details><summary>view details</summary>
 
-- mark all crates as publishable ([`3867bf6`](https://github.com/z0w13/tulpje/commit/3867bf60346a8391d98081d2370015ce6ec2d891))
-- move DisordEventMeta to tulpje-framework and rename it Metadata ([`e1e93d7`](https://github.com/z0w13/tulpje/commit/e1e93d7903ff7a48066214ca002554ce91e4a9b3))
-- remove unused InteractionHandler trait ([`641c297`](https://github.com/z0w13/tulpje/commit/641c297e65d00353d7b34147dda4e78d46114512))
-- add missing package metadata ([`7a9e193`](https://github.com/z0w13/tulpje/commit/7a9e1939cf7fad86b6234612934413139d82e936))
+- mark all crates as publishable ([`3867bf6`](https://github.com/tulpje/tulpje/commit/3867bf60346a8391d98081d2370015ce6ec2d891))
+- move DisordEventMeta to tulpje-framework and rename it Metadata ([`e1e93d7`](https://github.com/tulpje/tulpje/commit/e1e93d7903ff7a48066214ca002554ce91e4a9b3))
+- remove unused InteractionHandler trait ([`641c297`](https://github.com/tulpje/tulpje/commit/641c297e65d00353d7b34147dda4e78d46114512))
+- add missing package metadata ([`7a9e193`](https://github.com/tulpje/tulpje/commit/7a9e1939cf7fad86b6234612934413139d82e936))
 </details>
 
 ## [0.9.0] - 2025-01-05
@@ -393,7 +393,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <details><summary>view details</summary>
 
-- rework sending messages into framework, and refactor Scheduler to follow similar conventions to Dispatch ([`08bf914`](https://github.com/z0w13/tulpje/commit/08bf9145d5a412fffd3f489c4667f51f879ae4c1))
+- rework sending messages into framework, and refactor Scheduler to follow similar conventions to Dispatch ([`08bf914`](https://github.com/tulpje/tulpje/commit/08bf9145d5a412fffd3f489c4667f51f879ae4c1))
 </details>
 
 ## [0.8.0] - 2025-01-05
@@ -406,7 +406,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <details><summary>view details</summary>
 
-- implement framework with main loop and shutdown functionality ([`891be50`](https://github.com/z0w13/tulpje/commit/891be50d55ef9869a0f10b48c1f50f0bc0181cd9))
+- implement framework with main loop and shutdown functionality ([`891be50`](https://github.com/tulpje/tulpje/commit/891be50d55ef9869a0f10b48c1f50f0bc0181cd9))
 </details>
 
 ## [0.7.0] - 2025-01-05
@@ -439,18 +439,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <details><summary>view details</summary>
 
-- remove unused macros ([`5a9a1d5`](https://github.com/z0w13/tulpje/commit/5a9a1d58eed9ff9b1eb3c111aa1e02b38a9be1df))
-- run `cargo fmt` ([`8e61d27`](https://github.com/z0w13/tulpje/commit/8e61d27a38b8031dc2d30c23c17b150dfd6d72ec))
-- mark contexts/handlers as Sync + Send ([`d946b1d`](https://github.com/z0w13/tulpje/commit/d946b1d44f127d4550aad937be0c44a182aa9a12))
-- enable clippy::option_if_let_else and fix warnings ([`bc27650`](https://github.com/z0w13/tulpje/commit/bc27650b9d073b67488039fc1ccd6322d42b4ee3))
-- enable clippy::manual_assert and fix warnings ([`8b672eb`](https://github.com/z0w13/tulpje/commit/8b672eba70f3046e5d0458b02d1f1417ad88afca))
-- enable clippy::partial_pub_fields and fix warnings ([`2155f3a`](https://github.com/z0w13/tulpje/commit/2155f3a4d6434c79205e6682f14bcd9c7a5e7932))
-- enable clippy::clone_on_ref_ptr and fix warnings ([`b457f62`](https://github.com/z0w13/tulpje/commit/b457f624fad3e8030262d980b2879fc7ccc71fc3))
-- mark builder methods as #[must_use] ([`3ec3a8a`](https://github.com/z0w13/tulpje/commit/3ec3a8a24344c5e1e780b54b132e68fc1e443383))
-- enable clippy::redundant_clone and fix warnings ([`92e81e9`](https://github.com/z0w13/tulpje/commit/92e81e90362a5eb39625bef35487b06af8a20cc7))
-- enable clippy::needless_pass_by_value and fix warnings ([`7e448c6`](https://github.com/z0w13/tulpje/commit/7e448c63bd57e2c3337b8dfb2618717f307ff368))
-- enable clippy::semicolon_if_nothing_returned and fix warnings ([`a526faf`](https://github.com/z0w13/tulpje/commit/a526fafd635d3840b7eac26c8fe32bce923e7679))
-- refactor the scheduler so we can actually enable/disable tasks, even when the scheduler isn't running yet ([`259b15a`](https://github.com/z0w13/tulpje/commit/259b15a5d0a2ef7a92fc9695525d800c01d92bd4))
+- remove unused macros ([`5a9a1d5`](https://github.com/tulpje/tulpje/commit/5a9a1d58eed9ff9b1eb3c111aa1e02b38a9be1df))
+- run `cargo fmt` ([`8e61d27`](https://github.com/tulpje/tulpje/commit/8e61d27a38b8031dc2d30c23c17b150dfd6d72ec))
+- mark contexts/handlers as Sync + Send ([`d946b1d`](https://github.com/tulpje/tulpje/commit/d946b1d44f127d4550aad937be0c44a182aa9a12))
+- enable clippy::option_if_let_else and fix warnings ([`bc27650`](https://github.com/tulpje/tulpje/commit/bc27650b9d073b67488039fc1ccd6322d42b4ee3))
+- enable clippy::manual_assert and fix warnings ([`8b672eb`](https://github.com/tulpje/tulpje/commit/8b672eba70f3046e5d0458b02d1f1417ad88afca))
+- enable clippy::partial_pub_fields and fix warnings ([`2155f3a`](https://github.com/tulpje/tulpje/commit/2155f3a4d6434c79205e6682f14bcd9c7a5e7932))
+- enable clippy::clone_on_ref_ptr and fix warnings ([`b457f62`](https://github.com/tulpje/tulpje/commit/b457f624fad3e8030262d980b2879fc7ccc71fc3))
+- mark builder methods as #[must_use] ([`3ec3a8a`](https://github.com/tulpje/tulpje/commit/3ec3a8a24344c5e1e780b54b132e68fc1e443383))
+- enable clippy::redundant_clone and fix warnings ([`92e81e9`](https://github.com/tulpje/tulpje/commit/92e81e90362a5eb39625bef35487b06af8a20cc7))
+- enable clippy::needless_pass_by_value and fix warnings ([`7e448c6`](https://github.com/tulpje/tulpje/commit/7e448c63bd57e2c3337b8dfb2618717f307ff368))
+- enable clippy::semicolon_if_nothing_returned and fix warnings ([`a526faf`](https://github.com/tulpje/tulpje/commit/a526fafd635d3840b7eac26c8fe32bce923e7679))
+- refactor the scheduler so we can actually enable/disable tasks, even when the scheduler isn't running yet ([`259b15a`](https://github.com/tulpje/tulpje/commit/259b15a5d0a2ef7a92fc9695525d800c01d92bd4))
 </details>
 
 ## [0.6.0] - 2025-01-05
@@ -465,9 +465,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <details><summary>view details</summary>
 
-- don't hardcode guild module list ([`6b8000e`](https://github.com/z0w13/tulpje/commit/6b8000e973e6a6d333b4bf83cd7d814d79a48871))
-- rework module system, registry, and task scheduler ([`ba4aae2`](https://github.com/z0w13/tulpje/commit/ba4aae287376f7040b6798c30d7be4d6c0a12ed2))
-- cargo fmt ([`4a2d7d8`](https://github.com/z0w13/tulpje/commit/4a2d7d8b1f29ed55553fb7f01f73f0499600d7fd))
+- don't hardcode guild module list ([`6b8000e`](https://github.com/tulpje/tulpje/commit/6b8000e973e6a6d333b4bf83cd7d814d79a48871))
+- rework module system, registry, and task scheduler ([`ba4aae2`](https://github.com/tulpje/tulpje/commit/ba4aae287376f7040b6798c30d7be4d6c0a12ed2))
+- cargo fmt ([`4a2d7d8`](https://github.com/tulpje/tulpje/commit/4a2d7d8b1f29ed55553fb7f01f73f0499600d7fd))
 </details>
 
 ## [0.5.0] - 2025-01-05
@@ -489,10 +489,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <details><summary>view details</summary>
 
-- InteractionRegistry::get should not be &mut ([`8eb9da9`](https://github.com/z0w13/tulpje/commit/8eb9da9b96af410807b9ce789aaf2a30726f4f74))
-- per-guild commands ([`172d91c`](https://github.com/z0w13/tulpje/commit/172d91c8fe43e9ff7d8c46f02290712a28a7ea75))
-- don't pass context in constructor ([`473c7d8`](https://github.com/z0w13/tulpje/commit/473c7d81c351f0cd2d7c16af747c30bb22d0b74c))
-- disallow adding tasks after starting scheduler ([`f10212c`](https://github.com/z0w13/tulpje/commit/f10212ce1674b950033b934c08fe08834044702d))
+- InteractionRegistry::get should not be &mut ([`8eb9da9`](https://github.com/tulpje/tulpje/commit/8eb9da9b96af410807b9ce789aaf2a30726f4f74))
+- per-guild commands ([`172d91c`](https://github.com/tulpje/tulpje/commit/172d91c8fe43e9ff7d8c46f02290712a28a7ea75))
+- don't pass context in constructor ([`473c7d8`](https://github.com/tulpje/tulpje/commit/473c7d81c351f0cd2d7c16af747c30bb22d0b74c))
+- disallow adding tasks after starting scheduler ([`f10212c`](https://github.com/tulpje/tulpje/commit/f10212ce1674b950033b934c08fe08834044702d))
 </details>
 
 ## [0.4.0] - 2024-12-30
@@ -519,14 +519,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <details><summary>view details</summary>
 
-- PluralKit module ([`eeb11e5`](https://github.com/z0w13/tulpje/commit/eeb11e5faf20f394a7a2e350c78706f152f85187))
-- task scheduling using cron syntax ([`dbd42cb`](https://github.com/z0w13/tulpje/commit/dbd42cb547620d5c9a79b4618bcd87ac842629e6))
-- thread safetey ugh headaches ([`84c6eab`](https://github.com/z0w13/tulpje/commit/84c6eab779e30ca2f84aec3360f6a74abda611aa))
-- added `CommandContext::defer` helper method ([`c7ab85a`](https://github.com/z0w13/tulpje/commit/c7ab85a8ef48467a81977348ddd8bd9f2170216d))
-- added `CommandContext::update` method to update the current interaction's message (after defer) ([`8c0541f`](https://github.com/z0w13/tulpje/commit/8c0541f8b76ee242aeb302b9b58210edcd91e39d))
-- added helper methods to get command options ([`feec1f5`](https://github.com/z0w13/tulpje/commit/feec1f530d69957021fbc57bfd30630cecc5814d))
-- helper method to create CommandContext from base context ([`02e18e4`](https://github.com/z0w13/tulpje/commit/02e18e412da53fab06507c118679bb5342427405))
-- macros for making registering handlers slightly nicer ([`178e4b7`](https://github.com/z0w13/tulpje/commit/178e4b7b6c0f0a4df8469944038a2cf742a9e96a))
-- implemented basic command and event handling framework ([`cde4d29`](https://github.com/z0w13/tulpje/commit/cde4d2940656156c0b1d1d5754b6de8e3139ed31))
+- PluralKit module ([`eeb11e5`](https://github.com/tulpje/tulpje/commit/eeb11e5faf20f394a7a2e350c78706f152f85187))
+- task scheduling using cron syntax ([`dbd42cb`](https://github.com/tulpje/tulpje/commit/dbd42cb547620d5c9a79b4618bcd87ac842629e6))
+- thread safetey ugh headaches ([`84c6eab`](https://github.com/tulpje/tulpje/commit/84c6eab779e30ca2f84aec3360f6a74abda611aa))
+- added `CommandContext::defer` helper method ([`c7ab85a`](https://github.com/tulpje/tulpje/commit/c7ab85a8ef48467a81977348ddd8bd9f2170216d))
+- added `CommandContext::update` method to update the current interaction's message (after defer) ([`8c0541f`](https://github.com/tulpje/tulpje/commit/8c0541f8b76ee242aeb302b9b58210edcd91e39d))
+- added helper methods to get command options ([`feec1f5`](https://github.com/tulpje/tulpje/commit/feec1f530d69957021fbc57bfd30630cecc5814d))
+- helper method to create CommandContext from base context ([`02e18e4`](https://github.com/tulpje/tulpje/commit/02e18e412da53fab06507c118679bb5342427405))
+- macros for making registering handlers slightly nicer ([`178e4b7`](https://github.com/tulpje/tulpje/commit/178e4b7b6c0f0a4df8469944038a2cf742a9e96a))
+- implemented basic command and event handling framework ([`cde4d29`](https://github.com/tulpje/tulpje/commit/cde4d2940656156c0b1d1d5754b6de8e3139ed31))
 </details>
 <!-- generated by git-cliff -->

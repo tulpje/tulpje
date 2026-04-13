@@ -9,8 +9,8 @@ debug = "line-tables-only"
 [workspace.package]
 version = "0.25.0"
 description = "Multi-purpose discord bot & framework"
-homepage = "https://github.com/z0w13/tulpje"
-repository = "https://github.com/z0w13/tulpje"
+homepage = "https://github.com/tulpje/tulpje"
+repository = "https://github.com/tulpje/tulpje"
 license = "CC-BY-NC-SA-4.0"
 # See also `rust-toolchain.toml`
 rust-version = "1.94.0"

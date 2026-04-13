@@ -103,7 +103,7 @@ pub async fn stats(ctx: CommandContext) -> Result<(), Error> {
 
     let embed = EmbedBuilder::new()
         .title("Tulpje Discord Bot")
-        .url("https://github.com/z0w13/tulpje")
+        .url("https://github.com/tulpje/tulpje")
         .field(EmbedFieldBuilder::new("Version", version!()).inline())
         .field(
             EmbedFieldBuilder::new("Servers", guild_count.to_formatted_string(&Locale::en))
