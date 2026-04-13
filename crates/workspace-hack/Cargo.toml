@@ -37,7 +37,7 @@ memchr = { version = "2" }
 percent-encoding = { version = "2" }
 regex-automata = { version = "0.4", default-features = false, features = ["dfa-build", "dfa-onepass", "hybrid", "meta", "nfa-backtrack", "perf-inline", "perf-literal", "std", "unicode"] }
 regex-syntax = { version = "0.8" }
-reqwest = { version = "0.13", default-features = false, features = ["blocking", "charset", "http2", "rustls"] }
+reqwest = { version = "0.13", default-features = false, features = ["blocking", "charset", "http2", "query", "rustls"] }
 rustls = { version = "0.23", default-features = false, features = ["aws-lc-rs", "aws_lc_rs", "std"] }
 rustls-webpki = { version = "0.103", default-features = false, features = ["aws-lc-rs", "std"] }
 serde = { version = "1", features = ["derive", "rc"] }
