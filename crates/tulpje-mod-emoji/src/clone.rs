@@ -72,12 +72,7 @@ pub(crate) async fn command(ctx: CommandContext) -> Result<(), Error> {
 
     // add multiple emotes
     let prefix = ctx.get_arg_string_optional("prefix")?;
-    let reply = clone_emojis(&ctx.client(), guild.id, prefix, emojis).await;
-
-    if let Err(err) = ctx.update(&reply).await {
-        tracing::warn!("failed to respond to command: {err}");
-    }
-
+    clone_emojis(&ctx, guild.id, prefix, emojis).await?;
     Ok(())
 }
 
@@ -108,12 +103,7 @@ pub(crate) async fn context_command(ctx: CommandContext) -> Result<(), Error> {
         return Ok(());
     }
 
-    // add multiple emotes
-    let reply = clone_emojis(&ctx.client(), guild.id, None, emojis).await;
-
-    if let Err(err) = ctx.update(&reply).await {
-        tracing::warn!("failed to respond to command: {err}");
-    }
+    clone_emojis(&ctx, guild.id, None, emojis).await?;
     Ok(())
 }
 
@@ -137,17 +127,17 @@ async fn download_emoji(id: Id<EmojiMarker>, animated: bool) -> Result<String, r
 }
 
 async fn clone_emojis(
-    client: &Client,
+    ctx: &CommandContext,
     guild_id: Id<GuildMarker>,
     prefix: Option<String>,
     emojis: Vec<Emoji>,
-) -> String {
+) -> Result<(), Error> {
     let prefix = prefix.unwrap_or_default();
 
     // what a fucken mess to have async map, but it works :)
     let emoji_results: Vec<Result<Emoji, EmojiError>> =
         futures_util::stream::iter(emojis.into_iter().map(async |e| {
-            clone_emoji(client, guild_id, &e, &format!("{}{}", &prefix, e.name)).await
+            clone_emoji(&ctx.client, guild_id, &e, &format!("{}{}", &prefix, e.name)).await
         }))
         .buffered(1)
         .collect()
@@ -164,24 +154,54 @@ async fn clone_emojis(
             Ok(_) => None,
             Err(e) => {
                 tracing::warn!("{e}");
-                Some(format!("* {}", e))
+                Some(e.to_string())
             }
         })
         .collect();
 
-    format!(
-        "{}\n{}",
-        if emojis_added.is_empty() {
-            String::new()
-        } else {
-            format!("**Added:** {}", emojis_added.join(""))
-        },
-        if emoji_errors.is_empty() {
-            String::new()
-        } else {
-            format!("**Errors:**\n{}", emoji_errors.join("\n"))
-        },
+    // response if everything succeeded
+    if emoji_errors.is_empty() {
+        responses::success(
+            ctx,
+            &format!(
+                "### Success\n\
+                **The following emojis were added**\n\
+                {}",
+                emojis_added.join("")
+            ),
+        )
+        .await?;
+        return Ok(());
+    }
+
+    // response if everything failed
+    if emojis_added.is_empty() {
+        responses::error(
+            ctx,
+            &format!(
+                "### Error\n**While adding emojis the following errors occured**\n```{}```",
+                emoji_errors.join("\n\n")
+            ),
+        )
+        .await?;
+        return Ok(());
+    }
+
+    // response if mixed results
+    responses::warning(
+        ctx,
+        &format!(
+            "### Completed\n\
+            **The following emojis were added**\n\
+            {}\n\n\
+            **While trying to clone emojis the following errors occured**\n\
+            ```{}```",
+            emojis_added.join(""),
+            emoji_errors.join("\n\n"),
+        ),
     )
+    .await?;
+    Ok(())
 }
 
 async fn clone_emoji(
