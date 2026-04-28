@@ -42,8 +42,11 @@ pub(crate) async fn command(ctx: CommandContext) -> Result<(), Error> {
     if let Some(new_name) = ctx.get_arg_string_optional("new_name")? {
         // add single emote with new_name
         if emojis.len() > 1 {
-            ctx.reply("can't add more than one emote at a time when specifying name")
-                .await?;
+            responses::error(
+                &ctx,
+                "### Error\ncan't add more than one emote at a time when specifying name",
+            )
+            .await?;
             return Ok(());
         }
 
