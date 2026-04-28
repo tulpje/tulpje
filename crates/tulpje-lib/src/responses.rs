@@ -28,6 +28,10 @@ pub async fn error(ctx: &CommandContext, text: &str) -> Result<(), Error> {
     with_color(ctx, color::roles::RED, text).await
 }
 
+pub async fn warning(ctx: &CommandContext, text: &str) -> Result<(), Error> {
+    with_color(ctx, color::roles::ORANGE, text).await
+}
+
 pub async fn info(ctx: &CommandContext, text: &str) -> Result<(), Error> {
     with_color(ctx, color::roles::BLUE, text).await
 }
