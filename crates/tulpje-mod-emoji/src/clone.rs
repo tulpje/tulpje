@@ -1,6 +1,7 @@
 use base64::{Engine as _, prelude::BASE64_STANDARD};
 use futures_util::StreamExt as _;
 use tulpje_common::version;
+use tulpje_lib::responses;
 use twilight_http::Client;
 
 use tulpje_framework::Error;
@@ -11,11 +12,23 @@ use twilight_model::id::marker::{EmojiMarker, GuildMarker};
 use crate::db::Emoji;
 use crate::shared::parse_emojis_from_string;
 
+const EMOJI_CLONE_LIMIT: usize = 10;
+async fn handle_emoji_clone_limit_error(ctx: &CommandContext) -> Result<(), Error> {
+    responses::error(
+        ctx,
+        &format!("### ERROR\ncan't add more than {EMOJI_CLONE_LIMIT} emotes at once"),
+    )
+    .await
+}
+
 // requires CREATE_GUILD_EXPRESSIONS permission
 pub(crate) async fn command(ctx: CommandContext) -> Result<(), Error> {
     let Some(guild) = ctx.guild().await? else {
         unreachable!("command is guild_only");
     };
+
+    // defer, we might be a while
+    ctx.defer().await?;
 
     let emojis = parse_emojis_from_string(
         Id::<GuildMarker>::new(1), /* DUMMY */
@@ -46,14 +59,10 @@ pub(crate) async fn command(ctx: CommandContext) -> Result<(), Error> {
         .await?;
 
         return Ok(());
-    } else if emojis.len() > 10 {
-        ctx.reply("**ERROR:** can't add more than 10 emotes at once")
-            .await?;
+    } else if emojis.len() > EMOJI_CLONE_LIMIT {
+        handle_emoji_clone_limit_error(&ctx).await?;
         return Ok(());
     }
-
-    // defer, we might be a while
-    ctx.defer().await?;
 
     // add multiple emotes
     let prefix = ctx.get_arg_string_optional("prefix")?;
@@ -72,6 +81,9 @@ pub(crate) async fn context_command(ctx: CommandContext) -> Result<(), Error> {
         unreachable!("command is guild_only");
     };
 
+    // defer, we might be a while
+    ctx.defer().await?;
+
     let Some(resolved) = &ctx.command.resolved else {
         return Err("no resolved data for context command".into());
     };
@@ -85,14 +97,10 @@ pub(crate) async fn context_command(ctx: CommandContext) -> Result<(), Error> {
         ctx.reply("no emojis found").await?;
         return Ok(());
     }
-    if emojis.len() > 10 {
-        ctx.reply("**ERROR:** can't add more than 10 emotes at once")
-            .await?;
+    if emojis.len() > EMOJI_CLONE_LIMIT {
+        handle_emoji_clone_limit_error(&ctx).await?;
         return Ok(());
     }
-
-    // defer, we might be a while
-    ctx.defer().await?;
 
     // add multiple emotes
     let reply = clone_emojis(&ctx.client(), guild.id, None, emojis).await;
