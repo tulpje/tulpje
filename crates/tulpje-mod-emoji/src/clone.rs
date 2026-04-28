@@ -53,13 +53,16 @@ pub(crate) async fn command(ctx: CommandContext) -> Result<(), Error> {
         // defer, we might be a while
         ctx.defer().await?;
 
-        ctx.update(
-            match clone_emoji(&ctx.client, guild.id, emojis.first().unwrap(), &new_name).await {
-                Ok(emoji) => format!("**Added:** {}", emoji),
-                Err(err) => format!("**Error:** {}", err),
-            },
-        )
-        .await?;
+        match clone_emoji(&ctx.client, guild.id, emojis.first().unwrap(), &new_name).await {
+            Ok(emoji) => responses::success(&ctx, &format!("### Success\nAdded: {emoji}")).await?,
+            Err(err) => {
+                responses::error(
+                    &ctx,
+                    &format!("### Error\nError while cloning emoji\n```{err}```"),
+                )
+                .await?;
+            }
+        }
 
         return Ok(());
     } else if emojis.len() > EMOJI_CLONE_LIMIT {
