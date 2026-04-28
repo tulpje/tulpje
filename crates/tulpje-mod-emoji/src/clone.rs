@@ -35,7 +35,7 @@ pub(crate) async fn command(ctx: CommandContext) -> Result<(), Error> {
         &ctx.get_arg_string("emoji")?,
     );
     if emojis.is_empty() {
-        ctx.reply("no emojis found").await?;
+        responses::error(&ctx, "### ERROR\nNo emojis found in command argument").await?;
         return Ok(());
     }
 
@@ -94,7 +94,7 @@ pub(crate) async fn context_command(ctx: CommandContext) -> Result<(), Error> {
     let emojis =
         parse_emojis_from_string(Id::<GuildMarker>::new(1) /* DUMMY */, &message.content);
     if emojis.is_empty() {
-        ctx.reply("no emojis found").await?;
+        responses::error(&ctx, "### ERROR\nNo emojis found in message").await?;
         return Ok(());
     }
     if emojis.len() > EMOJI_CLONE_LIMIT {
