@@ -162,7 +162,10 @@ async fn clone_emojis(
         .iter()
         .filter_map(|r| match r {
             Ok(_) => None,
-            Err(e) => Some(format!("* {}", e)),
+            Err(e) => {
+                tracing::warn!("{e}");
+                Some(format!("* {}", e))
+            }
         })
         .collect();
 
