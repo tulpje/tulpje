@@ -6,6 +6,7 @@ use twilight_http::Client;
 
 use tulpje_framework::Error;
 use tulpje_lib::context::CommandContext;
+use twilight_model::guild::{Guild, PremiumTier};
 use twilight_model::id::Id;
 use twilight_model::id::marker::{EmojiMarker, GuildMarker};
 
@@ -19,6 +20,68 @@ async fn handle_emoji_clone_limit_error(ctx: &CommandContext) -> Result<(), Erro
         &format!("### ERROR\ncan't add more than {EMOJI_CLONE_LIMIT} emotes at once"),
     )
     .await
+}
+
+fn guild_emoji_limit(guild: &Guild) -> usize {
+    match guild.premium_tier {
+        PremiumTier::None => 50,
+        PremiumTier::Tier1 => 100,
+        PremiumTier::Tier2 => 150,
+        PremiumTier::Tier3 => 250,
+        _ => {
+            tracing::warn!("unknown premium tier {:?}", guild.premium_tier);
+            50
+        }
+    }
+}
+
+fn count_emojis(emojis: &[Emoji]) -> (usize, usize) {
+    emojis
+        .iter()
+        .fold((0, 0), |(num_normal, num_animated), emoji| {
+            if emoji.animated {
+                (num_normal, num_animated + 1)
+            } else {
+                (num_normal + 1, num_animated)
+            }
+        })
+}
+
+/// checks if guild has space for emojis, and communicates to the user
+/// expects calling function to return early if false is returned
+async fn handle_emoji_limits(
+    ctx: &CommandContext,
+    guild: &Guild,
+    emojis: &[Emoji],
+) -> Result<bool, Error> {
+    let (guild_normal, guild_animated) = count_emojis(
+        &guild
+            .emojis
+            .iter()
+            .map(|emoji| Emoji::from_twilight(emoji.clone(), guild.id))
+            .collect::<Vec<_>>(),
+    );
+    let (new_normal, new_animated) = count_emojis(emojis);
+    let emoji_limit = guild_emoji_limit(guild);
+    let normal_over_limit = guild_normal + new_normal > emoji_limit;
+    let animated_over_limit = guild_animated + new_animated > emoji_limit;
+
+    if !normal_over_limit && !animated_over_limit {
+        return Ok(true);
+    }
+
+    let mut text = String::from("### Error");
+    if normal_over_limit {
+        let over_limit = guild_normal + new_normal - emoji_limit;
+        text.push_str(&format!("\nAdding {new_normal} **normal** emojis would exceed the limit of **{emoji_limit}** of this server by **{over_limit}**"));
+    }
+    if animated_over_limit {
+        let over_limit = guild_animated + new_animated - emoji_limit;
+        text.push_str(&format!("\nAdding {new_animated} **animated** emojis would exceed the limit of **{emoji_limit}** of this server by **{over_limit}**"));
+    }
+
+    responses::error(ctx, &text).await?;
+    Ok(false)
 }
 
 // requires CREATE_GUILD_EXPRESSIONS permission
@@ -36,6 +99,10 @@ pub(crate) async fn command(ctx: CommandContext) -> Result<(), Error> {
     );
     if emojis.is_empty() {
         responses::error(&ctx, "### ERROR\nNo emojis found in command argument").await?;
+        return Ok(());
+    }
+
+    if !handle_emoji_limits(&ctx, &guild, &emojis).await? {
         return Ok(());
     }
 
