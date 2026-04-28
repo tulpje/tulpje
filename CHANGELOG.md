@@ -6,6 +6,44 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.25.1-rc.1] - 2026-10-04
+
+### Changed
+
+ - Update `rand` to latest `0.8.*` and `0.9.*` due to `RUSTSEC-2026-0097`
+ - Update `rustls-webpki` from `0.103.12` to `0.103.13` due to `RUSTSEC-2026-0104`
+ - Handle guild emoji limits
+ - New response format for multi-emoji cloning
+ - Update single emoji clone results to new format
+ - Update another error to new format
+ - Update no emoji found error message to new format
+ - Update clone limit error messages to new format
+ - Update `pytest` from `9.0.2` to `9.0.3` due to `CVE-2025-71176`
+ - Update `rustls-webpki` from `0.103.10` to `0.103.12` due to `RUSTSEC-2026-0098`
+ - Update nix-direnv to 3.1.1
+
+### Fixed
+
+ - Log emoji clone errors
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * chore(deps): update `rand` to latest `0.8.*` and `0.9.*` due to `RUSTSEC-2026-0097` ([`7a34e02`](https://github.com/tulpje/tulpje/commit/7a34e02db7f0dc136c49bbd02dd9f0c6611a51ee))
+ * chore(deps): update `rustls-webpki` from `0.103.12` to `0.103.13` due to `RUSTSEC-2026-0104` ([`bb530a2`](https://github.com/tulpje/tulpje/commit/bb530a292c5bbb559e935b96a9847e6ec1317342))
+ * feat(tulpje-mod-emoji/clone): handle guild emoji limits ([`67638f2`](https://github.com/tulpje/tulpje/commit/67638f2d6ab278ff3457b6e418c499af9bfe140f))
+ * feat(tulpje-mod-emoji/clone): new response format for multi-emoji cloning ([`7e28c93`](https://github.com/tulpje/tulpje/commit/7e28c939e523fda34e0c54d9dd9211a20391981f))
+ * fix(tulpje-mod-emoji/clone): log emoji clone errors ([`8de2de7`](https://github.com/tulpje/tulpje/commit/8de2de789ca9254afc6ef923b19a9e3a51c5e33a))
+ * feat(tulpje-mod-emoji/clone): update single emoji clone results to new format ([`2f205a6`](https://github.com/tulpje/tulpje/commit/2f205a693d6fd7855d73f134bd57302615fafeb7))
+ * feat(tulpje-mod-emoji/clone): update another error to new format ([`425f7eb`](https://github.com/tulpje/tulpje/commit/425f7eb33a9bb74fd5dba5603d86b89917464227))
+ * feat(tulpje-mod-emoji/clone): update no emoji found error message to new format ([`02229d1`](https://github.com/tulpje/tulpje/commit/02229d1b129ed29862baffdd5f27e66fa68f372d))
+ * feat(tulpje-mod-emoji/clone): update clone limit error messages to new format ([`61fdb49`](https://github.com/tulpje/tulpje/commit/61fdb493fea47aad07ec130359591884328a3967))
+ * chore(deps): update `pytest` from `9.0.2` to `9.0.3` due to `CVE-2025-71176` ([`2f4361b`](https://github.com/tulpje/tulpje/commit/2f4361bfbf9f93abae1681f058581869bb816a5d))
+ * chore(deps): update `rustls-webpki` from `0.103.10` to `0.103.12` due to `RUSTSEC-2026-0098` ([`2bd87c0`](https://github.com/tulpje/tulpje/commit/2bd87c0f4292d445e40e377ea3bd9d470036cd1f))
+ * chore: update nix-direnv to 3.1.1 ([`b6e4ff4`](https://github.com/tulpje/tulpje/commit/b6e4ff414882e46bc7b192cf405f1a8374a737bf))
+</details>
+
 ## [0.25.0] - 2026-10-04
 
 ### Added
