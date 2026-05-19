@@ -8,7 +8,7 @@ use tulpje_lib::{
 };
 use twilight_http::Client;
 use twilight_model::{
-    channel::message::{Embed, MessageFlags},
+    channel::message::{Component, Embed, MessageFlags},
     id::{
         Id,
         marker::{ChannelMarker, GuildMarker},
