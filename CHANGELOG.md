@@ -6,6 +6,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.25.2-rc.1] - 2026-10-04
+
+### Changed
+
+ - Move logic for notifying a guild of a change into `notify_guild`
+ - Move error context into `update_fronters_timestamp`
+
+### Fixed
+
+ - Notify users when a system they follow is deleted from PluralKit
+ - Update fronter update timestamp even when system is deleted
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * fix(tulpje-mod-pluralkit): notify users when a system they follow is deleted from PluralKit ([`80596c1`](https://github.com/tulpje/tulpje/commit/80596c1301639090dc6ff9bf20c8d6276a0c0af2))
+ * fix(tulpje-mod-pluralkit): update fronter update timestamp even when system is deleted ([`e569670`](https://github.com/tulpje/tulpje/commit/e5696701bf8eac5fe149a8e4d62fce44e09db189))
+ * refactor(tulpje-mod-pluralkit): move logic for notifying a guild of a change into `notify_guild` ([`1d6a627`](https://github.com/tulpje/tulpje/commit/1d6a627ba88f6aaacca5667a887ba100e1426ee8))
+ * refactor(tulpje-mod-pluralkit): move error context into `update_fronters_timestamp` ([`ee6a623`](https://github.com/tulpje/tulpje/commit/ee6a623e00da8be4e831b4d0d20794d6666e871b))
+</details>
+
 ## [0.25.1-rc.1] - 2026-10-04
 
 ### Changed
