@@ -138,6 +138,41 @@ async fn notify_guild(
     Ok(())
 }
 
+async fn notify_system_not_found(
+    db: &sqlx::PgPool,
+    discord_client: &Arc<Client>,
+    system: &ModPkSystem,
+) -> Result<(), Error> {
+    let guilds = notify_db::get_notify_guilds_for_system(db, system.uuid).await?;
+    tracing::debug!(
+        method = "notify_system_not_found",
+        "notifying {} guilds of front for {} being private",
+        guilds.len(),
+        system.uuid
+    );
+
+    let message = warning_message(&format!(
+        "### System Unfollowed\nSystem `{}` has been deleted from PluralKit, and has been unfollowed",
+        system.name.as_ref().unwrap_or(&system.id)
+    ));
+
+    let mut guilds_successfully_notified = Vec::new();
+    for guild_id in guilds {
+        metrics::counter!("pk:notifications", "type" => "total").increment(1);
+        if let Err(err) = notify_guild(db, discord_client, guild_id, &message).await {
+            tracing::warn!(err);
+            continue;
+        };
+
+        metrics::counter!("pk:notifications", "type" => "notfound").increment(1);
+        guilds_successfully_notified.push(guild_id);
+    }
+
+    notify_db::remove_notify_system_from_guilds(db, system.uuid, guilds_successfully_notified)
+        .await?;
+
+    Ok(())
+}
 async fn notify_front_private(
     db: &sqlx::PgPool,
     discord_client: &Arc<Client>,
@@ -240,6 +275,10 @@ async fn process_system(
         Ok(changed) => changed,
         Err(GetSystemFrontersError::Private(_)) => {
             notify_front_private(db, discord_client, system).await?;
+            return Ok(());
+        }
+        Err(GetSystemFrontersError::NotFound(_)) => {
+            notify_system_not_found(db, discord_client, system).await?;
             return Ok(());
         }
         Err(err) => return Err(format!("error updating system fronters: {err}").into()),
