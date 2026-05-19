@@ -226,6 +226,8 @@ pub(crate) async fn handle_private_front(
 pub(crate) enum GetSystemFrontersError {
     #[error("fronters for system {0} are private")]
     Private(Uuid),
+    #[error("system {0} not found")]
+    NotFound(Uuid),
     #[error(transparent)]
     Other(#[from] Error),
 }
@@ -250,6 +252,12 @@ pub(crate) async fn get_system_fronters(
             if error.code == 30004 =>
         {
             Err(GetSystemFrontersError::Private(system_uuid))
+        }
+        Err(PluralKitError::Pk(_, error))
+            // 20001 = system not found
+            if error.code == 20001 =>
+        {
+            Err(GetSystemFrontersError::NotFound(system_uuid))
         }
         // directly return any other errors
         Err(err) => Err(GetSystemFrontersError::Other(err.into())),
@@ -301,11 +309,12 @@ pub(crate) async fn update_system_fronters(
 ) -> Result<FrontChange, GetSystemFrontersError> {
     let fronters: Option<Fronters> = match get_system_fronters(client, system.uuid).await {
         Ok(fronters) => Ok(fronters),
-        Err(GetSystemFrontersError::Private(uuid)) => {
-            // NOTE: if the fronters are private we still want to update the last_updated
+        Err(err @ GetSystemFrontersError::Private(uuid))
+        | Err(err @ GetSystemFrontersError::NotFound(uuid)) => {
+            // NOTE: if the fronters are private or the system deleted we still want to update the last_updated
             //       timestamp to avoid getting stuck on trying to update private fronts
             db::update_fronters_timestamp(db, uuid).await?;
-            Err(GetSystemFrontersError::Private(uuid))
+            Err(err)
         }
         Err(err) => Err(err),
     }?;
