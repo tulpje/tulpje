@@ -146,7 +146,7 @@ async fn notify_system_not_found(
     let guilds = notify_db::get_notify_guilds_for_system(db, system.uuid).await?;
     tracing::debug!(
         method = "notify_system_not_found",
-        "notifying {} guilds of front for {} being private",
+        "notifying {} guilds of system {} being deleted",
         guilds.len(),
         system.uuid
     );
