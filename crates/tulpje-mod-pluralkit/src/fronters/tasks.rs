@@ -107,6 +107,37 @@ fn create_front_change_embed(system: &ModPkSystem, switch: &Switch) -> Result<Em
         .build())
 }
 
+async fn notify_guild(
+    db: &sqlx::PgPool,
+    discord_client: &Arc<Client>,
+    guild_id: Id<GuildMarker>,
+    message: &Component,
+) -> Result<(), Error> {
+    metrics::counter!("pk:notifications", "type" => "total").increment(1);
+    let Some(channel_id) = get_notify_channel(db, guild_id).await? else {
+        metrics::counter!("pk:notifications", "type" => "channel-missing").increment(1);
+        return Err(format!(
+            "no notify channel configured for guild {guild_id} despite it having tracked systems"
+        )
+        .into());
+    };
+
+    if let Err(err) = discord_client
+        .create_message(*channel_id)
+        .flags(MessageFlags::IS_COMPONENTS_V2)
+        .components(slice::from_ref(message))
+        .await
+    {
+        metrics::counter!("pk:notifications", "type" => "error").increment(1);
+        return Err(format!(
+            "error sending notification to guild {guild_id} channel {channel_id}: {err}",
+        )
+        .into());
+    }
+
+    Ok(())
+}
+
 async fn notify_front_private(
     db: &sqlx::PgPool,
     discord_client: &Arc<Client>,
@@ -128,34 +159,13 @@ async fn notify_front_private(
     let mut guilds_successfully_notified = Vec::new();
     for guild_id in guilds {
         metrics::counter!("pk:notifications", "type" => "total").increment(1);
-        let Some(channel_id) = get_notify_channel(db, guild_id).await? else {
-            metrics::counter!("pk:notifications", "type" => "channel-missing").increment(1);
-            tracing::warn!(
-                method = "notify_front_private",
-                "no notify channel configured for guild {} despite it having tracked systems",
-                guild_id,
-            );
+        if let Err(err) = notify_guild(db, discord_client, guild_id, &message).await {
+            tracing::warn!(err);
             continue;
         };
 
-        if let Err(err) = discord_client
-            .create_message(*channel_id)
-            .flags(MessageFlags::IS_COMPONENTS_V2)
-            .components(slice::from_ref(&message))
-            .await
-        {
-            metrics::counter!("pk:notifications", "type" => "error").increment(1);
-            tracing::warn!(
-                method = "notify_front_private",
-                "error sending front private notification to guild {} channel {}: {}",
-                guild_id,
-                channel_id,
-                err
-            );
-        } else {
-            metrics::counter!("pk:notifications", "type" => "private").increment(1);
-            guilds_successfully_notified.push(guild_id);
-        }
+        metrics::counter!("pk:notifications", "type" => "private").increment(1);
+        guilds_successfully_notified.push(guild_id);
     }
 
     notify_db::remove_notify_system_from_guilds(db, system.uuid, guilds_successfully_notified)
@@ -179,6 +189,7 @@ async fn notify_front_change(
         guilds.len(),
         system.id
     );
+    // TODO: Refactor so we can reuse `notify_guild`
     for guild_id in guilds {
         metrics::counter!("pk:notifications", "type" => "total").increment(1);
         tracing::debug!(
