@@ -304,12 +304,7 @@ pub(crate) async fn update_system_fronters(
         Err(GetSystemFrontersError::Private(uuid)) => {
             // NOTE: if the fronters are private we still want to update the last_updated
             //       timestamp to avoid getting stuck on trying to update private fronts
-            db::update_fronters_timestamp(db, uuid)
-                .await
-                .map_err(|err| -> Error {
-                    format!("error updating fronter timestamp in db for system {uuid}: {err}")
-                        .into()
-                })?;
+            db::update_fronters_timestamp(db, uuid).await?;
             Err(GetSystemFrontersError::Private(uuid))
         }
         Err(err) => Err(err),
