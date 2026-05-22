@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.25.3-rc.1] - 2026-05-22
+
+### Fixed
+
+ - Correct log message when a system is deleted
+
+### Removed
+
+ - Remove superfluous defer causing errors
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * fix(tulpje-mod-pluralkit): correct log message when a system is deleted ([`064b08f`](https://github.com/tulpje/tulpje/commit/064b08f053607f9d76033c61721768efd74a5f11))
+ * fix(tulpje-mod-emoji/clone): remove superfluous defer causing errors ([`dab93d2`](https://github.com/tulpje/tulpje/commit/dab93d238b6b3e7e91e364f8725f985bf9122edb))
+</details>
+
 ## [0.25.2] - 2026-05-19
 
 ### Commit Details
