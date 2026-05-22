@@ -117,9 +117,6 @@ pub(crate) async fn command(ctx: CommandContext) -> Result<(), Error> {
             return Ok(());
         }
 
-        // defer, we might be a while
-        ctx.defer().await?;
-
         match clone_emoji(&ctx.client, guild.id, emojis.first().unwrap(), &new_name).await {
             Ok(emoji) => responses::success(&ctx, &format!("### Success\nAdded: {emoji}")).await?,
             Err(err) => {
