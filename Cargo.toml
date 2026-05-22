@@ -7,7 +7,7 @@ resolver = "3"
 debug = "line-tables-only"
 
 [workspace.package]
-version = "0.25.3-rc.1"
+version = "0.25.3"
 description = "Multi-purpose discord bot & framework"
 homepage = "https://github.com/tulpje/tulpje"
 repository = "https://github.com/tulpje/tulpje"
