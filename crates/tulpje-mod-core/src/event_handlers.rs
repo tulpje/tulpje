@@ -37,14 +37,22 @@ pub async fn guild_delete(ctx: EventContext) -> Result<(), Error> {
 }
 
 pub async fn register_commands(ctx: &EventContext, guild_id: Id<GuildMarker>) -> Result<(), Error> {
-    tracing::debug!("registering commands for guild {}", guild_id);
-
     let commands: Vec<_> = db::guild_modules(&ctx.services.db, guild_id)
         .await?
         .iter()
         .filter_map(|name| ctx.services.registry.module_commands(name))
         .flatten()
         .collect();
+
+    tracing::debug!(
+        "registering {} commands for guild {}",
+        guild_id,
+        commands.len()
+    );
+    if commands.is_empty() {
+        tracing::debug!("no guild-specific commands for {guild_id}, skipping");
+        return Ok(());
+    }
 
     ctx.client
         .interaction(ctx.application_id)
