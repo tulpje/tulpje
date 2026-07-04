@@ -8,16 +8,15 @@ use tulpje_lib::{
 };
 use twilight_http::Client;
 use twilight_model::{
-    channel::message::{Component, Embed, MessageFlags},
+    channel::message::{Component, MessageFlags, component::TextDisplay},
     id::{
         Id,
         marker::{ChannelMarker, GuildMarker},
     },
-    util::Timestamp,
 };
 
 use tulpje_framework::Error;
-use twilight_util::builder::embed::EmbedBuilder;
+use twilight_util::builder::message::{ContainerBuilder, SeparatorBuilder};
 
 use crate::{
     db::ModPkSystem,
@@ -80,31 +79,41 @@ async fn update_fronter_categories(
 
 const MAX_FRONTERS_IN_MESSAGE: usize = 20;
 // TODO: Components V2
-fn create_front_change_embed(system: &ModPkSystem, switch: &Switch) -> Result<Embed, Error> {
-    let builder = EmbedBuilder::new().title(format!(
-        "Switch: {}",
+fn create_front_change_component(
+    system: &ModPkSystem,
+    switch: &Switch,
+) -> Result<Component, Error> {
+    let mut embed_lines = vec![format!(
+        "### Switch: {}",
         system.name.as_ref().unwrap_or(&system.id)
-    ));
-
-    let mut embed_parts = Vec::new();
+    )];
     for member in switch.fronters.iter().take(MAX_FRONTERS_IN_MESSAGE) {
-        embed_parts.push(format!("* {}", get_member_name(member)));
+        embed_lines.push(format!("* {}", get_member_name(member)));
     }
 
     if switch.fronters.len() > MAX_FRONTERS_IN_MESSAGE {
-        embed_parts.push(format!(
+        embed_lines.push(format!(
             "-# and {} more",
             switch.fronters.len() - MAX_FRONTERS_IN_MESSAGE
         ));
     }
 
-    Ok(builder
-        .description(embed_parts.join("\n"))
-        .timestamp(Timestamp::from_secs(
-            switch.timestamp.and_utc().timestamp(),
-        )?)
-        .validate()?
-        .build())
+    let unix_time_secs = switch.timestamp.and_utc().timestamp();
+
+    Ok(ContainerBuilder::new()
+        .component(TextDisplay {
+            id: None,
+            content: embed_lines.join("\n"),
+        })
+        .component(SeparatorBuilder::new().build())
+        .component(TextDisplay {
+            id: None,
+            content: format!(
+                "-# <t:{unix_time_secs}:d> <t:{unix_time_secs}:t> • <t:{unix_time_secs}:R>"
+            ),
+        })
+        .build()
+        .into())
 }
 
 async fn notify_guild(
@@ -216,7 +225,7 @@ async fn notify_guild_of_front_change(
     discord: &Client,
     guild_id: Id<GuildMarker>,
     system: &ModPkSystem,
-    embed: &Embed,
+    component: &Component,
 ) -> Result<(), Error> {
     metrics::counter!("pk:notifications", "type" => "total").increment(1);
     tracing::debug!(
@@ -239,7 +248,8 @@ async fn notify_guild_of_front_change(
 
     if let Err(err) = discord
         .create_message(*channel_id)
-        .embeds(slice::from_ref(embed))
+        .flags(MessageFlags::IS_COMPONENTS_V2)
+        .components(slice::from_ref(component))
         .await
     {
         metrics::counter!("pk:notifications", "type" => "error").increment(1);
@@ -263,7 +273,7 @@ async fn notify_front_change(
     system: &ModPkSystem,
     switch: &Switch,
 ) -> Result<(), Error> {
-    let embed = create_front_change_embed(system, switch)?;
+    let embed = create_front_change_component(system, switch)?;
 
     let guilds = notify_db::get_notify_guilds_for_system(db, system.uuid).await?;
     tracing::debug!(
