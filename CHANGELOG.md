@@ -5,6 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.25.4-rc.1] - 2026-07-04
+
+### Changed
+
+ - Update `quinn-proto` from `0.11.14` to `0.11.15` due to `RUSTSEC-2026-0185`
+ - Refactor guild notifications for code re-use
+ - Rewrite front change notifications to use components
+ - Split notifying guilds of a front change into separate function
+
+### Fixed
+
+ - Don't try registering guild-specific commands for guilds without guild-specific modules
+ - Fix incorrect method names in logging statements
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * chore(deps): update `quinn-proto` from `0.11.14` to `0.11.15` due to `RUSTSEC-2026-0185` ([`5dc8434`](https://github.com/tulpje/tulpje/commit/5dc8434ea8e4f06235d033a5cf26a40ba110211a))
+ * fix(tulpje-mod-core): don't try registering guild-specific commands for guilds without guild-specific modules ([`47b412e`](https://github.com/tulpje/tulpje/commit/47b412eeb555f0d49e72d557f06cc73672917987))
+ * refactor(tulpje-mod-pluralkit): refactor guild notifications for code re-use ([`6b083f6`](https://github.com/tulpje/tulpje/commit/6b083f6eed8d92b811b17ffb4e116dd088e25458))
+ * refactor(tulpje-mod-pluralkit): rewrite front change notifications to use components ([`da421f9`](https://github.com/tulpje/tulpje/commit/da421f9a60de073e12b12d642a8711924c94a804))
+ * fix(tulpje-mod-pluralkit): fix incorrect method names in logging statements ([`85dbade`](https://github.com/tulpje/tulpje/commit/85dbade1c77dbef1990d1c13afe8abb13e89a592))
+ * refactor(tulpje-mod-pluralkit): split notifying guilds of a front change into separate function ([`72b7c42`](https://github.com/tulpje/tulpje/commit/72b7c42b8dc43fa408714f23e4d7888754ee9a76))
+</details>
+
 ## [0.25.3] - 2026-05-22
 
 ### Commit Details
