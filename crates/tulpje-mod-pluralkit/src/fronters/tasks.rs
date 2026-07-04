@@ -28,6 +28,42 @@ use crate::{
     util::get_member_name,
 };
 
+// type of notification we're sending to the guild
+enum GuildNotification {
+    Switch(Component),
+    NotFound(Component),
+    Private(Component),
+}
+
+impl GuildNotification {
+    /// return the inner component of the notification
+    fn component(&self) -> &Component {
+        match self {
+            Self::Switch(component) | Self::NotFound(component) | Self::Private(component) => {
+                component
+            }
+        }
+    }
+
+    /// description to use in logging
+    fn description(&self) -> &'static str {
+        match self {
+            Self::Switch(_) => "switch",
+            Self::Private(_) => "front is private",
+            Self::NotFound(_) => "system not found",
+        }
+    }
+
+    /// type field of the metric for this notification type
+    fn metric_type(&self) -> &'static str {
+        match self {
+            Self::Switch(_) => "success",
+            Self::NotFound(_) => "notfound",
+            Self::Private(_) => "private",
+        }
+    }
+}
+
 async fn update_fronter_categories(
     db: &sqlx::PgPool,
     discord_client: &Arc<Client>,
@@ -116,13 +152,57 @@ fn create_front_change_component(
         .into())
 }
 
+#[tracing::instrument(skip_all)]
+async fn notify_guilds_for_system(
+    db: &sqlx::PgPool,
+    discord_client: &Arc<Client>,
+    system: &ModPkSystem,
+    notification: &GuildNotification,
+) -> Result<Vec<Id<GuildMarker>>, Error> {
+    let guilds = notify_db::get_notify_guilds_for_system(db, system.uuid).await?;
+
+    tracing::debug!(
+        method = "notify_front_change",
+        "notifying {} guilds about system {}: {}",
+        guilds.len(),
+        system.uuid,
+        notification.description()
+    );
+
+    let mut guilds_successfully_notified = Vec::new();
+    for guild_id in guilds {
+        tracing::debug!(
+            "notifying guild {} for system {}: {}",
+            guild_id,
+            system.uuid,
+            notification.description()
+        );
+
+        if let Err(err) = notify_guild(db, discord_client, guild_id, notification).await {
+            tracing::warn!(
+                "error notifying guild {} for system {}: {}",
+                guild_id,
+                system.uuid,
+                err
+            );
+            continue;
+        };
+
+        guilds_successfully_notified.push(guild_id);
+    }
+
+    Ok(guilds_successfully_notified)
+}
+
+#[tracing::instrument(skip_all)]
 async fn notify_guild(
     db: &sqlx::PgPool,
     discord_client: &Arc<Client>,
     guild_id: Id<GuildMarker>,
-    message: &Component,
+    notification: &GuildNotification,
 ) -> Result<(), Error> {
     metrics::counter!("pk:notifications", "type" => "total").increment(1);
+
     let Some(channel_id) = get_notify_channel(db, guild_id).await? else {
         metrics::counter!("pk:notifications", "type" => "channel-missing").increment(1);
         return Err(format!(
@@ -134,7 +214,7 @@ async fn notify_guild(
     if let Err(err) = discord_client
         .create_message(*channel_id)
         .flags(MessageFlags::IS_COMPONENTS_V2)
-        .components(slice::from_ref(message))
+        .components(slice::from_ref(notification.component()))
         .await
     {
         metrics::counter!("pk:notifications", "type" => "error").increment(1);
@@ -144,6 +224,7 @@ async fn notify_guild(
         .into());
     }
 
+    metrics::counter!("pk:notifications", "type" => notification.metric_type()).increment(1);
     Ok(())
 }
 
@@ -152,31 +233,15 @@ async fn notify_system_not_found(
     discord_client: &Arc<Client>,
     system: &ModPkSystem,
 ) -> Result<(), Error> {
-    let guilds = notify_db::get_notify_guilds_for_system(db, system.uuid).await?;
-    tracing::debug!(
-        method = "notify_system_not_found",
-        "notifying {} guilds of system {} being deleted",
-        guilds.len(),
-        system.uuid
-    );
-
-    let message = warning_message(&format!(
+    let notification = GuildNotification::NotFound(warning_message(&format!(
         "### System Unfollowed\nSystem `{}` has been deleted from PluralKit, and has been unfollowed",
         system.name.as_ref().unwrap_or(&system.id)
-    ));
+    )));
 
-    let mut guilds_successfully_notified = Vec::new();
-    for guild_id in guilds {
-        metrics::counter!("pk:notifications", "type" => "total").increment(1);
-        if let Err(err) = notify_guild(db, discord_client, guild_id, &message).await {
-            tracing::warn!(err);
-            continue;
-        };
+    let guilds_successfully_notified =
+        notify_guilds_for_system(db, discord_client, system, &notification).await?;
 
-        metrics::counter!("pk:notifications", "type" => "notfound").increment(1);
-        guilds_successfully_notified.push(guild_id);
-    }
-
+    // remove system from guilds we succesfully notified
     notify_db::remove_notify_system_from_guilds(db, system.uuid, guilds_successfully_notified)
         .await?;
 
@@ -187,83 +252,18 @@ async fn notify_front_private(
     discord_client: &Arc<Client>,
     system: &ModPkSystem,
 ) -> Result<(), Error> {
-    let guilds = notify_db::get_notify_guilds_for_system(db, system.uuid).await?;
-    tracing::debug!(
-        method = "notify_front_private",
-        "notifying {} guilds of front for {} being private",
-        guilds.len(),
-        system.uuid
-    );
-
-    let message = warning_message(&format!(
+    let notification = GuildNotification::Private(warning_message(&format!(
         "### System Unfollowed\nCurrent fronters for `{}` are private, system unfollowed",
         system.name.as_ref().unwrap_or(&system.id)
-    ));
+    )));
 
-    let mut guilds_successfully_notified = Vec::new();
-    for guild_id in guilds {
-        metrics::counter!("pk:notifications", "type" => "total").increment(1);
-        if let Err(err) = notify_guild(db, discord_client, guild_id, &message).await {
-            tracing::warn!(err);
-            continue;
-        };
+    let guilds_successfully_notified =
+        notify_guilds_for_system(db, discord_client, system, &notification).await?;
 
-        metrics::counter!("pk:notifications", "type" => "private").increment(1);
-        guilds_successfully_notified.push(guild_id);
-    }
-
+    // remove system from guilds we succesfully notified
     notify_db::remove_notify_system_from_guilds(db, system.uuid, guilds_successfully_notified)
         .await?;
 
-    Ok(())
-}
-
-/// notify a guild of front changes in a system
-#[tracing::instrument(skip_all)]
-async fn notify_guild_of_front_change(
-    db: &sqlx::PgPool,
-    discord: &Client,
-    guild_id: Id<GuildMarker>,
-    system: &ModPkSystem,
-    component: &Component,
-) -> Result<(), Error> {
-    metrics::counter!("pk:notifications", "type" => "total").increment(1);
-    tracing::debug!(
-        "notifying guild {} of front change in {}",
-        guild_id,
-        system.id
-    );
-
-    let Some(channel_id) = get_notify_channel(db, guild_id).await? else {
-        metrics::counter!("pk:notifications", "type" => "channel-missing").increment(1);
-        tracing::warn!(
-            "no notify channel configured for guild {guild_id} despite it having tracked systems",
-        );
-
-        // TODO: Do we return an error or just handle it here?
-        //       probably want to return an error if we ever want to do other things with the
-        //       result of this function
-        return Ok(());
-    };
-
-    if let Err(err) = discord
-        .create_message(*channel_id)
-        .flags(MessageFlags::IS_COMPONENTS_V2)
-        .components(slice::from_ref(component))
-        .await
-    {
-        metrics::counter!("pk:notifications", "type" => "error").increment(1);
-        tracing::warn!(
-            "error sending front change notification to guild {guild_id} channel {channel_id}: {err}",
-        );
-
-        // TODO: Do we return an error or just handle it here?
-        //       probably want to return an error if we ever want to do other things with the
-        //       result of this function
-        return Ok(());
-    }
-
-    metrics::counter!("pk:notifications", "type" => "success").increment(1);
     Ok(())
 }
 
@@ -273,29 +273,9 @@ async fn notify_front_change(
     system: &ModPkSystem,
     switch: &Switch,
 ) -> Result<(), Error> {
-    let embed = create_front_change_component(system, switch)?;
+    let notification = GuildNotification::Switch(create_front_change_component(system, switch)?);
+    notify_guilds_for_system(db, discord_client, system, &notification).await?;
 
-    let guilds = notify_db::get_notify_guilds_for_system(db, system.uuid).await?;
-    tracing::debug!(
-        method = "notify_front_change",
-        "notifying {} guilds of front change in {}",
-        guilds.len(),
-        system.id
-    );
-
-    // TODO: Refactor so we can reuse `notify_guild`
-    for guild_id in guilds {
-        if let Err(err) =
-            notify_guild_of_front_change(db, discord_client, guild_id, system, &embed).await
-        {
-            tracing::warn!(
-                "error notifying guild {} of front change in {}: {}",
-                guild_id,
-                system.id,
-                err,
-            );
-        };
-    }
     Ok(())
 }
 
