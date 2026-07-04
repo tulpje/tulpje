@@ -64,7 +64,7 @@ async fn update_fronter_categories(
         {
             metrics::counter!("pk:front-category", "type" => "error").increment(1);
             tracing::error!(
-                method = "update_fronter_category",
+                method = "update_fronter_categories",
                 "error updating fronters for guild {} category {}: {}",
                 guild_category.guild_id,
                 guild_category.category_id,
@@ -180,7 +180,7 @@ async fn notify_front_private(
 ) -> Result<(), Error> {
     let guilds = notify_db::get_notify_guilds_for_system(db, system.uuid).await?;
     tracing::debug!(
-        method = "notify_front_change",
+        method = "notify_front_private",
         "notifying {} guilds of front for {} being private",
         guilds.len(),
         system.uuid
