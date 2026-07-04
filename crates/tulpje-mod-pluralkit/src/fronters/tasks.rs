@@ -209,6 +209,54 @@ async fn notify_front_private(
     Ok(())
 }
 
+/// notify a guild of front changes in a system
+#[tracing::instrument(skip_all)]
+async fn notify_guild_of_front_change(
+    db: &sqlx::PgPool,
+    discord: &Client,
+    guild_id: Id<GuildMarker>,
+    system: &ModPkSystem,
+    embed: &Embed,
+) -> Result<(), Error> {
+    metrics::counter!("pk:notifications", "type" => "total").increment(1);
+    tracing::debug!(
+        "notifying guild {} of front change in {}",
+        guild_id,
+        system.id
+    );
+
+    let Some(channel_id) = get_notify_channel(db, guild_id).await? else {
+        metrics::counter!("pk:notifications", "type" => "channel-missing").increment(1);
+        tracing::warn!(
+            "no notify channel configured for guild {guild_id} despite it having tracked systems",
+        );
+
+        // TODO: Do we return an error or just handle it here?
+        //       probably want to return an error if we ever want to do other things with the
+        //       result of this function
+        return Ok(());
+    };
+
+    if let Err(err) = discord
+        .create_message(*channel_id)
+        .embeds(slice::from_ref(embed))
+        .await
+    {
+        metrics::counter!("pk:notifications", "type" => "error").increment(1);
+        tracing::warn!(
+            "error sending front change notification to guild {guild_id} channel {channel_id}: {err}",
+        );
+
+        // TODO: Do we return an error or just handle it here?
+        //       probably want to return an error if we ever want to do other things with the
+        //       result of this function
+        return Ok(());
+    }
+
+    metrics::counter!("pk:notifications", "type" => "success").increment(1);
+    Ok(())
+}
+
 async fn notify_front_change(
     db: &sqlx::PgPool,
     discord_client: &Arc<Client>,
@@ -224,42 +272,19 @@ async fn notify_front_change(
         guilds.len(),
         system.id
     );
+
     // TODO: Refactor so we can reuse `notify_guild`
     for guild_id in guilds {
-        metrics::counter!("pk:notifications", "type" => "total").increment(1);
-        tracing::debug!(
-            method = "notify_front_change",
-            "notifying guild {} of front change in {}",
-            guild_id,
-            system.id
-        );
-
-        let Some(channel_id) = get_notify_channel(db, guild_id).await? else {
-            metrics::counter!("pk:notifications", "type" => "channel-missing").increment(1);
-            tracing::warn!(
-                method = "notify_front_change",
-                "no notify channel configured for guild {} despite it having tracked systems",
-                guild_id,
-            );
-            continue;
-        };
-
-        if let Err(err) = discord_client
-            .create_message(*channel_id)
-            .embeds(slice::from_ref(&embed))
-            .await
+        if let Err(err) =
+            notify_guild_of_front_change(db, discord_client, guild_id, system, &embed).await
         {
-            metrics::counter!("pk:notifications", "type" => "error").increment(1);
             tracing::warn!(
-                method = "notify_front_change",
-                "error sending front change notification to guild {} channel {}: {}",
+                "error notifying guild {} of front change in {}: {}",
                 guild_id,
-                channel_id,
-                err
+                system.id,
+                err,
             );
-        } else {
-            metrics::counter!("pk:notifications", "type" => "success").increment(1);
-        }
+        };
     }
     Ok(())
 }
