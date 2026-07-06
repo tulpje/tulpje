@@ -1,5 +1,3 @@
-use std::collections::HashSet;
-
 use sqlx::prelude::FromRow;
 use twilight_model::id::{
     Id,
@@ -162,8 +160,8 @@ pub(crate) async fn did_fronters_change(
         return Ok(true);
     };
 
-    let saved_fronters: HashSet<&Uuid> = saved_front.fronters.iter().collect();
-    let new_fronters: HashSet<&Uuid> = new_fronters.iter().collect();
+    let saved_fronters: Vec<&Uuid> = saved_front.fronters.iter().collect();
+    let new_fronters: Vec<&Uuid> = new_fronters.iter().collect();
 
     Ok(saved_fronters != new_fronters)
 }
