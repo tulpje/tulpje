@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            DELETE FROM\n                pk_notify_systems\n            WHERE\n                guild_id = $1\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int8"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "f61fdad6a747373e8516d24d863fb02929ce90fd0f1c81716d3d8152c3121272"
+}
