@@ -37,6 +37,44 @@ pub(crate) async fn get_notify_channel(
     Ok(result.map(DbId::<ChannelMarker>::from))
 }
 
+pub(crate) async fn delete_notify_channel(
+    db: &sqlx::PgPool,
+    channel_id: Id<ChannelMarker>,
+) -> Result<bool, Error> {
+    Ok(sqlx::query!(
+        r#"
+            DELETE FROM
+                pk_notify_channels
+            WHERE
+                channel_id = $1
+        "#,
+        i64::from(DbId(channel_id))
+    )
+    .execute(db)
+    .await?
+    .rows_affected()
+        > 0)
+}
+
+pub(crate) async fn delete_notify_systems(
+    db: &sqlx::PgPool,
+    guild_id: Id<GuildMarker>,
+) -> Result<bool, Error> {
+    Ok(sqlx::query!(
+        r#"
+            DELETE FROM
+                pk_notify_systems
+            WHERE
+                guild_id = $1
+        "#,
+        i64::from(DbId(guild_id))
+    )
+    .execute(db)
+    .await?
+    .rows_affected()
+        > 0)
+}
+
 pub(crate) async fn add_notify_system(
     db: &sqlx::PgPool,
     guild_id: Id<GuildMarker>,

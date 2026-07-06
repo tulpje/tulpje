@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            DELETE FROM\n                pk_notify_channels\n            WHERE\n                channel_id = $1\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int8"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "fe169e7899df752a023aa604d39690d7c3a32e9970a59d6a31c70cb8bb090af7"
+}

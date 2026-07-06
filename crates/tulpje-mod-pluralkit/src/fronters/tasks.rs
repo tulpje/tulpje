@@ -24,7 +24,9 @@ use crate::{
         db::{self, delete_fronter_category},
         shared::{FrontChange, GetSystemFrontersError, Switch, update_system_fronters},
     },
-    notify::db::{self as notify_db, get_notify_channel},
+    notify::db::{
+        self as notify_db, delete_notify_channel, delete_notify_systems, get_notify_channel,
+    },
     util::get_member_name,
 };
 
@@ -211,21 +213,44 @@ async fn notify_guild(
         .into());
     };
 
-    if let Err(err) = discord_client
+    match discord_client
         .create_message(*channel_id)
         .flags(MessageFlags::IS_COMPONENTS_V2)
         .components(slice::from_ref(notification.component()))
         .await
     {
-        metrics::counter!("pk:notifications", "type" => "error").increment(1);
-        return Err(format!(
-            "error sending notification to guild {guild_id} channel {channel_id}: {err}",
-        )
-        .into());
-    }
+        Err(err) if get_json_error_code(&err).is_some_and(|code| code == ERROR_UNKNOWN_CHANNEL) => {
+            // channel was deleted remove it from pk_notify_channels
+            tracing::info!(
+                "received ERROR_UNKNOWN_CHANNEL for category {channel_id} \
+                in guild {guild_id}, removing from notify channel config"
+            );
+            delete_notify_channel(db, *channel_id)
+                .await
+                .map_err(|err| {
+                    format!(
+                        "error deleting notify channel {channel_id} for guild {guild_id}: {err}"
+                    )
+                })?;
+            delete_notify_systems(db, guild_id).await.map_err(|err| {
+                format!("error deleting notify channel {channel_id} for guild {guild_id}: {err}")
+            })?;
 
-    metrics::counter!("pk:notifications", "type" => notification.metric_type()).increment(1);
-    Ok(())
+            Ok(())
+        }
+        Err(err) => {
+            metrics::counter!("pk:notifications", "type" => "error").increment(1);
+            return Err(format!(
+                "error sending notification to guild {guild_id} channel {channel_id}: {err}",
+            )
+            .into());
+        }
+        Ok(_) => {
+            metrics::counter!("pk:notifications", "type" => notification.metric_type())
+                .increment(1);
+            Ok(())
+        }
+    }
 }
 
 async fn notify_system_not_found(
