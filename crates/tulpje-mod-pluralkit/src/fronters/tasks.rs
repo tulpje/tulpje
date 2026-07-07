@@ -2,10 +2,7 @@ use std::{slice, sync::Arc};
 
 use pkrs_fork::{client::PkClient, model::Member};
 use tracing::instrument;
-use tulpje_lib::{
-    context::TaskContext,
-    util::{ERROR_UNKNOWN_CHANNEL, get_json_error_code, warning_message},
-};
+use tulpje_lib::util::{ERROR_UNKNOWN_CHANNEL, get_json_error_code, warning_message};
 use twilight_http::Client;
 use twilight_model::{
     channel::message::{Component, MessageFlags, component::TextDisplay},
@@ -305,7 +302,7 @@ async fn notify_front_change(
 }
 
 #[instrument("process-system", skip_all, fields(system=?system.uuid))]
-async fn process_system(
+pub(crate) async fn process_system(
     db: &sqlx::PgPool,
     pk_client: &PkClient,
     discord_client: &Arc<Client>,
@@ -333,26 +330,6 @@ async fn process_system(
             tracing::debug!("fronters unchanged for system {}", system.uuid);
         }
     }
-    Ok(())
-}
-
-pub(crate) async fn update_fronters(ctx: TaskContext) -> Result<(), Error> {
-    let tracked_system_count = db::get_tracked_system_count(&ctx.services.db).await?;
-    metrics::counter!("pk:tracked-systems").absolute(tracked_system_count as u64);
-
-    let system_count = db::get_system_count(&ctx.services.db).await?;
-    metrics::counter!("pk:total-systems").absolute(system_count as u64);
-
-    let systems_to_update = db::get_systems_to_update(&ctx.services.db).await?;
-
-    for system in &systems_to_update {
-        if let Err(err) =
-            process_system(&ctx.services.db, &ctx.services.pk, &ctx.client, system).await
-        {
-            tracing::warn!("error updating system {}: {}", system.uuid, err);
-        }
-    }
-
     Ok(())
 }
 
