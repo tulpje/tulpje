@@ -6,6 +6,7 @@ use tracing::{Instrument as _, Span};
 use twilight_standby::Standby;
 
 use crate::Metadata;
+use crate::service_manager::ServiceManager;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use twilight_gateway::Event;
 use twilight_http::Client;
@@ -60,12 +61,13 @@ impl<T: Clone + Send + Sync + 'static> FrameworkBuilder<T> {
     }
 }
 
-pub struct Framework<T: Clone + Send + Sync> {
+pub struct Framework<T: Clone + Send + Sync + 'static> {
     ctx: Context<T>,
     setup_fn: Option<SetupFunc<T>>,
 
     scheduler: SchedulerHandle<T>,
     dispatcher: DispatchHandle,
+    service_manager: ServiceManager<T>,
 }
 
 impl<T: Clone + Send + Sync + 'static> Framework<T> {
@@ -82,6 +84,7 @@ impl<T: Clone + Send + Sync + 'static> Framework<T> {
             client,
             standby: Arc::new(Standby::new()),
         };
+        let service_manager = ServiceManager::new(registry.services.clone());
         let scheduler =
             SchedulerHandle::new(registry.tasks.values().cloned().collect(), ctx.clone());
         let dispatcher = DispatchHandle::new(registry, ctx.clone());
@@ -92,6 +95,7 @@ impl<T: Clone + Send + Sync + 'static> Framework<T> {
 
             scheduler,
             dispatcher,
+            service_manager,
         }
     }
 
@@ -105,6 +109,10 @@ impl<T: Clone + Send + Sync + 'static> Framework<T> {
         self.scheduler
             .start()
             .map_err(|err| format!("error starting scheduled tasks: {}", err))?;
+
+        self.service_manager
+            .start(&self.ctx)
+            .map_err(|err| format!("error starting services: {err}"))?;
 
         Ok(())
     }
@@ -141,11 +149,13 @@ impl<T: Clone + Send + Sync + 'static> Framework<T> {
     pub async fn shutdown(&mut self) {
         self.scheduler.shutdown();
         self.dispatcher.shutdown();
+        self.service_manager.shutdown();
     }
 
     pub async fn join(&mut self) -> Result<(), Error> {
         self.scheduler.join().await?;
         self.dispatcher.join().await?;
+        self.service_manager.join().await?;
 
         Ok(())
     }
