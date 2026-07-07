@@ -15,6 +15,7 @@ pub mod macros;
 pub mod metadata;
 pub mod module;
 pub mod scheduler;
+pub mod service_manager;
 
 pub type Error = Box<dyn std::error::Error + Send + Sync>;
 

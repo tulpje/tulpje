@@ -10,6 +10,7 @@ use crate::handler::{
     component_interaction_handler::{ComponentInteractionFunc, ComponentInteractionHandler},
     event_handler::{EventFunc, EventHandler},
     modal_handler::{ModalFunc, ModalHandler},
+    service_handler::ServiceFunc,
     task_handler::{TaskFunc, TaskHandler},
 };
 
@@ -24,6 +25,7 @@ pub struct ModuleBuilder<T: Clone + Send + Sync> {
     modals: HashMap<String, ModalHandler<T>>,
     events: HashMap<EventType, Vec<EventHandler<T>>>,
     tasks: HashMap<String, TaskHandler<T>>,
+    services: HashMap<String, ServiceFunc<T>>,
 }
 
 impl<T: Clone + Send + Sync> ModuleBuilder<T> {
@@ -39,6 +41,7 @@ impl<T: Clone + Send + Sync> ModuleBuilder<T> {
             modals: HashMap::new(),
             events: HashMap::new(),
             tasks: HashMap::new(),
+            services: HashMap::new(),
         }
     }
 
@@ -55,6 +58,7 @@ impl<T: Clone + Send + Sync> ModuleBuilder<T> {
             modals: self.modals,
             events: self.events,
             tasks: self.tasks,
+            services: self.services,
         }
     }
 
@@ -166,6 +170,11 @@ impl<T: Clone + Send + Sync> ModuleBuilder<T> {
                 func,
             },
         );
+        self
+    }
+
+    pub fn service(mut self, name: &str, func: ServiceFunc<T>) -> Self {
+        self.services.insert(name.to_string(), func);
         self
     }
 }

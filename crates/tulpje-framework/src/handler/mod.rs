@@ -12,6 +12,7 @@ pub mod command_handler;
 pub mod component_interaction_handler;
 pub mod event_handler;
 pub mod modal_handler;
+pub mod service_handler;
 pub mod task_handler;
 
 async fn send_internal_handler_error<T: Clone + Send + Sync>(

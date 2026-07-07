@@ -5,7 +5,8 @@ use twilight_model::application::command::Command;
 
 use crate::handler::{
     command_handler::CommandHandler, component_interaction_handler::ComponentInteractionHandler,
-    event_handler::EventHandler, modal_handler::ModalHandler, task_handler::TaskHandler,
+    event_handler::EventHandler, modal_handler::ModalHandler, service_handler::ServiceFunc,
+    task_handler::TaskHandler,
 };
 
 pub mod builder;
@@ -24,4 +25,5 @@ pub struct Module<T: Clone + Send + Sync> {
     pub(crate) modals: HashMap<String, ModalHandler<T>>,
     pub(crate) events: HashMap<EventType, Vec<EventHandler<T>>>,
     pub(crate) tasks: HashMap<String, TaskHandler<T>>,
+    pub(crate) services: HashMap<String, ServiceFunc<T>>,
 }

@@ -6,7 +6,8 @@ use twilight_model::application::command::Command;
 use super::Module;
 use crate::handler::{
     command_handler::CommandHandler, component_interaction_handler::ComponentInteractionHandler,
-    event_handler::EventHandler, modal_handler::ModalHandler, task_handler::TaskHandler,
+    event_handler::EventHandler, modal_handler::ModalHandler, service_handler::ServiceFunc,
+    task_handler::TaskHandler,
 };
 
 #[derive(Clone)]
@@ -22,6 +23,7 @@ pub struct Registry<T: Clone + Send + Sync> {
     pub(crate) components: HashMap<String, ComponentInteractionHandler<T>>,
     pub(crate) events: HashMap<EventType, Vec<EventHandler<T>>>,
     pub tasks: HashMap<String, TaskHandler<T>>,
+    pub(crate) services: HashMap<String, ServiceFunc<T>>,
 }
 
 impl<T: Clone + Send + Sync> Registry<T> {
@@ -33,6 +35,7 @@ impl<T: Clone + Send + Sync> Registry<T> {
             components: HashMap::new(),
             events: HashMap::new(),
             tasks: HashMap::new(),
+            services: HashMap::new(),
         }
     }
 
@@ -42,6 +45,7 @@ impl<T: Clone + Send + Sync> Registry<T> {
         self.components.extend(module.components.clone());
         self.events.extend(module.events.clone());
         self.tasks.extend(module.tasks.clone());
+        self.services.extend(module.services.clone());
 
         self.modules.insert(module.name.clone(), module);
     }
