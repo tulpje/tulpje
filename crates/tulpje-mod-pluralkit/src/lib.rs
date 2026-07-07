@@ -7,12 +7,14 @@ use twilight_util::builder::command::StringBuilder;
 use tulpje_framework::{
     Module, ModuleBuilder, handler_func,
     module::command_builder::{CommandBuilder, SubCommandBuilder},
+    service_func,
 };
 
 use tulpje_lib::context::Services;
 
 mod commands;
 mod db;
+mod front_update_service;
 mod fronters;
 mod notify;
 mod roles;
@@ -45,14 +47,14 @@ pub fn build() -> Module<Services> {
         )
         // tasks
         .task(
-            "pk:update-fronters",
-            "*/5 * * * * *", // every 5 seconds
-            handler_func!(fronters::tasks::update_fronters),
-        )
-        .task(
             "pk:cleanup-systems",
             "@daily", // once a day at midnight
             handler_func!(tasks::cleanup_systems),
+        )
+        // services
+        .service(
+            "pk:update-fronters",
+            service_func!(front_update_service::start),
         )
         .build()
 }
