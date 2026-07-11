@@ -42,13 +42,15 @@ impl<T: Clone + Send + Sync> ServiceManager<T> {
     }
 
     pub(crate) fn shutdown(&mut self) {
+        tracing::info!("shutting down service manager ...");
         self.shutdown.cancel();
     }
 
     pub(crate) async fn join(&mut self) -> Result<(), crate::Error> {
         for (name, handle) in self.handles.drain() {
-            if let Err(err) = handle.await {
-                tracing::warn!("error stopping service {name}: {err}");
+            match handle.await {
+                Ok(()) => tracing::info!("stopped service {name}"),
+                Err(err) => tracing::warn!("error stopping service {name}: {err}"),
             }
         }
 
