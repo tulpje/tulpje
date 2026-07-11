@@ -201,7 +201,7 @@ async fn clone_emojis(
     // what a fucken mess to have async map, but it works :)
     let emoji_results: Vec<Result<Emoji, EmojiError>> =
         futures_util::stream::iter(emojis.into_iter().map(async |e| {
-            clone_emoji(&ctx.client, guild_id, &e, &format!("{}{}", &prefix, e.name)).await
+            clone_emoji(&ctx.client, guild_id, &e, &format!("{}{}", prefix, e.name)).await
         }))
         .buffered(1)
         .collect()
