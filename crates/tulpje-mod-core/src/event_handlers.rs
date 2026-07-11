@@ -44,15 +44,16 @@ pub async fn register_commands(ctx: &EventContext, guild_id: Id<GuildMarker>) ->
         .flatten()
         .collect();
 
-    tracing::debug!(
-        "registering {} commands for guild {}",
-        guild_id,
-        commands.len()
-    );
     if commands.is_empty() {
-        tracing::debug!("no guild-specific commands for {guild_id}, skipping");
+        tracing::debug!("no guild-specific commands for {guild_id}, skipping registration");
         return Ok(());
     }
+
+    tracing::debug!(
+        "registering {} commands for guild {}",
+        commands.len(),
+        guild_id,
+    );
 
     ctx.client
         .interaction(ctx.application_id)
