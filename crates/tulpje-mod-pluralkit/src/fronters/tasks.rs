@@ -143,9 +143,7 @@ fn create_front_change_component(
         .component(SeparatorBuilder::new().build())
         .component(TextDisplay {
             id: None,
-            content: format!(
-                "-# <t:{unix_time_secs}:d> <t:{unix_time_secs}:t> • <t:{unix_time_secs}:R>"
-            ),
+            content: format!("-# <t:{unix_time_secs}:f>"),
         })
         .build()
         .into())
