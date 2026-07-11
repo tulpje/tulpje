@@ -243,19 +243,17 @@ async fn handle_message(cache: &Cache, sender: &Sender, meta: Metadata, event: E
 fn parse_delivery(message: Vec<u8>) -> Result<(Metadata, Event), Box<dyn std::error::Error>> {
     let discord_event = serde_json::from_str::<DiscordEvent>(&String::from_utf8(message)?)?;
 
-    // TODO: Don't clone discord_event.payload for debugging stuff, find a better way, ideally just
-    //       logging the event type somehow
     Ok((
         discord_event.meta,
         twilight_gateway::Event::from(
             twilight_gateway::parse(
-                discord_event.payload.clone(),
+                discord_event.payload,
                 twilight_gateway::EventTypeFlags::all(),
             )?
             .ok_or_else(|| {
                 format!(
-                    "twilight_gateway::parse returned None, payload: {}",
-                    discord_event.payload
+                    "twilight_gateway::parse returned None, uuid: {}",
+                    discord_event.meta.uuid
                 )
             })?,
         ),
