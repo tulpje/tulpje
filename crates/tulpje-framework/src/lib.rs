@@ -26,7 +26,7 @@ pub async fn handle_interaction<T: Clone + Send + Sync + 'static>(
     registry: &Registry<T>,
     processed: twilight_standby::ProcessResults,
 ) -> Result<(), Error> {
-    match interaction::parse(&event, meta.clone(), context) {
+    match interaction::parse(&event, *meta, context) {
         Ok(InteractionContext::Command(ctx)) => {
             let Some(command) = registry.find_command(&ctx.name) else {
                 return Err(format!("unknown command /{}", ctx.name).into());
@@ -109,7 +109,7 @@ pub async fn handle<T: Clone + Send + Sync + 'static>(
         );
 
         for handler in handlers {
-            let event_ctx = EventContext::from_context(ctx.clone(), meta.clone(), event.clone());
+            let event_ctx = EventContext::from_context(ctx.clone(), meta, event.clone());
 
             if let Err(err) = handler.run(event_ctx).await {
                 tracing::warn!(
