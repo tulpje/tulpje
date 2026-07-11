@@ -140,7 +140,7 @@ fn create_front_change_component(
             id: None,
             content: embed_lines.join("\n"),
         })
-        .component(SeparatorBuilder::new().build())
+        .component(SeparatorBuilder::new().divider(false).build())
         .component(TextDisplay {
             id: None,
             content: format!("-# <t:{unix_time_secs}:f>"),
