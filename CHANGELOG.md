@@ -5,6 +5,41 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.25.4-rc.2] - 2026-07-11
+
+### Changed
+
+ - Update to rust 1.97.0
+ - Use invisible spacer between fronters and time
+ - Use full absolute time for fronter notifications
+ - Update `crossbeam-epoch` from `0.9.18` to `0.9.20` due to `RUSTSEC-2026-0204`
+ - Log event uuid instead of full payload on parse error
+
+### Fixed
+
+ - Use a long-running service for front updates so they won't overlap
+ - Order of fronters matter, so don't use a hashset for comparison
+
+### Removed
+
+ - Remove redundant reference
+ - Remove notify channel config if notify channel was removed
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * chore: update to rust 1.97.0 ([`f226047`](https://github.com/tulpje/tulpje/commit/f226047b077a1b11de6742d7274322fd6aa8c652))
+ * fix: remove redundant reference ([`777e313`](https://github.com/tulpje/tulpje/commit/777e313c026d850aa9818eb3dfdb03e0a3ae0b0c))
+ * chore(tulpje-mod-pluralkit): use invisible spacer between fronters and time ([`9f0e77e`](https://github.com/tulpje/tulpje/commit/9f0e77e49477f51d32677970484cea5e8e248693))
+ * chore(tulpje-mod-pluralkit): use full absolute time for fronter notifications ([`d5ef7f1`](https://github.com/tulpje/tulpje/commit/d5ef7f1063f6e4476cdd487fc39ee9cce9f77adb))
+ * chore(deps): update `crossbeam-epoch` from `0.9.18` to `0.9.20` due to `RUSTSEC-2026-0204` ([`8e68d4f`](https://github.com/tulpje/tulpje/commit/8e68d4f35a77ffed80ba609cb2d741c7dc212d0d))
+ * refactor(tulpje-handler): log event uuid instead of full payload on parse error ([`13671ee`](https://github.com/tulpje/tulpje/commit/13671eee6ad4d499a75009fcadd2b58328e951fc))
+ * fix(tulpje-mod-pluralkit): use a long-running service for front updates so they won't overlap ([`bb87a4b`](https://github.com/tulpje/tulpje/commit/bb87a4b798c4cfa3bb7708d5a623dfe04c9e600a))
+ * fix(tulpje-mod-pluralkit): remove notify channel config if notify channel was removed ([`196eb2f`](https://github.com/tulpje/tulpje/commit/196eb2f32c7a1007b2e9efb752a2293195a98000))
+ * fix(tulpje-mod-pluralkit): order of fronters matter, so don't use a hashset for comparison ([`101787c`](https://github.com/tulpje/tulpje/commit/101787c45ab42b4b7e916d757b8acbdd0bb1abbb))
+</details>
+
 ## [0.25.4-rc.1] - 2026-07-04
 
 ### Changed

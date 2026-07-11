@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.18.0-rc.1] - 2026-07-11
+
+### Changed
+
+ - Better logging on ServiceManager shutdown/join
+ - Implement services for modules, which are expected to be long-running
+
+### Fixed
+
+ - Derive `Copy` on `Metadata`
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * fix(tulpje-framework): derive `Copy` on `Metadata` ([`6dfba16`](https://github.com/tulpje/tulpje/commit/6dfba1685a9c64c68cbdd64628a019063ec4123d))
+ * feat(tulpje-framework): better logging on ServiceManager shutdown/join ([`afb7213`](https://github.com/tulpje/tulpje/commit/afb7213dc200c23f967a9afb554e9a304196a02f))
+ * feat(tulpje-framework): implement services for modules, which are expected to be long-running ([`0546d01`](https://github.com/tulpje/tulpje/commit/0546d01c85d53c4763242c9980d338913381eef4))
+</details>
+
 ## [0.17.3] - 2026-04-28
 
 ### Commit Details
