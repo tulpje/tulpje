@@ -8,6 +8,7 @@ use tulpje_framework::{
 use tulpje_lib::context::Services;
 
 pub(crate) mod db;
+pub(crate) mod front_track;
 pub(crate) mod setup;
 pub(crate) mod shared;
 pub(crate) mod tasks;
