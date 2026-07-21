@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.25.4-rc.3] - 2026-10-04
+
+### Fixed
+
+ - Fix log message
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * fix(tulpje-mod-core): fix log message ([`d9b127a`](https://github.com/tulpje/tulpje/commit/d9b127a96ec47d46a2b4d6376662cf519cf9fb9c))
+</details>
+
 ## [0.25.4-rc.2] - 2026-10-04
 
 ### Changed
