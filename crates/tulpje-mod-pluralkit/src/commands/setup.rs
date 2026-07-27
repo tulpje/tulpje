@@ -12,13 +12,13 @@ use tulpje_lib::{
 };
 use twilight_util::builder::message::{ButtonBuilder, TextDisplayBuilder};
 
-use super::{
+use crate::{
     db::{self, ModPkSystem},
     util::handle_system_ref,
 };
 
 // TODO: command to see current settings
-pub async fn setup_pk(ctx: CommandContext) -> Result<(), Error> {
+pub async fn handle(ctx: CommandContext) -> Result<(), Error> {
     let Some(guild) = ctx.guild().await? else {
         unreachable!("command is guild_only");
     };
