@@ -31,17 +31,17 @@ impl<T: Clone + Send + Sync + 'static> FrameworkBuilder<T> {
         }
     }
 
-    pub fn setup(&mut self, func: SetupFunc<T>) -> &mut Self {
+    pub fn setup(mut self, func: SetupFunc<T>) -> Self {
         self.setup_fn = Some(func);
         self
     }
 
-    pub fn build(&self) -> Framework<T> {
+    pub fn build(self) -> Framework<T> {
         Framework::new(
-            Arc::clone(&self.registry),
-            Arc::clone(&self.client),
+            self.registry,
+            self.client,
             self.app_id,
-            Arc::clone(&self.user_data),
+            self.user_data,
             self.setup_fn,
         )
     }
