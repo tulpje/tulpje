@@ -39,7 +39,7 @@ pub fn build() -> Module<Services> {
                         .option(
                             StringBuilder::new("system_id", "PluralKit system ID").required(true),
                         )
-                        .handler(handler_func!(commands::setup_pk)),
+                        .handler(handler_func!(commands::setup::handle)),
                 )
                 .group(roles::commands())
                 .group(fronters::commands())
