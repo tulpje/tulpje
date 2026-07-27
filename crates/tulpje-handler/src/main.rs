@@ -153,12 +153,8 @@ async fn main() {
         db,
         registry: Arc::clone(&registry),
     });
-    let mut framework = Framework::new(
-        registry,
-        client,
-        app_id,
-        services,
-        Some(|ctx| {
+    let mut framework = Framework::builder(registry, client, app_id, services)
+        .setup(|ctx| {
             Box::pin(async move {
                 // only register commands on the "primary" handler to avoid
                 // sending too many requests to discord
@@ -174,8 +170,8 @@ async fn main() {
 
                 Ok(())
             })
-        }),
-    );
+        })
+        .build();
 
     framework.start().await.expect("error starting framework");
 
