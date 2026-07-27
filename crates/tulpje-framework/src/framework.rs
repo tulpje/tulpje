@@ -61,9 +61,9 @@ impl<T: Clone + Send + Sync + 'static> Framework<T> {
 
     pub fn builder(
         registry: Arc<Registry<T>>,
-        client: Client,
+        client: Arc<Client>,
         application_id: Id<ApplicationMarker>,
-        services: T,
+        services: Arc<T>,
     ) -> FrameworkBuilder<T> {
         FrameworkBuilder::new(registry, client, application_id, services)
     }

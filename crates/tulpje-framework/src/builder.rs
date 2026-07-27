@@ -18,15 +18,15 @@ pub struct FrameworkBuilder<T: Clone + Send + Sync> {
 impl<T: Clone + Send + Sync + 'static> FrameworkBuilder<T> {
     pub fn new(
         registry: Arc<Registry<T>>,
-        client: Client,
+        client: Arc<Client>,
         app_id: Id<ApplicationMarker>,
-        user_data: T,
+        user_data: Arc<T>,
     ) -> Self {
         Self {
             registry,
-            client: Arc::new(client),
+            client,
             app_id,
-            user_data: Arc::new(user_data),
+            user_data,
             setup_fn: None,
         }
     }
