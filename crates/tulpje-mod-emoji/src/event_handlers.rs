@@ -61,12 +61,11 @@ pub async fn message_update(ctx: EventContext) -> Result<(), Error> {
     //    return;
     //};
 
-    // TODO: We can't seem to check application_id here yet, this seems to be fixed in twilight HEAD though
-    // // don't track PluralKit proxy messages
-    // if is_pk_proxy(&evt.application_id) {
-    //     debug!("skipping PluralKit proxy message");
-    //     return;
-    // }
+    // don't track PluralKit proxy messages
+    if is_pk_proxy(&evt.application_id) {
+        debug!("skipping PluralKit proxy message");
+        return Ok(());
+    }
 
     let Some(guild_id) = evt.guild_id else {
         // Don't process non-guild messages
