@@ -113,7 +113,6 @@ async fn update_fronter_categories(
 }
 
 const MAX_FRONTERS_IN_MESSAGE: usize = 20;
-// TODO: Components V2
 fn create_front_change_component(
     system: &ModPkSystem,
     switch: &Switch,
