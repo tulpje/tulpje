@@ -6,6 +6,7 @@ use tracing::{Instrument as _, Span};
 use twilight_standby::Standby;
 
 use crate::Metadata;
+use crate::builder::FrameworkBuilder;
 use crate::service_manager::ServiceManager;
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use twilight_gateway::Event;
@@ -16,50 +17,9 @@ use crate::handler::task_handler::TaskHandler;
 use crate::scheduler::{SchedulerHandle, SchedulerTaskMessage};
 use crate::{Context, Error, Registry};
 
-type SetupFunc<T> = fn(ctx: Context<T>) -> Pin<Box<dyn Future<Output = Result<(), Error>> + Send>>;
+pub(crate) type SetupFunc<T> =
+    fn(ctx: Context<T>) -> Pin<Box<dyn Future<Output = Result<(), Error>> + Send>>;
 type EventMessage = (Metadata, Event, Option<Span>);
-
-#[derive(Clone)]
-pub struct FrameworkBuilder<T: Clone + Send + Sync> {
-    registry: Arc<Registry<T>>,
-    client: Arc<Client>,
-    app_id: Id<ApplicationMarker>,
-    user_data: Arc<T>,
-
-    setup_fn: Option<SetupFunc<T>>,
-}
-
-impl<T: Clone + Send + Sync + 'static> FrameworkBuilder<T> {
-    pub fn new(
-        registry: Arc<Registry<T>>,
-        client: Client,
-        app_id: Id<ApplicationMarker>,
-        user_data: T,
-    ) -> Self {
-        Self {
-            registry,
-            client: Arc::new(client),
-            app_id,
-            user_data: Arc::new(user_data),
-            setup_fn: None,
-        }
-    }
-
-    pub fn setup(&mut self, func: SetupFunc<T>) -> &mut Self {
-        self.setup_fn = Some(func);
-        self
-    }
-
-    pub fn build(&self) -> Framework<T> {
-        Framework::new(
-            Arc::clone(&self.registry),
-            Arc::clone(&self.client),
-            self.app_id,
-            Arc::clone(&self.user_data),
-            self.setup_fn,
-        )
-    }
-}
 
 pub struct Framework<T: Clone + Send + Sync + 'static> {
     ctx: Context<T>,
@@ -97,6 +57,15 @@ impl<T: Clone + Send + Sync + 'static> Framework<T> {
             dispatcher,
             service_manager,
         }
+    }
+
+    pub fn builder(
+        registry: Arc<Registry<T>>,
+        client: Client,
+        application_id: Id<ApplicationMarker>,
+        services: T,
+    ) -> FrameworkBuilder<T> {
+        FrameworkBuilder::new(registry, client, application_id, services)
     }
 
     pub async fn start(&mut self) -> Result<(), Error> {
