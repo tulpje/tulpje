@@ -24,6 +24,8 @@ type EventMessage = (Metadata, Event, Option<Span>);
 pub struct Framework<T: Clone + Send + Sync + 'static> {
     ctx: Context<T>,
     setup_fn: Option<SetupFunc<T>>,
+    enable_tasks: bool,
+    enable_services: bool,
 
     scheduler: SchedulerHandle<T>,
     dispatcher: DispatchHandle,
@@ -37,6 +39,8 @@ impl<T: Clone + Send + Sync + 'static> Framework<T> {
         application_id: Id<ApplicationMarker>,
         services: Arc<T>,
         setup_fn: Option<SetupFunc<T>>,
+        enable_tasks: bool,
+        enable_services: bool,
     ) -> Self {
         let ctx = Context {
             application_id,
@@ -52,6 +56,8 @@ impl<T: Clone + Send + Sync + 'static> Framework<T> {
         Self {
             ctx,
             setup_fn,
+            enable_tasks,
+            enable_services,
 
             scheduler,
             dispatcher,
@@ -75,13 +81,21 @@ impl<T: Clone + Send + Sync + 'static> Framework<T> {
                 .map_err(|err| format!("error running setup function: {}", err))?;
         }
 
-        self.scheduler
-            .start()
-            .map_err(|err| format!("error starting scheduled tasks: {}", err))?;
+        if self.enable_tasks {
+            self.scheduler
+                .start()
+                .map_err(|err| format!("error starting scheduled tasks: {}", err))?;
+        } else {
+            tracing::info!("scheduled tasks are disabled, not starting task scheduler");
+        }
 
-        self.service_manager
-            .start(&self.ctx)
-            .map_err(|err| format!("error starting services: {err}"))?;
+        if self.enable_services {
+            self.service_manager
+                .start(&self.ctx)
+                .map_err(|err| format!("error starting services: {err}"))?;
+        } else {
+            tracing::info!("services are disabled, not starting service manager");
+        }
 
         Ok(())
     }
