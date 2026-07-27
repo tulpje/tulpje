@@ -175,13 +175,17 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
         .collect();
 
     // TODO: actually handle errors
-    // TODO: set mention permissions?
     for (idx, op) in ops.iter().enumerate() {
         match op {
-            ChangeOperation::Update { id, color } => {
+            ChangeOperation::Update {
+                id,
+                color,
+                mentionable,
+            } => {
                 ctx.client
                     .update_role(guild.id, *id)
                     .color(Some(*color))
+                    .mentionable(*mentionable)
                     .await
                     .map_err(|err| {
                         format!("error updating role {} in guild {}: {}", id, guild.id, err)
@@ -200,6 +204,7 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
                     .create_role(guild.id)
                     .name(name)
                     .color(*color)
+                    .mentionable(true)
                     .await
                     .map_err(|err| {
                         format!(
@@ -316,6 +321,13 @@ struct MemberRole {
     uuid: Option<Uuid>,
     name: String,
     color: u32,
+    mentionable: bool,
+}
+
+impl MemberRole {
+    fn should_update(&self, desired: &Self) -> bool {
+        self.color != desired.color || self.mentionable != desired.mentionable
+    }
 }
 
 enum ChangeOperation {
@@ -330,6 +342,7 @@ enum ChangeOperation {
     Update {
         id: Id<RoleMarker>,
         color: u32,
+        mentionable: bool,
     },
 }
 
@@ -409,6 +422,7 @@ fn get_desired_roles(members: &[Member]) -> HashMap<String, MemberRole> {
                     .unwrap()
             ),
             color: pk_color_to_discord(m.color.clone()),
+            mentionable: true,
         })
         .map(|r| (r.name.clone(), r))
         .collect()
@@ -424,6 +438,7 @@ fn get_current_roles(guild: &Guild) -> HashMap<String, MemberRole> {
             uuid: None,
             name: v.name.clone(),
             color: v.colors.primary_color,
+            mentionable: v.mentionable,
         })
         .map(|v| (v.name.clone(), v))
         .collect()
@@ -439,11 +454,11 @@ fn get_role_ops(
         .into_iter()
         .filter_map(|role| {
             match (current_roles.get(role), desired_roles.get(role)) {
-                // Update, only if color changed
-                (Some(current), Some(desired)) => {
-                    (current.color != desired.color).then(|| ChangeOperation::Update {
+                (Some(current), Some(desired)) if current.should_update(desired) => {
+                    Some(ChangeOperation::Update {
                         id: current.role_id.unwrap(),
                         color: desired.color,
+                        mentionable: desired.mentionable,
                     })
                 }
                 // Create
@@ -456,6 +471,8 @@ fn get_role_ops(
                 (Some(current), None) => Some(ChangeOperation::Delete {
                     id: current.role_id.unwrap(),
                 }),
+                // Ignore roles without mention/color changes
+                (Some(_), Some(_)) => None,
                 // Shit got fucked up aaaa
                 (None, None) => panic!("current and desired are both None, shouldn't happen"),
             }
