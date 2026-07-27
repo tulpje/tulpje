@@ -11,10 +11,6 @@ use crate::handler::{
 };
 
 #[derive(Clone)]
-#[expect(
-    clippy::partial_pub_fields,
-    reason = "we need 'tasks' to be public for now to start the task scheduler"
-)]
 pub struct Registry<T: Clone + Send + Sync> {
     modules: HashMap<String, Module<T>>,
 
@@ -22,7 +18,7 @@ pub struct Registry<T: Clone + Send + Sync> {
     pub(crate) modals: HashMap<String, ModalHandler<T>>,
     pub(crate) components: HashMap<String, ComponentInteractionHandler<T>>,
     pub(crate) events: HashMap<EventType, Vec<EventHandler<T>>>,
-    pub tasks: HashMap<String, TaskHandler<T>>,
+    pub(crate) tasks: HashMap<String, TaskHandler<T>>,
     pub(crate) services: HashMap<String, ServiceFunc<T>>,
 }
 
