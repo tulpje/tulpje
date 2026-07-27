@@ -133,11 +133,6 @@ async fn main() {
     // previous modules to set up
     registry.register(tulpje_mod_core::build(&registry));
 
-    // only run scheduled tasks on the "primary" handler
-    if config.handler_id != 0 {
-        registry.tasks.clear();
-    }
-
     // we don't need to mutate registry anymore after this
     let registry = Arc::new(registry);
 
@@ -153,7 +148,13 @@ async fn main() {
         db,
         registry: Arc::clone(&registry),
     });
+
+    // we only run services and tasks on the primary handler
+    let primary_handler = config.handler_id == 0;
+
     let mut framework = Framework::builder(registry, client, app_id, services)
+        .enable_tasks(primary_handler)
+        .enable_services(primary_handler)
         .setup(|ctx| {
             Box::pin(async move {
                 // only register commands on the "primary" handler to avoid
