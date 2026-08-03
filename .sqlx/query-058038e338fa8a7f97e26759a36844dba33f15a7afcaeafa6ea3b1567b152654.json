@@ -1,0 +1,53 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        SELECT\n            id,\n            guild_id,\n            message_id,\n            state AS \"state: Json<T>\",\n            created_at,\n            updated_at\n        FROM\n            interaction_state\n        WHERE\n            guild_id = $1\n        AND\n            message_id = $2\n    ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "guild_id",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 2,
+        "name": "message_id",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 3,
+        "name": "state: Json<T>",
+        "type_info": "Jsonb"
+      },
+      {
+        "ordinal": 4,
+        "name": "created_at",
+        "type_info": "Timestamp"
+      },
+      {
+        "ordinal": 5,
+        "name": "updated_at",
+        "type_info": "Timestamp"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int8",
+        "Int8"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "058038e338fa8a7f97e26759a36844dba33f15a7afcaeafa6ea3b1567b152654"
+}
