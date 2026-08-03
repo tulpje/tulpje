@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        DELETE FROM\n            interaction_state\n        WHERE\n            guild_id = $1\n        AND\n            message_id = $2\n    ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int8",
+        "Int8"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "bccd0004bf2aacda652bdf0aa14060362227f17d73244fef2e8deaf8c5aaa6cf"
+}
