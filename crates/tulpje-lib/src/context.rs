@@ -21,6 +21,7 @@ pub struct Services {
     pub registry: Arc<Registry<Self>>,
 }
 
+pub type ModalContext = context::ModalContext<Services>;
 pub type ComponentInteractionContext = context::ComponentInteractionContext<Services>;
 pub type CommandContext = context::CommandContext<Services>;
 pub type EventContext = context::EventContext<Services>;
