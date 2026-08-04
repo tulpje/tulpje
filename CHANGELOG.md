@@ -6,6 +6,51 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.26.0-rc.1] - 2026-10-04
+
+### Breaking Changes
+
+ - Move database code into db folder/module
+ - Change `tasks` visibility to crate only
+
+### Added
+
+ - Add `avatar`, `created_at` and `deleted_at` columns to `pk_systems` table
+
+### Changed
+
+ - Show avatar in front change notifications
+ - Change front change notifications back to embeds
+ - Move `/pk setup` command into submodule
+ - Use new framework functionality to enable/disable tasks and services on handlers other than the first one
+ - Use `FrameworkBuilder` to instantiate framework
+
+### Fixed
+
+ - Member roles should be mentionable
+ - Don't count emojis in pluralkit messages
+
+### Removed
+
+ - Remove finished todo
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * feat(tulpje-mod-pluralkit): show avatar in front change notifications ([`519ed06`](https://github.com/tulpje/tulpje/commit/519ed06964fbbd438272f5cab1244852235c37b6))
+ * feat(tulpje-mod-pluralkit): add `avatar`, `created_at` and `deleted_at` columns to `pk_systems` table ([`e1bf4c2`](https://github.com/tulpje/tulpje/commit/e1bf4c27c9c273c50c45256c8f1416a2d9bcd4e0))
+ * refactor(tulpje-mod-pluralkit): change front change notifications back to embeds ([`ac85aac`](https://github.com/tulpje/tulpje/commit/ac85aacbbc70193540ca51eee9c31cfb9a66e453))
+ * refactor(tulpje-lib)!: move database code into db folder/module ([`046a27f`](https://github.com/tulpje/tulpje/commit/046a27f57914002400cab81b532de3fb5143b09a))
+ * refactor(tulpje-mod-pluralkit): move `/pk setup` command into submodule ([`e5fce95`](https://github.com/tulpje/tulpje/commit/e5fce953c89c9790aab83d3a0fcc785939b208d3))
+ * fix(tulpje-mod-pluralkit): member roles should be mentionable ([`27ba82a`](https://github.com/tulpje/tulpje/commit/27ba82a4964d0b784b5232cca8c033b69daa23b4))
+ * chore(tulpje-mod-pluralkit): remove finished todo ([`efddefa`](https://github.com/tulpje/tulpje/commit/efddefa0f484930bd6bdfbe1b0fbb76251970ee0))
+ * fix(tulpje-framework)!: change `tasks` visibility to crate only ([`330ab8e`](https://github.com/tulpje/tulpje/commit/330ab8e64423359d950cec9352ff0c1be040b09e))
+ * refactor(tulpje-handler): use new framework functionality to enable/disable tasks and services on handlers other than the first one ([`d7d5e10`](https://github.com/tulpje/tulpje/commit/d7d5e101b9c59ed59bed6bbf76daf91232bbdb5a))
+ * refactor(tulpje-handler): use `FrameworkBuilder` to instantiate framework ([`234a600`](https://github.com/tulpje/tulpje/commit/234a600584a5f78c1b4ed2f80552d0ac99e5c45c))
+ * fix(tulpje-mod-emoji): don't count emojis in pluralkit messages ([`d44972b`](https://github.com/tulpje/tulpje/commit/d44972be3f906ab2b210e9b95449daa5951a3e3e))
+</details>
+
 ## [0.25.4-rc.3] - 2026-10-04
 
 ### Fixed

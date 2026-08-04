@@ -1,6 +1,6 @@
 [package]
 name = "reconnecting-amqp"
-version = "0.2.3"
+version = "0.2.4-rc.1"
 description = "Auto-reconnecting amqprs wrapper"
 publish = true
 
