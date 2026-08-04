@@ -18,11 +18,9 @@ pub(crate) enum CloseReason {
     PublishNoRoute,
 
     /// a fatal error occured and there's no way we can recover, don't reconnect
-    // TODO: Add reason string
     Fatal(String),
 
     /// some other error occured, reconnecting
-    // TODO: Add reason string
     Other,
 
     /// special close reason so we can pass the error to whoever is waiting on it
