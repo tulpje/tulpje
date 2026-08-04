@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.26.0-rc.2] - 2026-08-04
+
+### Changed
+
+ - Update `event-listener` from `5.3.1` to `5.4.2` due to `RUSTSEC-2026-0221`
+ - Update `spin` from yanked `0.9.8` to `0.9.9`
+ - Update `quinn-proto` from `0.11.15` to `0.11.16` due to `RUSTSEC-2026-0185`
+ - Implement system update service
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * chore(deps): update `event-listener` from `5.3.1` to `5.4.2` due to `RUSTSEC-2026-0221` ([`66f266a`](https://github.com/tulpje/tulpje/commit/66f266a00236f85b78b87080e9748d1decbeae1e))
+ * chore(deps): update `spin` from yanked `0.9.8` to `0.9.9` ([`ed4d509`](https://github.com/tulpje/tulpje/commit/ed4d5099affdf40d5d573c071b4a59313b13b9af))
+ * chore(deps): update `quinn-proto` from `0.11.15` to `0.11.16` due to `RUSTSEC-2026-0185` ([`69a1444`](https://github.com/tulpje/tulpje/commit/69a144405275519c360ed8d9a32cd961e36c15f2))
+ * feat(tulpje-mod-pluralkit): implement system update service ([`2185cb1`](https://github.com/tulpje/tulpje/commit/2185cb11bc4b5ec5909db7da3734f4e8161b16f1))
+</details>
+
 ## [0.26.0-rc.1] - 2026-08-04
 
 ### Breaking Changes
