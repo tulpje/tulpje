@@ -14,12 +14,14 @@ use tulpje_lib::context::Services;
 
 mod commands;
 mod db;
-mod front_update_service;
 mod fronters;
 mod notify;
 mod roles;
 mod tasks;
 mod util;
+
+mod front_update_service;
+mod system_update_service;
 
 pub fn build() -> Module<Services> {
     // define metrics
@@ -55,6 +57,10 @@ pub fn build() -> Module<Services> {
         .service(
             "pk:update-fronters",
             service_func!(front_update_service::start),
+        )
+        .service(
+            "pk:update-systems",
+            service_func!(system_update_service::start),
         )
         .build()
 }

@@ -281,3 +281,60 @@ pub(crate) async fn cleanup_systems(db: &sqlx::PgPool) -> Result<u64, Error> {
     .await?
     .rows_affected())
 }
+
+/// get a list of systems that haven't been updated in 24 hours
+pub(crate) async fn get_systems_to_update(db: &sqlx::PgPool) -> Result<Vec<ModPkSystem>, Error> {
+    Ok(sqlx::query_as!(
+        ModPkSystem,
+        r#"
+            SELECT
+                pk_systems.uuid,
+                pk_systems.id,
+                pk_systems.name,
+                pk_systems.avatar,
+                pk_systems.created_at,
+                pk_systems.updated_at
+            FROM
+                pk_systems
+            WHERE (
+                pk_systems.updated_at <= NOW() - interval '24 hours'
+            ) AND (
+                    uuid IN (
+                        SELECT
+                            system_uuid
+                        FROM
+                            pk_notify_systems
+                        INNER JOIN
+                            guilds
+                        ON
+                            guilds.guild_id = pk_notify_systems.guild_id
+                        WHERE
+                            guilds.deleted_at IS NULL
+                    )
+                OR
+                    uuid IN (
+                        SELECT
+                            system_uuid
+                        FROM
+                            pk_guilds
+                        INNER JOIN
+                            pk_fronters
+                        ON
+                            pk_guilds.guild_id = pk_fronters.guild_id
+                        INNER JOIN
+                            guilds
+                        ON
+                            pk_guilds.guild_id = guilds.guild_id
+                        WHERE
+                            guilds.deleted_at IS NULL
+                    )
+            )
+            ORDER BY
+                updated_at
+            ASC
+            LIMIT 5
+        "#
+    )
+    .fetch_all(db)
+    .await?)
+}
