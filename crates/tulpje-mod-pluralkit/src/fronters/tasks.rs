@@ -5,15 +5,19 @@ use tracing::instrument;
 use tulpje_lib::util::{ERROR_UNKNOWN_CHANNEL, get_json_error_code, warning_message};
 use twilight_http::Client;
 use twilight_model::{
-    channel::message::{Component, MessageFlags, component::TextDisplay},
+    channel::message::{Component, Embed, MessageFlags, component::TextDisplay},
     id::{
         Id,
         marker::{ChannelMarker, GuildMarker},
     },
+    util::Timestamp,
 };
 
 use tulpje_framework::Error;
-use twilight_util::builder::message::{ContainerBuilder, SeparatorBuilder};
+use twilight_util::builder::{
+    embed::EmbedBuilder,
+    message::{ContainerBuilder, SeparatorBuilder},
+};
 
 use crate::{
     db::ModPkSystem,
@@ -29,21 +33,12 @@ use crate::{
 
 // type of notification we're sending to the guild
 enum GuildNotification {
-    Switch(Component),
+    Switch(Box<Embed>),
     NotFound(Component),
     Private(Component),
 }
 
 impl GuildNotification {
-    /// return the inner component of the notification
-    fn component(&self) -> &Component {
-        match self {
-            Self::Switch(component) | Self::NotFound(component) | Self::Private(component) => {
-                component
-            }
-        }
-    }
-
     /// description to use in logging
     fn description(&self) -> &'static str {
         match self {
@@ -113,6 +108,10 @@ async fn update_fronter_categories(
 }
 
 const MAX_FRONTERS_IN_MESSAGE: usize = 20;
+#[expect(
+    dead_code,
+    reason = "want to keep the reference components v2 implementation around"
+)]
 fn create_front_change_component(
     system: &ModPkSystem,
     switch: &Switch,
@@ -146,6 +145,35 @@ fn create_front_change_component(
         })
         .build()
         .into())
+}
+
+// NOTE: We're using this because new components don't show in
+//       mobile notifications and embeds do
+fn create_front_change_embed(system: &ModPkSystem, switch: &Switch) -> Result<Embed, Error> {
+    let builder = EmbedBuilder::new().title(format!(
+        "Switch: {}",
+        system.name.as_ref().unwrap_or(&system.id)
+    ));
+
+    let mut embed_parts = Vec::new();
+    for member in switch.fronters.iter().take(MAX_FRONTERS_IN_MESSAGE) {
+        embed_parts.push(format!("* {}", get_member_name(member)));
+    }
+
+    if switch.fronters.len() > MAX_FRONTERS_IN_MESSAGE {
+        embed_parts.push(format!(
+            "-# and {} more",
+            switch.fronters.len() - MAX_FRONTERS_IN_MESSAGE
+        ));
+    }
+
+    Ok(builder
+        .description(embed_parts.join("\n"))
+        .timestamp(Timestamp::from_secs(
+            switch.timestamp.and_utc().timestamp(),
+        )?)
+        .validate()?
+        .build())
 }
 
 #[tracing::instrument(skip_all)]
@@ -207,12 +235,17 @@ async fn notify_guild(
         .into());
     };
 
-    match discord_client
-        .create_message(*channel_id)
-        .flags(MessageFlags::IS_COMPONENTS_V2)
-        .components(slice::from_ref(notification.component()))
-        .await
-    {
+    let mut message = discord_client.create_message(*channel_id);
+    match notification {
+        GuildNotification::NotFound(component) | GuildNotification::Private(component) => {
+            message = message
+                .flags(MessageFlags::IS_COMPONENTS_V2)
+                .components(slice::from_ref(component));
+        }
+        GuildNotification::Switch(embed) => message = message.embeds(slice::from_ref(embed)),
+    }
+
+    match message.await {
         Err(err) if get_json_error_code(&err).is_some_and(|code| code == ERROR_UNKNOWN_CHANNEL) => {
             // channel was deleted remove it from pk_notify_channels
             tracing::info!(
@@ -292,7 +325,7 @@ async fn notify_front_change(
     system: &ModPkSystem,
     switch: &Switch,
 ) -> Result<(), Error> {
-    let notification = GuildNotification::Switch(create_front_change_component(system, switch)?);
+    let notification = GuildNotification::Switch(create_front_change_embed(system, switch)?.into());
     notify_guilds_for_system(db, discord_client, system, &notification).await?;
 
     Ok(())
