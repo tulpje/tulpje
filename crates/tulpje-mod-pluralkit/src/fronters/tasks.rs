@@ -5,7 +5,10 @@ use tracing::instrument;
 use tulpje_lib::util::{ERROR_UNKNOWN_CHANNEL, get_json_error_code, warning_message};
 use twilight_http::Client;
 use twilight_model::{
-    channel::message::{Component, Embed, MessageFlags, component::TextDisplay},
+    channel::message::{
+        Component, Embed, MessageFlags,
+        component::{Section, TextDisplay, Thumbnail, UnfurledMediaItem},
+    },
     id::{
         Id,
         marker::{ChannelMarker, GuildMarker},
@@ -15,7 +18,7 @@ use twilight_model::{
 
 use tulpje_framework::Error;
 use twilight_util::builder::{
-    embed::EmbedBuilder,
+    embed::{EmbedBuilder, ImageSource},
     message::{ContainerBuilder, SeparatorBuilder},
 };
 
@@ -116,10 +119,9 @@ fn create_front_change_component(
     system: &ModPkSystem,
     switch: &Switch,
 ) -> Result<Component, Error> {
-    let mut embed_lines = vec![format!(
-        "### Switch: {}",
-        system.name.as_ref().unwrap_or(&system.id)
-    )];
+    let system_name = system.name.as_ref().unwrap_or(&system.id);
+    let mut embed_lines = vec![format!("### Switch: {system_name}",)];
+
     for member in switch.fronters.iter().take(MAX_FRONTERS_IN_MESSAGE) {
         embed_lines.push(format!("* {}", get_member_name(member)));
     }
@@ -133,11 +135,38 @@ fn create_front_change_component(
 
     let unix_time_secs = switch.timestamp.and_utc().timestamp();
 
-    Ok(ContainerBuilder::new()
-        .component(TextDisplay {
+    let front_list = TextDisplay {
+        id: None,
+        content: embed_lines.join("\n"),
+    };
+
+    // handle system avatar
+    let front_component: Component = match &system.avatar {
+        Some(url) => Section {
             id: None,
-            content: embed_lines.join("\n"),
-        })
+            components: vec![front_list.into()],
+            accessory: Box::new(
+                Thumbnail {
+                    id: None,
+                    description: Some(Some(format!("avatar for {system_name}"))),
+                    media: UnfurledMediaItem {
+                        url: url.clone(),
+                        proxy_url: None,
+                        height: None,
+                        width: None,
+                        content_type: None,
+                    },
+                    spoiler: None,
+                }
+                .into(),
+            ),
+        }
+        .into(),
+        None => front_list.into(),
+    };
+
+    Ok(ContainerBuilder::new()
+        .component(front_component)
         .component(SeparatorBuilder::new().divider(false).build())
         .component(TextDisplay {
             id: None,
@@ -150,10 +179,17 @@ fn create_front_change_component(
 // NOTE: We're using this because new components don't show in
 //       mobile notifications and embeds do
 fn create_front_change_embed(system: &ModPkSystem, switch: &Switch) -> Result<Embed, Error> {
-    let builder = EmbedBuilder::new().title(format!(
+    let mut builder = EmbedBuilder::new().title(format!(
         "Switch: {}",
         system.name.as_ref().unwrap_or(&system.id)
     ));
+
+    if let Some(url) = &system.avatar {
+        match ImageSource::url(url) {
+            Ok(image_source) => builder = builder.thumbnail(image_source),
+            Err(err) => tracing::warn!("error parsing system avatar as url: {err}"),
+        };
+    }
 
     let mut embed_parts = Vec::new();
     for member in switch.fronters.iter().take(MAX_FRONTERS_IN_MESSAGE) {
