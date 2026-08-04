@@ -6,6 +6,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.26.0-rc.2] - 2026-10-04
+
+### Changed
+
+ - Update `event-listener` from `5.3.1` to `5.4.2` due to `RUSTSEC-2026-0221`
+ - Update `spin` from yanked `0.9.8` to `0.9.9`
+ - Update `quinn-proto` from `0.11.15` to `0.11.16` due to `RUSTSEC-2026-0185`
+ - Implement system update service
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * chore(deps): update `event-listener` from `5.3.1` to `5.4.2` due to `RUSTSEC-2026-0221` ([`df5d3f4`](https://github.com/tulpje/tulpje/commit/df5d3f471164055f3ccb2459fe321aeb206f7b63))
+ * chore(deps): update `spin` from yanked `0.9.8` to `0.9.9` ([`2e215e5`](https://github.com/tulpje/tulpje/commit/2e215e507138892b9711725dd37656e85a9fba2c))
+ * chore(deps): update `quinn-proto` from `0.11.15` to `0.11.16` due to `RUSTSEC-2026-0185` ([`9e6778c`](https://github.com/tulpje/tulpje/commit/9e6778cd8be437a4f5ceae04c9a541e71994042c))
+ * feat(tulpje-mod-pluralkit): implement system update service ([`d546939`](https://github.com/tulpje/tulpje/commit/d5469394482975a1c079f80046c93e586e393fd6))
+</details>
+
 ## [0.26.0-rc.1] - 2026-10-04
 
 ### Breaking Changes
