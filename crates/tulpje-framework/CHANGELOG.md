@@ -5,6 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.19.0-rc.1] - 2026-08-04
+
+### Breaking Changes
+
+ - Change `tasks` visibility to crate only
+ - Don't use references to self in `FrameworkBuilder` take ownership instead
+ - Move FrameworkBuilder to dedicated module
+
+### Added
+
+ - Add option for disabling scheduled tasks or services
+
+### Fixed
+
+ - Use `Arc` in arguments to FrameworkBuilder
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * fix(tulpje-framework)!: change `tasks` visibility to crate only ([`d4c98ef`](https://github.com/tulpje/tulpje/commit/d4c98ef8c179d2446d06182daca0c013f9d9ff64))
+ * feat(tulpje-framework): add option for disabling scheduled tasks or services ([`ccd5a74`](https://github.com/tulpje/tulpje/commit/ccd5a74fdcdecff257a7a7265472a71647f1468c))
+ * refactor(tulpje-framework)!: don't use references to self in `FrameworkBuilder` take ownership instead ([`30835e8`](https://github.com/tulpje/tulpje/commit/30835e81fcc9c2a5955001f7b7b794744f2a934b))
+ * fix(tulpje-framework): use `Arc` in arguments to FrameworkBuilder ([`8d2a65d`](https://github.com/tulpje/tulpje/commit/8d2a65d4dfcdf91042c62e64b4834ad8a650981c))
+ * refactor(tulpje-framework)!: move FrameworkBuilder to dedicated module ([`0b59892`](https://github.com/tulpje/tulpje/commit/0b598928fcb95739747b72143c8894a134332c8e))
+</details>
+
 ## [0.18.0] - 2026-07-26
 
 ### Commit Details

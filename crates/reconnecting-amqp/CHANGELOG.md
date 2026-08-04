@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.4-rc.1] - 2026-08-04
+
+### Changed
+
+ - Rewrite all repo references to the correct new one
+
+### Removed
+
+ - Remove finished/incorrect TODOs
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * chore: remove finished/incorrect TODOs ([`8c60ec3`](https://github.com/tulpje/tulpje/commit/8c60ec377a03d00adfb2c922585eb9ad0ef980da))
+ * chore: rewrite all repo references to the correct new one ([`c6e4f73`](https://github.com/tulpje/tulpje/commit/c6e4f73f491eb438439bdf31451eba826667279f))
+</details>
+
 ## [0.2.3] - 2026-04-01
 
 ### Commit Details
