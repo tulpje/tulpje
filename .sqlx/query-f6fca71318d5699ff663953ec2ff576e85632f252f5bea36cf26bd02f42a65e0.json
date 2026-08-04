@@ -1,0 +1,52 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                pk_systems.id,\n                pk_systems.uuid,\n                pk_systems.name,\n                pk_systems.avatar,\n                pk_systems.created_at,\n                pk_systems.updated_at\n            FROM\n                pk_guilds\n            INNER JOIN\n                pk_systems\n            ON\n                pk_systems.uuid = pk_guilds.system_uuid\n            WHERE\n                guild_id = $1\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 1,
+        "name": "uuid",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 2,
+        "name": "name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "avatar",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "created_at",
+        "type_info": "Timestamp"
+      },
+      {
+        "ordinal": 5,
+        "name": "updated_at",
+        "type_info": "Timestamp"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int8"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      true,
+      true,
+      false,
+      false
+    ]
+  },
+  "hash": "f6fca71318d5699ff663953ec2ff576e85632f252f5bea36cf26bd02f42a65e0"
+}

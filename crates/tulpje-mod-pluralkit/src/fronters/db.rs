@@ -231,16 +231,21 @@ pub(crate) async fn get_systems_to_update(db: &sqlx::PgPool) -> Result<Vec<ModPk
         ModPkSystem,
         r#"
             SELECT
-                uuid, id, name
+                pk_systems.uuid,
+                pk_systems.id,
+                pk_systems.name,
+                pk_systems.avatar,
+                pk_systems.created_at,
+                pk_systems.updated_at
             FROM
                 pk_systems
             LEFT JOIN
                 pk_system_fronters
             ON pk_systems.uuid = pk_system_fronters.system_uuid
             WHERE (
-                    updated_at IS NULL
+                    pk_system_fronters.updated_at IS NULL
                 OR
-                    updated_at <= NOW() - interval '1 minutes'
+                    pk_system_fronters.updated_at <= NOW() - interval '1 minutes'
             ) AND (
                     uuid IN (
                         SELECT

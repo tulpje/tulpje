@@ -1,5 +1,5 @@
 use pkrs_fork::model::System;
-use sqlx::prelude::FromRow;
+use sqlx::{prelude::FromRow, types::chrono};
 use twilight_model::id::{
     Id,
     marker::{GuildMarker, UserMarker},
@@ -73,10 +73,14 @@ pub(crate) async fn get_guild_settings(db: &sqlx::PgPool) -> Result<Vec<ModPkGui
 }
 
 #[derive(Debug, FromRow)]
+#[expect(dead_code, reason = "reflects database structure")]
 pub(crate) struct ModPkSystem {
     pub(crate) id: String,
     pub(crate) uuid: Uuid,
     pub(crate) name: Option<String>,
+    pub(crate) avatar: Option<String>,
+    pub(crate) created_at: chrono::NaiveDateTime,
+    pub(crate) updated_at: chrono::NaiveDateTime,
 }
 
 impl From<System> for ModPkSystem {
@@ -85,17 +89,31 @@ impl From<System> for ModPkSystem {
             id: value.id.0,
             uuid: value.uuid,
             name: value.name,
+            avatar: value.avatar_url.map(|url| url.to_string()),
+            created_at: chrono::Utc::now().naive_utc(),
+            updated_at: chrono::Utc::now().naive_utc(),
         }
     }
 }
 
 #[expect(dead_code, reason = "useful utility function")]
 pub(crate) async fn get_all_systems(db: &sqlx::PgPool) -> Result<Vec<ModPkSystem>, Error> {
-    Ok(
-        sqlx::query_as!(ModPkSystem, "SELECT id, uuid, name FROM pk_systems",)
-            .fetch_all(db)
-            .await?,
+    Ok(sqlx::query_as!(
+        ModPkSystem,
+        r#"
+            SELECT
+                id,
+                uuid,
+                name,
+                avatar,
+                created_at,
+                updated_at
+            FROM
+                pk_systems
+        "#,
     )
+    .fetch_all(db)
+    .await?)
 }
 pub(crate) async fn get_systems(
     db: &sqlx::PgPool,
@@ -103,7 +121,19 @@ pub(crate) async fn get_systems(
 ) -> Result<Vec<ModPkSystem>, Error> {
     Ok(sqlx::query_as!(
         ModPkSystem,
-        "SELECT id, uuid, name FROM pk_systems WHERE uuid = ANY($1)",
+        r#"
+            SELECT
+                id,
+                uuid,
+                name,
+                avatar,
+                created_at,
+                updated_at
+            FROM
+                pk_systems
+            WHERE
+                uuid = ANY($1)
+        "#,
         &uuids[..],
     )
     .fetch_all(db)
@@ -117,14 +147,38 @@ pub(crate) async fn get_system(
     match system_ref {
         SystemRef::Id(id) => Ok(sqlx::query_as!(
             ModPkSystem,
-            "SELECT id, uuid, name FROM pk_systems WHERE id = $1",
+            r#"
+                SELECT
+                    id,
+                    uuid,
+                    name,
+                    avatar,
+                    created_at,
+                    updated_at
+                FROM
+                    pk_systems
+                WHERE
+                    id = $1
+            "#,
             id
         )
         .fetch_optional(db)
         .await?),
         SystemRef::Uuid(uuid) => Ok(sqlx::query_as!(
             ModPkSystem,
-            "SELECT id, uuid, name FROM pk_systems WHERE uuid = $1",
+            r#"
+                SELECT
+                    id,
+                    uuid,
+                    name,
+                    avatar,
+                    created_at,
+                    updated_at
+                FROM
+                    pk_systems
+                WHERE
+                    uuid = $1
+            "#,
             uuid
         )
         .fetch_optional(db)
@@ -143,7 +197,10 @@ pub(crate) async fn get_system_for_guild(
             SELECT
                 pk_systems.id,
                 pk_systems.uuid,
-                pk_systems.name
+                pk_systems.name,
+                pk_systems.avatar,
+                pk_systems.created_at,
+                pk_systems.updated_at
             FROM
                 pk_guilds
             INNER JOIN
@@ -161,10 +218,23 @@ pub(crate) async fn get_system_for_guild(
 
 pub(crate) async fn update_system(db: &sqlx::PgPool, system: &ModPkSystem) -> Result<(), Error> {
     sqlx::query!(
-        "INSERT INTO pk_systems (id, uuid, name) VALUES ($1, $2, $3) ON CONFLICT (uuid) DO UPDATE SET id = $1, name = $3",
+        r#"
+            INSERT INTO
+                pk_systems (id, uuid, name, avatar)
+            VALUES
+                ($1, $2, $3, $4)
+            ON CONFLICT
+                (uuid)
+            DO UPDATE SET
+                id = $1,
+                name = $3,
+                avatar = $4,
+                updated_at = NOW()
+        "#,
         system.id,
         system.uuid,
         system.name,
+        system.avatar,
     )
     .execute(db)
     .await?;
@@ -176,7 +246,7 @@ pub(crate) async fn update_system(db: &sqlx::PgPool, system: &ModPkSystem) -> Re
 pub(crate) async fn delete_system(db: &sqlx::PgPool, system_ref: SystemRef) -> Result<(), Error> {
     match system_ref {
         SystemRef::Uuid(uuid) => {
-            sqlx::query!("DELETE FROM pk_systems WHERE uuid = $1", uuid,)
+            sqlx::query!("DELETE FROM pk_systems WHERE uuid = $1", uuid)
                 .execute(db)
                 .await?;
             Ok(())
