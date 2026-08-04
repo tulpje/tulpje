@@ -17,11 +17,7 @@ pub(super) async fn resolve_system_from_reference(
     db: &sqlx::PgPool,
 ) -> Result<Option<ModPkSystem>, Error> {
     match pk_client.get_system(&PkId(system_ref.clone().into())).await {
-        Ok(system) => Ok(Some(ModPkSystem {
-            id: system.id.0,
-            uuid: system.uuid,
-            name: system.name,
-        })),
+        Ok(system) => Ok(Some(system.into())),
         Err(PluralKitError::Pk(_, message)) if message.code == 20001 => match system_ref {
             SystemRef::Id(_) | SystemRef::Uuid(_) => Ok(db::get_system(db, system_ref).await?),
             SystemRef::DiscordId(_) => {

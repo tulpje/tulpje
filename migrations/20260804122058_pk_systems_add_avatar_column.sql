@@ -1,0 +1,1 @@
+ALTER TABLE pk_systems ADD COLUMN avatar TEXT NULL;
