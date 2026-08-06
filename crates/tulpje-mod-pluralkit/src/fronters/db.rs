@@ -278,7 +278,7 @@ pub(crate) async fn get_systems_to_update(db: &sqlx::PgPool) -> Result<Vec<ModPk
                     )
             )
             ORDER BY
-                updated_at
+                pk_system_fronters.updated_at
             ASC NULLS FIRST
             LIMIT 5
         "#
