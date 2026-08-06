@@ -22,6 +22,9 @@ async fn process_system(
 async fn tick(ctx: &TaskContext) -> Result<(), Error> {
     let systems_to_update = db::get_systems_to_update(&ctx.services.db).await?;
 
+    let outdated_systems = db::get_outdated_system_count(&ctx.services.db).await?;
+    metrics::counter!("pk:outdated-systems").absolute(outdated_systems as u64);
+
     for system in &systems_to_update {
         tracing::info!("updating system {}", system.uuid);
         if let Err(err) = process_system(&ctx.services.db, &ctx.services.pk, system).await {
