@@ -6,6 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.26.1-rc.1] - 2026-10-04
+
+### Added
+
+ - Add outdated system and fronter stats
+
+### Fixed
+
+ - Use correct `updated_at` column for updating fronters
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * feat(tulpje-mod-pluralkit): add outdated system and fronter stats ([`8899911`](https://github.com/tulpje/tulpje/commit/8899911d7de561a07414e9ac82cca398e5814ca0))
+ * fix(tulpje-mod-pluralkit): use correct `updated_at` column for updating fronters ([`2bb64cf`](https://github.com/tulpje/tulpje/commit/2bb64cf1dd12d2425faa5c7b4fdb3e6023a45755))
+</details>
+
 ## [0.26.0-rc.2] - 2026-10-04
 
 ### Changed
