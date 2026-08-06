@@ -225,6 +225,57 @@ pub(crate) async fn delete_fronters(db: &sqlx::PgPool, system_uuid: Uuid) -> Res
     Ok(())
 }
 
+pub(crate) async fn get_outdated_fronter_count(db: &sqlx::PgPool) -> Result<usize, Error> {
+    Ok(sqlx::query_scalar!(
+        r#"
+            SELECT
+                COUNT(pk_systems.uuid) AS "count!"
+            FROM
+                pk_systems
+            LEFT JOIN
+                pk_system_fronters
+            ON pk_systems.uuid = pk_system_fronters.system_uuid
+            WHERE (
+                    pk_system_fronters.updated_at IS NULL
+                OR
+                    pk_system_fronters.updated_at <= NOW() - interval '1 minutes'
+            ) AND (
+                    uuid IN (
+                        SELECT
+                            system_uuid
+                        FROM
+                            pk_notify_systems
+                        INNER JOIN
+                            guilds
+                        ON
+                            guilds.guild_id = pk_notify_systems.guild_id
+                        WHERE
+                            guilds.deleted_at IS NULL
+                    )
+                OR
+                    uuid IN (
+                        SELECT
+                            system_uuid
+                        FROM
+                            pk_guilds
+                        INNER JOIN
+                            pk_fronters
+                        ON
+                            pk_guilds.guild_id = pk_fronters.guild_id
+                        INNER JOIN
+                            guilds
+                        ON
+                            pk_guilds.guild_id = guilds.guild_id
+                        WHERE
+                            guilds.deleted_at IS NULL
+                    )
+            )
+        "#
+    )
+    .fetch_one(db)
+    .await? as usize)
+}
+
 pub(crate) async fn get_systems_to_update(db: &sqlx::PgPool) -> Result<Vec<ModPkSystem>, Error> {
     // fetch 5 systems ordered by most stale, and that haven't been updated in over a minute
     Ok(sqlx::query_as!(
