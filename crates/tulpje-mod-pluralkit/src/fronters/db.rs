@@ -1,3 +1,4 @@
+use chrono::Utc;
 use sqlx::prelude::FromRow;
 use twilight_model::id::{
     Id,
@@ -226,6 +227,7 @@ pub(crate) async fn delete_fronters(db: &sqlx::PgPool, system_uuid: Uuid) -> Res
 }
 
 pub(crate) async fn get_outdated_fronter_count(db: &sqlx::PgPool) -> Result<usize, Error> {
+    let tracked_systems = get_tracked_system_count(db).await?;
     Ok(sqlx::query_scalar!(
         r#"
             SELECT
@@ -238,7 +240,7 @@ pub(crate) async fn get_outdated_fronter_count(db: &sqlx::PgPool) -> Result<usiz
             WHERE (
                     pk_system_fronters.updated_at IS NULL
                 OR
-                    pk_system_fronters.updated_at <= NOW() - interval '1 minutes'
+                    EXTRACT(epoch FROM pk_system_fronters.updated_at)::bigint <= $1
             ) AND (
                     uuid IN (
                         SELECT
@@ -270,7 +272,8 @@ pub(crate) async fn get_outdated_fronter_count(db: &sqlx::PgPool) -> Result<usiz
                             guilds.deleted_at IS NULL
                     )
             )
-        "#
+        "#,
+        Utc::now().timestamp() - (tracked_systems as i64).max(60)
     )
     .fetch_one(db)
     .await? as usize)
