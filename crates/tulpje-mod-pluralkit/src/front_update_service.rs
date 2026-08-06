@@ -14,6 +14,9 @@ async fn tick(ctx: &TaskContext) -> Result<(), Error> {
     let system_count = db::get_system_count(&ctx.services.db).await?;
     metrics::counter!("pk:total-systems").absolute(system_count as u64);
 
+    let outdated_fronters = db::get_outdated_fronter_count(&ctx.services.db).await?;
+    metrics::counter!("pk:outdated-fronters").absolute(outdated_fronters as u64);
+
     let systems_to_update = db::get_systems_to_update(&ctx.services.db).await?;
 
     for system in &systems_to_update {
