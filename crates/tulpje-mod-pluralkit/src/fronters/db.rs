@@ -212,9 +212,9 @@ pub(crate) async fn update_fronters_timestamp(
     )
     .execute(db)
     .await
-    .map_err(|err|
+    .map_err(|err| {
         format!("error updating fronter timestamp in db for system {system_uuid}: {err}")
-    )?;
+    })?;
 
     Ok(())
 }
