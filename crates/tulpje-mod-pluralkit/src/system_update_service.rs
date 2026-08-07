@@ -47,7 +47,6 @@ async fn tick(ctx: &TaskContext) -> Result<(), Error> {
 }
 
 pub(crate) async fn start(ctx: TaskContext, shutdown: CancellationToken) -> Result<(), Error> {
-    // TODO: Change interval to 10 minutes
     let mut interval = tokio::time::interval(Duration::from_mins(10));
     interval.set_missed_tick_behavior(MissedTickBehavior::Skip);
 
