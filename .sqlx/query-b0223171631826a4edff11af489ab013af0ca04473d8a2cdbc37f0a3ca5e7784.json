@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE\n                pk_systems\n            SET\n                updated_at = NOW()\n            WHERE\n                uuid = $1\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "b0223171631826a4edff11af489ab013af0ca04473d8a2cdbc37f0a3ca5e7784"
+}
