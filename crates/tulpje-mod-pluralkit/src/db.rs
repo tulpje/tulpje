@@ -242,7 +242,6 @@ pub(crate) async fn update_system(db: &sqlx::PgPool, system: &ModPkSystem) -> Re
     Ok(())
 }
 
-#[expect(dead_code, reason = "utility function we want to keep")]
 pub(crate) async fn touch_system(db: &sqlx::PgPool, uuid: Uuid) -> Result<(), Error> {
     sqlx::query!(
         r#"
