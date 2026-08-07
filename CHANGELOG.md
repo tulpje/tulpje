@@ -6,6 +6,44 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.26.1-rc.3] - 2026-10-04
+
+### Added
+
+ - Add TODOs
+ - Add todo
+
+### Changed
+
+ - Style fix
+ - Format sql queries
+ - Use view for tracked systems
+ - Implement `touch_system` db function
+
+### Fixed
+
+ - Update `updated_at` for system even if system is deleted
+ - Use non-nullable type override in query
+
+### Removed
+
+ - Remove finished TODO
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * chore: remove finished TODO ([`1032933`](https://github.com/tulpje/tulpje/commit/1032933c5fc5ae439cc445c304388327d91fa9b8))
+ * fix(tulpje-mod-pluralkit): update `updated_at` for system even if system is deleted ([`647535b`](https://github.com/tulpje/tulpje/commit/647535b69d70e2fe7e4c50c04f60a410d87f0e94))
+ * chore(tulpje-mod-pluralkit): style fix ([`cf84108`](https://github.com/tulpje/tulpje/commit/cf84108c07524e4bce3e96198f58491b902f24de))
+ * fix(tulpje-mod-pluralkit): use non-nullable type override in query ([`753d2a7`](https://github.com/tulpje/tulpje/commit/753d2a74f816782263aa0ccb6925179b9fd39ba0))
+ * chore(tulpje-mod-pluralkit): format sql queries ([`3fa3727`](https://github.com/tulpje/tulpje/commit/3fa37278c17331cb84ce9ec000b5f95bfaebcf6b))
+ * chore(tulpje-mod-pluralkit): add TODOs ([`6d4839b`](https://github.com/tulpje/tulpje/commit/6d4839b5b8e1cb677f1bda2aa96718b805027f7e))
+ * refactor(tulpje-mod-pluralkit): use view for tracked systems ([`eeb9a91`](https://github.com/tulpje/tulpje/commit/eeb9a91c935d8b8136bcd95a2cba3af5a18d1b95))
+ * chore(tulpje-mod-pluralkit): add todo ([`a63fb55`](https://github.com/tulpje/tulpje/commit/a63fb55402303fa6cbb2f642c47b05bca0c324ec))
+ * feat(tulpje-mod-pluralkit): implement `touch_system` db function ([`4f107d6`](https://github.com/tulpje/tulpje/commit/4f107d6ed696e9b51e56b5538e2496058d0fb1f3))
+</details>
+
 ## [0.26.1-rc.2] - 2026-10-04
 
 ### Fixed
