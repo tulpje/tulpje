@@ -14,6 +14,7 @@ async fn process_system(
     system: &ModPkSystem,
 ) -> Result<(), Error> {
     // TODO: Clean-up deleted systems
+    // TODO: Update timestamp on pluralkit 5xx errors
     let system = pk.get_system(&PkId(system.uuid.to_string())).await?;
     db::update_system(db, &system.into()).await?;
     Ok(())
