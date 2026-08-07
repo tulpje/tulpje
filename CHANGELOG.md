@@ -5,6 +5,52 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.26.1-rc.3] - 2026-08-07
+
+### Added
+
+ - Add TODOs
+ - Add todo
+ - Add outdated system and fronter stats
+
+### Changed
+
+ - Style fix
+ - Format sql queries
+ - Use view for tracked systems
+ - Implement `touch_system` db function
+
+### Fixed
+
+ - Update `updated_at` for system even if system is deleted
+ - Use non-nullable type override in query
+ - Correct calculations for outdated fronter count
+ - Use correct `updated_at` column for updating fronters
+ - Use correct `updated_at` column for updating fronters
+
+### Removed
+
+ - Remove finished TODO
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * chore: remove finished TODO ([`4a650f0`](https://github.com/tulpje/tulpje/commit/4a650f078a1662c7053560035d505a6c6f75c0b0))
+ * fix(tulpje-mod-pluralkit): update `updated_at` for system even if system is deleted ([`5d154fd`](https://github.com/tulpje/tulpje/commit/5d154fdb32cc07f3b88c28e1ec31a0246d019ffe))
+ * chore(tulpje-mod-pluralkit): style fix ([`6d3bac2`](https://github.com/tulpje/tulpje/commit/6d3bac29b5ec99fd9c680a31d7a3464b421e8375))
+ * fix(tulpje-mod-pluralkit): use non-nullable type override in query ([`5d66024`](https://github.com/tulpje/tulpje/commit/5d660243da3666ad11ab647dac208499550866ef))
+ * chore(tulpje-mod-pluralkit): format sql queries ([`4ab887d`](https://github.com/tulpje/tulpje/commit/4ab887d8e545def5ab3489a9910fce3df2c439a2))
+ * chore(tulpje-mod-pluralkit): add TODOs ([`5589d1a`](https://github.com/tulpje/tulpje/commit/5589d1a6d5ed004b7615b7cb3278a8dbdcff1079))
+ * refactor(tulpje-mod-pluralkit): use view for tracked systems ([`e5b6bd4`](https://github.com/tulpje/tulpje/commit/e5b6bd48c8048b6497f15b34959de5f35464b0a4))
+ * chore(tulpje-mod-pluralkit): add todo ([`6b2ebe2`](https://github.com/tulpje/tulpje/commit/6b2ebe244444515e772ec969138b8574906b5284))
+ * feat(tulpje-mod-pluralkit): implement `touch_system` db function ([`8a65350`](https://github.com/tulpje/tulpje/commit/8a6535073bf101211438e63f2d61cba1b49e8b2e))
+ * fix(tulpje-mod-pluralkit): correct calculations for outdated fronter count ([`b9ebeee`](https://github.com/tulpje/tulpje/commit/b9ebeeec923117b5450bb3b92ee9191ae79e5243))
+ * feat(tulpje-mod-pluralkit): add outdated system and fronter stats ([`91bad39`](https://github.com/tulpje/tulpje/commit/91bad39e3da4c5cbe0460b8420fee939e0c2155c))
+ * fix(tulpje-mod-pluralkit): use correct `updated_at` column for updating fronters ([`b1575dd`](https://github.com/tulpje/tulpje/commit/b1575dd99ca9fc57259d957ff719f509d97c98f2))
+ * fix(tulpje-mod-pluralkit): use correct `updated_at` column for updating fronters ([`cc24efb`](https://github.com/tulpje/tulpje/commit/cc24efb1c43f3ace2ae36e8ea4524d4e1541b868))
+</details>
+
 ## [0.26.1-rc.2] - 2026-08-06
 
 ### Fixed
