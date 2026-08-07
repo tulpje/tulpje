@@ -123,18 +123,16 @@ pub(crate) async fn save_fronter_category(
 }
 
 pub(crate) async fn get_tracked_system_count(db: &sqlx::PgPool) -> Result<usize, Error> {
-    // TODO: Use nullability assertion in query
     Ok(sqlx::query_scalar!(
         r#"
             SELECT
-                COUNT(uuid)
+                COUNT(uuid) AS "count!"
             FROM
                 pk_tracked_systems
         "#
     )
     .fetch_one(db)
-    .await?
-    .unwrap_or_default() as usize)
+    .await? as usize)
 }
 
 pub(crate) async fn get_system_count(db: &sqlx::PgPool) -> Result<usize, Error> {
