@@ -107,25 +107,7 @@ pub(crate) async fn get_tracked_system_count(db: &sqlx::PgPool) -> Result<usize,
         SELECT
             COUNT(uuid)
         FROM
-            pk_systems
-        WHERE
-            uuid IN (
-                SELECT
-                    system_uuid
-                FROM
-                    pk_notify_systems
-            )
-        OR
-            uuid IN (
-                SELECT
-                    system_uuid
-                FROM
-                    pk_guilds
-                INNER JOIN
-                    pk_fronters
-                ON
-                    pk_guilds.guild_id = pk_fronters.guild_id
-            )
+            pk_tracked_systems
         "#
     )
     .fetch_one(db)
@@ -242,35 +224,7 @@ pub(crate) async fn get_outdated_fronter_count(db: &sqlx::PgPool) -> Result<usiz
                 OR
                     EXTRACT(epoch FROM pk_system_fronters.updated_at)::bigint <= $1
             ) AND (
-                    uuid IN (
-                        SELECT
-                            system_uuid
-                        FROM
-                            pk_notify_systems
-                        INNER JOIN
-                            guilds
-                        ON
-                            guilds.guild_id = pk_notify_systems.guild_id
-                        WHERE
-                            guilds.deleted_at IS NULL
-                    )
-                OR
-                    uuid IN (
-                        SELECT
-                            system_uuid
-                        FROM
-                            pk_guilds
-                        INNER JOIN
-                            pk_fronters
-                        ON
-                            pk_guilds.guild_id = pk_fronters.guild_id
-                        INNER JOIN
-                            guilds
-                        ON
-                            pk_guilds.guild_id = guilds.guild_id
-                        WHERE
-                            guilds.deleted_at IS NULL
-                    )
+                uuid IN (SELECT uuid FROM pk_tracked_systems)
             )
         "#,
         Utc::now().timestamp() - (tracked_systems as i64).max(60)
@@ -301,35 +255,7 @@ pub(crate) async fn get_systems_to_update(db: &sqlx::PgPool) -> Result<Vec<ModPk
                 OR
                     pk_system_fronters.updated_at <= NOW() - interval '1 minutes'
             ) AND (
-                    uuid IN (
-                        SELECT
-                            system_uuid
-                        FROM
-                            pk_notify_systems
-                        INNER JOIN
-                            guilds
-                        ON
-                            guilds.guild_id = pk_notify_systems.guild_id
-                        WHERE
-                            guilds.deleted_at IS NULL
-                    )
-                OR
-                    uuid IN (
-                        SELECT
-                            system_uuid
-                        FROM
-                            pk_guilds
-                        INNER JOIN
-                            pk_fronters
-                        ON
-                            pk_guilds.guild_id = pk_fronters.guild_id
-                        INNER JOIN
-                            guilds
-                        ON
-                            pk_guilds.guild_id = guilds.guild_id
-                        WHERE
-                            guilds.deleted_at IS NULL
-                    )
+                uuid IN (SELECT uuid FROM pk_tracked_systems)
             )
             ORDER BY
                 pk_system_fronters.updated_at
