@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT category_id FROM pk_fronters WHERE guild_id = $1",
+  "query": "\n            SELECT\n                category_id\n            FROM\n                pk_fronters\n            WHERE\n                guild_id = $1\n        ",
   "describe": {
     "columns": [
       {
@@ -18,5 +18,5 @@
       false
     ]
   },
-  "hash": "6ab9848d9a3521c05a3be8347cb103ccb9323eaa2e422c2e462b3dc0d588a748"
+  "hash": "40db6c7d5eba90b02d2df21e4229f90945169cff8796b19dc061a26aee75175b"
 }
