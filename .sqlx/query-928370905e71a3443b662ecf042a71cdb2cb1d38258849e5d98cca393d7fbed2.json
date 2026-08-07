@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n        SELECT COUNT(uuid) FROM pk_systems;\n    ",
+  "query": "\n            SELECT\n                COUNT(uuid)\n            FROM\n                pk_tracked_systems\n        ",
   "describe": {
     "columns": [
       {
@@ -16,5 +16,5 @@
       null
     ]
   },
-  "hash": "8862e2c6f3059e8545defb3c4b95d53868bd0cea7390f4952274d08051ae4492"
+  "hash": "928370905e71a3443b662ecf042a71cdb2cb1d38258849e5d98cca393d7fbed2"
 }

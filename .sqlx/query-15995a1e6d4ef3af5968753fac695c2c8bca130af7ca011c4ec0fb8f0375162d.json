@@ -1,0 +1,50 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                pk_systems.uuid,\n                pk_systems.id,\n                pk_systems.name,\n                pk_systems.avatar,\n                pk_systems.created_at,\n                pk_systems.updated_at\n            FROM\n                pk_systems\n            LEFT JOIN\n                pk_system_fronters\n            ON pk_systems.uuid = pk_system_fronters.system_uuid\n            WHERE\n                (\n                    pk_system_fronters.updated_at IS NULL\n                    OR pk_system_fronters.updated_at <= NOW() - interval '1 minutes'\n                )\n                AND uuid IN (\n                    SELECT\n                        uuid\n                    FROM\n                        pk_tracked_systems\n                )\n            ORDER BY\n                pk_system_fronters.updated_at\n            ASC NULLS FIRST\n            LIMIT 5\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "uuid",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "id",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "avatar",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "created_at",
+        "type_info": "Timestamp"
+      },
+      {
+        "ordinal": 5,
+        "name": "updated_at",
+        "type_info": "Timestamp"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false,
+      false,
+      true,
+      true,
+      false,
+      false
+    ]
+  },
+  "hash": "15995a1e6d4ef3af5968753fac695c2c8bca130af7ca011c4ec0fb8f0375162d"
+}
