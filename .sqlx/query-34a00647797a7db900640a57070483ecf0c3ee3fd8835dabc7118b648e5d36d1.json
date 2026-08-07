@@ -1,0 +1,22 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                COUNT(pk_systems.uuid) AS \"count!\"\n            FROM\n                pk_systems\n            LEFT JOIN\n                pk_system_fronters\n            ON pk_systems.uuid = pk_system_fronters.system_uuid\n            WHERE\n                (\n                    pk_system_fronters.updated_at IS NULL\n                    OR EXTRACT(epoch FROM pk_system_fronters.updated_at)::bigint <= $1\n                )\n                AND uuid IN (\n                    SELECT\n                        uuid\n                    FROM\n                        pk_tracked_systems\n                )\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "count!",
+        "type_info": "Int8"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int8"
+      ]
+    },
+    "nullable": [
+      null
+    ]
+  },
+  "hash": "34a00647797a7db900640a57070483ecf0c3ee3fd8835dabc7118b648e5d36d1"
+}

@@ -22,7 +22,13 @@ pub(crate) async fn get_fronter_categories(
 ) -> Result<Vec<ModPkFrontersRow>, Error> {
     Ok(sqlx::query_as!(
         ModPkFrontersRow,
-        "SELECT guild_id, category_id FROM pk_fronters"
+        r#"
+            SELECT
+                guild_id,
+                category_id
+            FROM
+                pk_fronters
+        "#
     )
     .fetch_all(db)
     .await?)
@@ -36,13 +42,12 @@ pub(crate) async fn get_fronter_categories_for_system(
         ModPkFrontersRow,
         r#"
             SELECT
-                pk_fronters.guild_id, category_id
+                pk_fronters.guild_id,
+                category_id
             FROM
                 pk_fronters
             INNER JOIN
-                pk_guilds
-            ON
-                pk_guilds.guild_id = pk_fronters.guild_id
+                pk_guilds ON pk_guilds.guild_id = pk_fronters.guild_id
             WHERE
                 system_uuid = $1
         "#,
@@ -57,7 +62,14 @@ pub(crate) async fn get_fronter_category(
     guild_id: Id<GuildMarker>,
 ) -> Result<Option<DbId<ChannelMarker>>, Error> {
     let result = sqlx::query_scalar!(
-        "SELECT category_id FROM pk_fronters WHERE guild_id = $1",
+        r#"
+            SELECT
+                category_id
+            FROM
+                pk_fronters
+            WHERE
+                guild_id = $1
+        "#,
         i64::from(DbId(guild_id)),
     )
     .fetch_optional(db)
@@ -90,9 +102,17 @@ pub(crate) async fn save_fronter_category(
     guild_id: Id<GuildMarker>,
     channel_id: Id<ChannelMarker>,
 ) -> Result<(), Error> {
-    // TODO: Format query indentation
     sqlx::query!(
-        "INSERT INTO pk_fronters (guild_id, category_id) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET category_id = $2",
+        r#"
+            INSERT INTO pk_fronters
+                (guild_id, category_id)
+            VALUES
+                ($1, $2)
+            ON CONFLICT
+                (guild_id)
+            DO UPDATE SET
+                category_id = $2
+        "#,
         i64::from(DbId(guild_id)),
         i64::from(DbId(channel_id)),
     )
@@ -106,10 +126,10 @@ pub(crate) async fn get_tracked_system_count(db: &sqlx::PgPool) -> Result<usize,
     // TODO: Use nullability assertion in query
     Ok(sqlx::query_scalar!(
         r#"
-        SELECT
-            COUNT(uuid)
-        FROM
-            pk_tracked_systems
+            SELECT
+                COUNT(uuid)
+            FROM
+                pk_tracked_systems
         "#
     )
     .fetch_one(db)
@@ -118,11 +138,13 @@ pub(crate) async fn get_tracked_system_count(db: &sqlx::PgPool) -> Result<usize,
 }
 
 pub(crate) async fn get_system_count(db: &sqlx::PgPool) -> Result<usize, Error> {
-    // TODO: format query correctly
     Ok(sqlx::query_scalar!(
         r#"
-        SELECT COUNT(uuid) FROM pk_systems;
-    "#
+            SELECT
+                COUNT(uuid)
+            FROM
+                pk_systems;
+        "#
     )
     .fetch_one(db)
     .await?
@@ -156,10 +178,18 @@ pub(crate) async fn get_fronters(
     db: &sqlx::PgPool,
     system_uuid: Uuid,
 ) -> Result<Option<ModPkSystemFronters>, Error> {
-    // TODO: format query correctly
     Ok(sqlx::query_as!(
         ModPkSystemFronters,
-        r#"SELECT system_uuid, fronters as "fronters: sqlx::types::Json<Vec<Uuid>>", updated_at FROM pk_system_fronters WHERE system_uuid = $1"#,
+        r#"
+            SELECT
+                system_uuid,
+                fronters AS "fronters: sqlx::types::Json<Vec<Uuid>>",
+                updated_at
+            FROM
+                pk_system_fronters
+            WHERE
+                system_uuid = $1
+        "#,
         system_uuid
     )
     .fetch_optional(db)
@@ -170,9 +200,16 @@ pub(crate) async fn update_fronters_timestamp(
     db: &sqlx::PgPool,
     system_uuid: Uuid,
 ) -> Result<(), Error> {
-    // TODO: format query correctly
     sqlx::query!(
-        "INSERT INTO pk_system_fronters (system_uuid, fronters, updated_at) VALUES ($1, '[]', NOW()) ON CONFLICT (system_uuid) DO UPDATE SET updated_at = NOW()",
+        r#"
+            INSERT INTO pk_system_fronters (system_uuid, fronters, updated_at)
+            VALUES
+                ($1, '[]', NOW())
+            ON CONFLICT
+                (system_uuid)
+            DO UPDATE SET
+                updated_at = NOW()
+        "#,
         system_uuid,
     )
     .execute(db)
@@ -189,9 +226,17 @@ pub(crate) async fn update_fronters(
     system_uuid: Uuid,
     fronters: &[Uuid],
 ) -> Result<(), Error> {
-    // TODO: format query correctly
     sqlx::query!(
-        "INSERT INTO pk_system_fronters (system_uuid, fronters, updated_at) VALUES ($1, $2, $3) ON CONFLICT (system_uuid) DO UPDATE SET fronters = $2, updated_at = $3",
+        r#"
+            INSERT INTO pk_system_fronters (system_uuid, fronters, updated_at)
+            VALUES
+                ($1, $2, $3)
+            ON CONFLICT
+                (system_uuid)
+            DO UPDATE SET
+                fronters = $2,
+                updated_at = $3
+        "#,
         system_uuid,
         sqlx::types::Json(fronters) as _,
         chrono::Utc::now().naive_utc(),
@@ -204,9 +249,13 @@ pub(crate) async fn update_fronters(
 
 #[expect(dead_code, reason = "useful utility function")]
 pub(crate) async fn delete_fronters(db: &sqlx::PgPool, system_uuid: Uuid) -> Result<(), Error> {
-    // TODO: format query correctly
     sqlx::query!(
-        "DELETE FROM pk_system_fronters WHERE system_uuid = $1",
+        r#"
+            DELETE FROM
+                pk_system_fronters
+            WHERE
+                system_uuid = $1
+        "#,
         system_uuid
     )
     .execute(db)
@@ -226,13 +275,17 @@ pub(crate) async fn get_outdated_fronter_count(db: &sqlx::PgPool) -> Result<usiz
             LEFT JOIN
                 pk_system_fronters
             ON pk_systems.uuid = pk_system_fronters.system_uuid
-            WHERE (
+            WHERE
+                (
                     pk_system_fronters.updated_at IS NULL
-                OR
-                    EXTRACT(epoch FROM pk_system_fronters.updated_at)::bigint <= $1
-            ) AND (
-                uuid IN (SELECT uuid FROM pk_tracked_systems)
-            )
+                    OR EXTRACT(epoch FROM pk_system_fronters.updated_at)::bigint <= $1
+                )
+                AND uuid IN (
+                    SELECT
+                        uuid
+                    FROM
+                        pk_tracked_systems
+                )
         "#,
         Utc::now().timestamp() - (tracked_systems as i64).max(60)
     )
@@ -257,13 +310,17 @@ pub(crate) async fn get_systems_to_update(db: &sqlx::PgPool) -> Result<Vec<ModPk
             LEFT JOIN
                 pk_system_fronters
             ON pk_systems.uuid = pk_system_fronters.system_uuid
-            WHERE (
+            WHERE
+                (
                     pk_system_fronters.updated_at IS NULL
-                OR
-                    pk_system_fronters.updated_at <= NOW() - interval '1 minutes'
-            ) AND (
-                uuid IN (SELECT uuid FROM pk_tracked_systems)
-            )
+                    OR pk_system_fronters.updated_at <= NOW() - interval '1 minutes'
+                )
+                AND uuid IN (
+                    SELECT
+                        uuid
+                    FROM
+                        pk_tracked_systems
+                )
             ORDER BY
                 pk_system_fronters.updated_at
             ASC NULLS FIRST

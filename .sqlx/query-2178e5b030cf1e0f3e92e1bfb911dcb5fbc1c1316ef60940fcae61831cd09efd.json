@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO pk_system_fronters (system_uuid, fronters, updated_at)\n            VALUES\n                ($1, '[]', NOW())\n            ON CONFLICT\n                (system_uuid)\n            DO UPDATE SET\n                updated_at = NOW()\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "2178e5b030cf1e0f3e92e1bfb911dcb5fbc1c1316ef60940fcae61831cd09efd"
+}

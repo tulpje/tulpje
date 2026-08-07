@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO pk_fronters\n                (guild_id, category_id)\n            VALUES\n                ($1, $2)\n            ON CONFLICT\n                (guild_id)\n            DO UPDATE SET\n                category_id = $2\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int8",
+        "Int8"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "58ecb56f59927342e905ad5f687229b08f3c546cbccbf1ea84995cd23323c6a6"
+}

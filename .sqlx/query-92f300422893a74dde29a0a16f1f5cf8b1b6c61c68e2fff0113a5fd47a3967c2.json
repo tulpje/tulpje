@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            DELETE FROM\n                pk_system_fronters\n            WHERE\n                system_uuid = $1\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "92f300422893a74dde29a0a16f1f5cf8b1b6c61c68e2fff0113a5fd47a3967c2"
+}
