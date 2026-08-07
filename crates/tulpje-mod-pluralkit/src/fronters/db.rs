@@ -90,6 +90,7 @@ pub(crate) async fn save_fronter_category(
     guild_id: Id<GuildMarker>,
     channel_id: Id<ChannelMarker>,
 ) -> Result<(), Error> {
+    // TODO: Format query indentation
     sqlx::query!(
         "INSERT INTO pk_fronters (guild_id, category_id) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET category_id = $2",
         i64::from(DbId(guild_id)),
@@ -102,6 +103,7 @@ pub(crate) async fn save_fronter_category(
 }
 
 pub(crate) async fn get_tracked_system_count(db: &sqlx::PgPool) -> Result<usize, Error> {
+    // TODO: Use nullability assertion in query
     Ok(sqlx::query_scalar!(
         r#"
         SELECT
@@ -116,6 +118,7 @@ pub(crate) async fn get_tracked_system_count(db: &sqlx::PgPool) -> Result<usize,
 }
 
 pub(crate) async fn get_system_count(db: &sqlx::PgPool) -> Result<usize, Error> {
+    // TODO: format query correctly
     Ok(sqlx::query_scalar!(
         r#"
         SELECT COUNT(uuid) FROM pk_systems;
@@ -153,6 +156,7 @@ pub(crate) async fn get_fronters(
     db: &sqlx::PgPool,
     system_uuid: Uuid,
 ) -> Result<Option<ModPkSystemFronters>, Error> {
+    // TODO: format query correctly
     Ok(sqlx::query_as!(
         ModPkSystemFronters,
         r#"SELECT system_uuid, fronters as "fronters: sqlx::types::Json<Vec<Uuid>>", updated_at FROM pk_system_fronters WHERE system_uuid = $1"#,
@@ -166,6 +170,7 @@ pub(crate) async fn update_fronters_timestamp(
     db: &sqlx::PgPool,
     system_uuid: Uuid,
 ) -> Result<(), Error> {
+    // TODO: format query correctly
     sqlx::query!(
         "INSERT INTO pk_system_fronters (system_uuid, fronters, updated_at) VALUES ($1, '[]', NOW()) ON CONFLICT (system_uuid) DO UPDATE SET updated_at = NOW()",
         system_uuid,
@@ -184,6 +189,7 @@ pub(crate) async fn update_fronters(
     system_uuid: Uuid,
     fronters: &[Uuid],
 ) -> Result<(), Error> {
+    // TODO: format query correctly
     sqlx::query!(
         "INSERT INTO pk_system_fronters (system_uuid, fronters, updated_at) VALUES ($1, $2, $3) ON CONFLICT (system_uuid) DO UPDATE SET fronters = $2, updated_at = $3",
         system_uuid,
@@ -198,6 +204,7 @@ pub(crate) async fn update_fronters(
 
 #[expect(dead_code, reason = "useful utility function")]
 pub(crate) async fn delete_fronters(db: &sqlx::PgPool, system_uuid: Uuid) -> Result<(), Error> {
+    // TODO: format query correctly
     sqlx::query!(
         "DELETE FROM pk_system_fronters WHERE system_uuid = $1",
         system_uuid
