@@ -316,39 +316,10 @@ pub(crate) async fn get_systems_to_update(db: &sqlx::PgPool) -> Result<Vec<ModPk
                 pk_systems.updated_at
             FROM
                 pk_systems
-            WHERE (
+            WHERE
                 pk_systems.updated_at <= NOW() - interval '24 hours'
-            ) AND (
-                    uuid IN (
-                        SELECT
-                            system_uuid
-                        FROM
-                            pk_notify_systems
-                        INNER JOIN
-                            guilds
-                        ON
-                            guilds.guild_id = pk_notify_systems.guild_id
-                        WHERE
-                            guilds.deleted_at IS NULL
-                    )
-                OR
-                    uuid IN (
-                        SELECT
-                            system_uuid
-                        FROM
-                            pk_guilds
-                        INNER JOIN
-                            pk_fronters
-                        ON
-                            pk_guilds.guild_id = pk_fronters.guild_id
-                        INNER JOIN
-                            guilds
-                        ON
-                            pk_guilds.guild_id = guilds.guild_id
-                        WHERE
-                            guilds.deleted_at IS NULL
-                    )
-            )
+            AND
+                uuid IN (SELECT uuid FROM pk_tracked_systems)
             ORDER BY
                 updated_at
             ASC
@@ -363,42 +334,13 @@ pub(crate) async fn get_outdated_system_count(db: &sqlx::PgPool) -> Result<usize
     Ok(sqlx::query_scalar!(
         r#"
             SELECT
-                COUNT(pk_systems.uuid) AS "count!"
+                COUNT(uuid) AS "count!"
             FROM
                 pk_systems
-            WHERE (
-                pk_systems.updated_at <= NOW() - interval '24 hours'
-            ) AND (
-                    uuid IN (
-                        SELECT
-                            system_uuid
-                        FROM
-                            pk_notify_systems
-                        INNER JOIN
-                            guilds
-                        ON
-                            guilds.guild_id = pk_notify_systems.guild_id
-                        WHERE
-                            guilds.deleted_at IS NULL
-                    )
-                OR
-                    uuid IN (
-                        SELECT
-                            system_uuid
-                        FROM
-                            pk_guilds
-                        INNER JOIN
-                            pk_fronters
-                        ON
-                            pk_guilds.guild_id = pk_fronters.guild_id
-                        INNER JOIN
-                            guilds
-                        ON
-                            pk_guilds.guild_id = guilds.guild_id
-                        WHERE
-                            guilds.deleted_at IS NULL
-                    )
-            )
+            WHERE
+                updated_at <= NOW() - interval '24 hours'
+            AND
+                uuid IN (SELECT uuid FROM pk_tracked_systems)
         "#
     )
     .fetch_one(db)
