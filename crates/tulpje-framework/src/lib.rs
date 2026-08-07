@@ -9,6 +9,7 @@ pub use module::{Module, builder::ModuleBuilder, registry::Registry};
 mod builder;
 pub mod color;
 pub mod context;
+pub mod error;
 pub mod framework;
 pub mod handler;
 pub mod interaction;
