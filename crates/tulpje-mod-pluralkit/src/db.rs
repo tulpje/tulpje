@@ -242,6 +242,26 @@ pub(crate) async fn update_system(db: &sqlx::PgPool, system: &ModPkSystem) -> Re
     Ok(())
 }
 
+#[expect(dead_code, reason = "utility function we want to keep")]
+pub(crate) async fn touch_system(db: &sqlx::PgPool, uuid: Uuid) -> Result<(), Error> {
+    sqlx::query!(
+        r#"
+            UPDATE
+                pk_systems
+            SET
+                updated_at = NOW()
+            WHERE
+                uuid = $1
+        "#,
+        uuid
+    )
+    .execute(db)
+    .await
+    .map_err(|err| format!("error updating `pk_systems.updated_at` for system {uuid}: {err}"))?;
+
+    Ok(())
+}
+
 #[expect(dead_code, reason = "useful utility function")]
 pub(crate) async fn delete_system(db: &sqlx::PgPool, system_ref: SystemRef) -> Result<(), Error> {
     match system_ref {
