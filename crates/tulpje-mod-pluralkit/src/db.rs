@@ -1,5 +1,5 @@
 use pkrs_fork::model::System;
-use sqlx::{prelude::FromRow, types::chrono};
+use sqlx::prelude::FromRow;
 use twilight_model::id::{
     Id,
     marker::{GuildMarker, UserMarker},
@@ -344,4 +344,80 @@ pub(crate) async fn get_outdated_system_count(db: &sqlx::PgPool) -> Result<usize
     )
     .fetch_one(db)
     .await? as usize)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    use crate::notify::db::add_notify_system;
+    use tulpje_lib::db::guild::touch;
+
+    async fn create_n_systems(
+        db: &sqlx::PgPool,
+        n: u16,
+        updated_at: chrono::NaiveDateTime,
+    ) -> Result<(), tulpje_framework::Error> {
+        let guild_id = Id::<GuildMarker>::new(1);
+        touch(db, guild_id).await?;
+
+        let now = chrono::Utc::now().naive_utc();
+        let mut uuids = Vec::new();
+        for i in 1..=n {
+            let uuid = Uuid::now_v7();
+            update_system(
+                db,
+                &ModPkSystem {
+                    id: format!("sys{:03}", i),
+                    uuid,
+                    name: None,
+                    avatar: None,
+                    created_at: now,
+                    updated_at,
+                },
+            )
+            .await?;
+            add_notify_system(db, guild_id, uuid).await?;
+            uuids.push(uuid);
+        }
+
+        sqlx::query(
+            r#"
+            UPDATE
+                pk_systems
+            SET
+                updated_at = $1
+            WHERE
+                uuid = ANY($2)
+        "#,
+        )
+        .bind(updated_at)
+        .bind(uuids)
+        .execute(db)
+        .await?;
+
+        Ok(())
+    }
+
+    #[ignore]
+    #[sqlx::test(migrations = "../../migrations")]
+    async fn test_get_outdated_system_count_up_to_date(
+        db: sqlx::PgPool,
+    ) -> Result<(), tulpje_framework::Error> {
+        let updated_at = chrono::Utc::now().naive_utc();
+        create_n_systems(&db, 50, updated_at).await?;
+        assert_eq!(get_outdated_system_count(&db).await?, 0);
+        Ok(())
+    }
+
+    #[ignore]
+    #[sqlx::test(migrations = "../../migrations")]
+    async fn test_get_outdated_system_count_outdated(
+        db: sqlx::PgPool,
+    ) -> Result<(), tulpje_framework::Error> {
+        let updated_at = chrono::Utc::now().naive_utc() - chrono::Duration::hours(48);
+        create_n_systems(&db, 50, updated_at).await?;
+        assert_eq!(get_outdated_system_count(&db).await?, 50);
+        Ok(())
+    }
 }
