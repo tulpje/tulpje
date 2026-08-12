@@ -5,6 +5,91 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.26.1-rc.4] - 2026-08-12
+
+### Added
+
+ - Add test for `get_outdated_system_count` for partly out of date systems
+ - Add tests for `get_outdated_fronter_count` for partly out of date fronters
+ - Support creating multiple sets of systems in `create_n_systems` test util
+ - Add comment explaining meaning of test names to fronter db tests
+ - Add `test` task to justfile
+ - Add TODOs
+ - Add todo
+
+### Changed
+
+ - Split test utils into module
+ - Implement tests for `get_outdated_system_count`
+ - Implement tests for `get_outdated_fronter_count`
+ - Style fix
+ - Format sql queries
+ - Use view for tracked systems
+ - Implement `touch_system` db function
+
+### Fixed
+
+ - Update `updated_at` for system even if system is deleted
+ - Use non-nullable type override in query
+
+### Removed
+
+ - Remove finished TODO
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * chore(tulpje-mod-pluralkit): add test for `get_outdated_system_count` for partly out of date systems ([`b5e2b21`](https://github.com/tulpje/tulpje/commit/b5e2b213037bd41a52a794349a9e81afe2cf21ce))
+ * chore(tulpje-mod-pluralkit): add tests for `get_outdated_fronter_count` for partly out of date fronters ([`5fe138d`](https://github.com/tulpje/tulpje/commit/5fe138df5aa4e061c0c7cb945169d2c862fc3c17))
+ * fix(tulpje-mod-pluralkit): support creating multiple sets of systems in `create_n_systems` test util ([`16a8f37`](https://github.com/tulpje/tulpje/commit/16a8f3784a86ffeb4405e27dbad46514704a927e))
+ * chore(tulpje-mod-pluralkit): add comment explaining meaning of test names to fronter db tests ([`fbda549`](https://github.com/tulpje/tulpje/commit/fbda549a520a3fcff7f1bec7a19c6181a7549cc3))
+ * refactor(tulpje-mod-pluralkit): split test utils into module ([`ad4b11d`](https://github.com/tulpje/tulpje/commit/ad4b11d8116bbf61d0922986c14da8423bc98bd7))
+ * feat: add `test` task to justfile ([`fa4dbd3`](https://github.com/tulpje/tulpje/commit/fa4dbd352e8650c810bcff5c4b016a3dc96c1de2))
+ * chore(tulpje-mod-pluralkit): implement tests for `get_outdated_system_count` ([`6110e47`](https://github.com/tulpje/tulpje/commit/6110e477a788afd5fb4678fed716104c7677bcce))
+ * chore(tulpje-mod-pluralkit): implement tests for `get_outdated_fronter_count` ([`1205130`](https://github.com/tulpje/tulpje/commit/12051308cc5be8db1e4c57ef45db043ba1b4438c))
+ * chore: remove finished TODO ([`58fc0c7`](https://github.com/tulpje/tulpje/commit/58fc0c799a0bc113c460a3ecd570f5d855d4fc09))
+ * fix(tulpje-mod-pluralkit): update `updated_at` for system even if system is deleted ([`1d1aeb3`](https://github.com/tulpje/tulpje/commit/1d1aeb380bce22acb878997ed22ed075339e2b5e))
+ * chore(tulpje-mod-pluralkit): style fix ([`2852326`](https://github.com/tulpje/tulpje/commit/28523264f498dba2370fa2f3231bab9bd6a26f14))
+ * fix(tulpje-mod-pluralkit): use non-nullable type override in query ([`79afc32`](https://github.com/tulpje/tulpje/commit/79afc325558d5a523c77a8717e315f28d78ad524))
+ * chore(tulpje-mod-pluralkit): format sql queries ([`0acabfd`](https://github.com/tulpje/tulpje/commit/0acabfd4bf11f278e3334dfe88f2c6f71bc4bd14))
+ * chore(tulpje-mod-pluralkit): add TODOs ([`a69db0e`](https://github.com/tulpje/tulpje/commit/a69db0e8b7cc982f8f3c69d5f147b54369e03870))
+ * refactor(tulpje-mod-pluralkit): use view for tracked systems ([`2b2c7ca`](https://github.com/tulpje/tulpje/commit/2b2c7cad1bd2da06300ca91eb0a5ecd8f80ad060))
+ * chore(tulpje-mod-pluralkit): add todo ([`14120bb`](https://github.com/tulpje/tulpje/commit/14120bbf2ad2b1533d0d03b7b6a97d6af0b76c22))
+ * feat(tulpje-mod-pluralkit): implement `touch_system` db function ([`626d74c`](https://github.com/tulpje/tulpje/commit/626d74c4c7a55c3cf0bd51efc6cd695fe2a7e2f5))
+</details>
+
+## [0.26.1-rc.2] - 2026-08-06
+
+### Fixed
+
+ - Correct calculations for outdated fronter count
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * fix(tulpje-mod-pluralkit): correct calculations for outdated fronter count ([`c263699`](https://github.com/tulpje/tulpje/commit/c2636998e7a0fd0c86c9e21660d1273470ee6f51))
+</details>
+
+## [0.26.1-rc.1] - 2026-08-06
+
+### Added
+
+ - Add outdated system and fronter stats
+
+### Fixed
+
+ - Use correct `updated_at` column for updating fronters
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * feat(tulpje-mod-pluralkit): add outdated system and fronter stats ([`667459a`](https://github.com/tulpje/tulpje/commit/667459a95d8522df3c5d88d242ea18a8e87cf063))
+ * fix(tulpje-mod-pluralkit): use correct `updated_at` column for updating fronters ([`b5d33ea`](https://github.com/tulpje/tulpje/commit/b5d33eaa6674645fae4d4a78b7ae4639639ebaef))
+</details>
+
 ## [0.26.1-rc.3] - 2026-08-07
 
 ### Added
