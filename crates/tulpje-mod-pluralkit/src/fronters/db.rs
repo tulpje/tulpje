@@ -365,6 +365,19 @@ mod tests {
 
     #[ignore]
     #[sqlx::test(migrations = "../../migrations")]
+    async fn test_get_outdated_fronter_count_split_below_interval(
+        db: sqlx::PgPool,
+    ) -> Result<(), tulpje_framework::Error> {
+        let updated_at = chrono::Utc::now().naive_utc() - chrono::Duration::seconds(200);
+        let now = chrono::Utc::now().naive_utc();
+        create_n_fronters(&db, 25, now).await?;
+        create_n_fronters(&db, 25, updated_at).await?;
+        assert_eq!(get_outdated_fronter_count(&db).await?, 25);
+        Ok(())
+    }
+
+    #[ignore]
+    #[sqlx::test(migrations = "../../migrations")]
     async fn test_get_outdated_fronter_count_up_to_date_above_interval(
         db: sqlx::PgPool,
     ) -> Result<(), tulpje_framework::Error> {
@@ -382,6 +395,19 @@ mod tests {
         let updated_at = chrono::Utc::now().naive_utc() - chrono::Duration::seconds(200);
         create_n_fronters(&db, 200, updated_at).await?;
         assert_eq!(get_outdated_fronter_count(&db).await?, 200);
+        Ok(())
+    }
+
+    #[ignore]
+    #[sqlx::test(migrations = "../../migrations")]
+    async fn test_get_outdated_fronter_count_split_above_interval(
+        db: sqlx::PgPool,
+    ) -> Result<(), tulpje_framework::Error> {
+        let updated_at = chrono::Utc::now().naive_utc() - chrono::Duration::seconds(200);
+        let now = chrono::Utc::now().naive_utc();
+        create_n_fronters(&db, 100, now).await?;
+        create_n_fronters(&db, 100, updated_at).await?;
+        assert_eq!(get_outdated_fronter_count(&db).await?, 100);
         Ok(())
     }
 }
