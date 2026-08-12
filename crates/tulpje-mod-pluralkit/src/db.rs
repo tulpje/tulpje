@@ -373,4 +373,17 @@ pub(crate) mod tests {
         assert_eq!(get_outdated_system_count(&db).await?, 50);
         Ok(())
     }
+
+    #[ignore]
+    #[sqlx::test(migrations = "../../migrations")]
+    async fn test_get_outdated_system_count_split(
+        db: sqlx::PgPool,
+    ) -> Result<(), tulpje_framework::Error> {
+        let updated_at = chrono::Utc::now().naive_utc() - chrono::Duration::hours(48);
+        let now = chrono::Utc::now().naive_utc();
+        create_n_systems(&db, 25, now).await?;
+        create_n_systems(&db, 25, updated_at).await?;
+        assert_eq!(get_outdated_system_count(&db).await?, 25);
+        Ok(())
+    }
 }
