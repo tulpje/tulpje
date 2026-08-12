@@ -347,57 +347,10 @@ pub(crate) async fn get_outdated_system_count(db: &sqlx::PgPool) -> Result<usize
 }
 
 #[cfg(test)]
-mod tests {
+pub(crate) mod tests {
+    use crate::test_utils::create_n_systems;
+
     use super::*;
-
-    use crate::notify::db::add_notify_system;
-    use tulpje_lib::db::guild::touch;
-
-    async fn create_n_systems(
-        db: &sqlx::PgPool,
-        n: u16,
-        updated_at: chrono::NaiveDateTime,
-    ) -> Result<(), tulpje_framework::Error> {
-        let guild_id = Id::<GuildMarker>::new(1);
-        touch(db, guild_id).await?;
-
-        let now = chrono::Utc::now().naive_utc();
-        let mut uuids = Vec::new();
-        for i in 1..=n {
-            let uuid = Uuid::now_v7();
-            update_system(
-                db,
-                &ModPkSystem {
-                    id: format!("sys{:03}", i),
-                    uuid,
-                    name: None,
-                    avatar: None,
-                    created_at: now,
-                    updated_at,
-                },
-            )
-            .await?;
-            add_notify_system(db, guild_id, uuid).await?;
-            uuids.push(uuid);
-        }
-
-        sqlx::query(
-            r#"
-            UPDATE
-                pk_systems
-            SET
-                updated_at = $1
-            WHERE
-                uuid = ANY($2)
-        "#,
-        )
-        .bind(updated_at)
-        .bind(uuids)
-        .execute(db)
-        .await?;
-
-        Ok(())
-    }
 
     #[ignore]
     #[sqlx::test(migrations = "../../migrations")]

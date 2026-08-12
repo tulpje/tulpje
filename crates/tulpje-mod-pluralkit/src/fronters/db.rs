@@ -331,51 +331,9 @@ pub(crate) async fn get_systems_to_update(db: &sqlx::PgPool) -> Result<Vec<ModPk
 
 #[cfg(test)]
 mod tests {
+    use crate::test_utils::create_n_fronters;
+
     use super::*;
-
-    use crate::{db::update_system, notify::db::add_notify_system};
-    use tulpje_lib::db::guild::touch;
-
-    async fn create_n_fronters(
-        db: &sqlx::PgPool,
-        n: u16,
-        updated_at: chrono::NaiveDateTime,
-    ) -> Result<(), tulpje_framework::Error> {
-        let guild_id = Id::<GuildMarker>::new(1);
-        touch(db, guild_id).await?;
-
-        let now = chrono::Utc::now().naive_utc();
-        for i in 1..=n {
-            let uuid = Uuid::now_v7();
-            update_system(
-                db,
-                &ModPkSystem {
-                    id: format!("sys{:03}", i),
-                    uuid,
-                    name: None,
-                    avatar: None,
-                    created_at: now,
-                    updated_at: now,
-                },
-            )
-            .await?;
-
-            add_notify_system(db, guild_id, uuid).await?;
-
-            sqlx::query(
-                r#"
-                    INSERT INTO pk_system_fronters (system_uuid, fronters, updated_at)
-                    VALUES
-                        ($1, '[]', $2)
-                "#,
-            )
-            .bind(uuid)
-            .bind(updated_at)
-            .execute(db)
-            .await?;
-        }
-        Ok(())
-    }
 
     #[ignore]
     #[sqlx::test(migrations = "../../migrations")]
