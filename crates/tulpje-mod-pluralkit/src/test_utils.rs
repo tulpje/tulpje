@@ -4,6 +4,7 @@ use uuid::Uuid;
 
 use crate::{
     db::{ModPkSystem, update_system},
+    fronters::db::get_system_count,
     notify::db::add_notify_system,
 };
 
@@ -16,8 +17,9 @@ pub(crate) async fn create_n_systems(
     touch(db, guild_id).await?;
 
     let now = chrono::Utc::now().naive_utc();
+    let offset = get_system_count(db).await?;
     let mut uuids = Vec::new();
-    for i in 1..=n {
+    for i in offset + 1..=offset + (n as usize) {
         let uuid = Uuid::now_v7();
         update_system(
             db,
