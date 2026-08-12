@@ -335,6 +335,12 @@ mod tests {
 
     use super::*;
 
+    // below_interval = amount of fronters is less than 60, which is the max
+    //                  we can update within 60 seconds
+    // above_interval = amount of fronters is more than 60, so average update
+    //                  time is longer than 60 seconds, and we need to take
+    //                  that into account for the outdated count
+
     #[ignore]
     #[sqlx::test(migrations = "../../migrations")]
     async fn test_get_outdated_fronter_count_up_to_date_below_interval(
