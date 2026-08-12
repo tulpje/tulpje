@@ -6,6 +6,36 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.26.1-rc.4] - 2026-10-04
+
+### Added
+
+ - Add test for `get_outdated_system_count` for partly out of date systems
+ - Add tests for `get_outdated_fronter_count` for partly out of date fronters
+ - Support creating multiple sets of systems in `create_n_systems` test util
+ - Add comment explaining meaning of test names to fronter db tests
+ - Add `test` task to justfile
+
+### Changed
+
+ - Split test utils into module
+ - Implement tests for `get_outdated_system_count`
+ - Implement tests for `get_outdated_fronter_count`
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * chore(tulpje-mod-pluralkit): add test for `get_outdated_system_count` for partly out of date systems ([`e4a04d9`](https://github.com/tulpje/tulpje/commit/e4a04d91c2efe3b4a399bcdfdba7356b00ec704b))
+ * chore(tulpje-mod-pluralkit): add tests for `get_outdated_fronter_count` for partly out of date fronters ([`747624b`](https://github.com/tulpje/tulpje/commit/747624b541138ecf44bf63ddfd09d4da9b117494))
+ * fix(tulpje-mod-pluralkit): support creating multiple sets of systems in `create_n_systems` test util ([`a93b3ee`](https://github.com/tulpje/tulpje/commit/a93b3ee4153007921acfe750d71c146a62481272))
+ * chore(tulpje-mod-pluralkit): add comment explaining meaning of test names to fronter db tests ([`633d345`](https://github.com/tulpje/tulpje/commit/633d345505633d3e07b97d1d289ffbe25e1a0c3a))
+ * refactor(tulpje-mod-pluralkit): split test utils into module ([`14a4ae5`](https://github.com/tulpje/tulpje/commit/14a4ae5b71adf2afc8a14b2ba1522ee2e07f4503))
+ * feat: add `test` task to justfile ([`00ce5bc`](https://github.com/tulpje/tulpje/commit/00ce5bccebdea9a82148f72dfba41610b92ecd31))
+ * chore(tulpje-mod-pluralkit): implement tests for `get_outdated_system_count` ([`38c7763`](https://github.com/tulpje/tulpje/commit/38c7763d14411428452cacbb1a7dcd7441739a29))
+ * chore(tulpje-mod-pluralkit): implement tests for `get_outdated_fronter_count` ([`d0ffb38`](https://github.com/tulpje/tulpje/commit/d0ffb389b13d783ba1692f4e112ba97329d4bb21))
+</details>
+
 ## [0.26.1-rc.3] - 2026-10-04
 
 ### Added
