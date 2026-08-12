@@ -11,6 +11,9 @@ handler:
   METRICS_LISTEN_ADDR=0.0.0.0:9001 \
     contrib/run-local.py cargo run -p tulpje-handler
 
+test:
+  contrib/run-local.py cargo test -- --no-capture --include-ignored
+
 release *args:
   uv --project tools/release-tulpje run release-tulpje {{ args }}
 
