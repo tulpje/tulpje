@@ -20,6 +20,9 @@ mod roles;
 mod tasks;
 mod util;
 
+#[cfg(test)]
+mod test_utils;
+
 mod front_update_service;
 mod system_update_service;
 
