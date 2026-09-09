@@ -9,6 +9,17 @@ pub(crate) async fn enable(ctx: CommandContext) -> Result<(), Error> {
     };
 
     let module = ctx.get_arg_string("module")?;
+
+    if ctx
+        .services
+        .registry
+        .global_module_names()
+        .contains(&module)
+    {
+        responses::warning(&ctx, &format!("module `{}` is always enabled", module)).await?;
+        return Ok(());
+    }
+
     if !ctx.services.registry.guild_module_names().contains(&module) {
         responses::error(&ctx, &format!("no module named `{}` exists", module)).await?;
         return Ok(());
@@ -35,6 +46,16 @@ pub(crate) async fn disable(ctx: CommandContext) -> Result<(), Error> {
     };
 
     let module = ctx.get_arg_string("module")?;
+    if ctx
+        .services
+        .registry
+        .global_module_names()
+        .contains(&module)
+    {
+        responses::warning(&ctx, &format!("module `{}` is always enabled", module)).await?;
+        return Ok(());
+    }
+
     if !ctx.services.registry.guild_module_names().contains(&module) {
         responses::error(&ctx, &format!("no module named `{}` exists", module)).await?;
         return Ok(());
