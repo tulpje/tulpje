@@ -62,6 +62,14 @@ impl<T: Clone + Send + Sync> Registry<T> {
         self.commands.get(name)
     }
 
+    pub fn global_module_names(&self) -> Vec<String> {
+        self.modules
+            .values()
+            .filter(|m| !m.guild_scoped)
+            .map(|m| m.name.clone())
+            .collect()
+    }
+
     pub fn guild_module_names(&self) -> Vec<String> {
         self.modules
             .values()

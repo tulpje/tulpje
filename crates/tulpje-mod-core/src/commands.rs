@@ -59,6 +59,7 @@ pub(crate) async fn modules(ctx: CommandContext) -> Result<(), Error> {
         unreachable!("command is guild_only");
     };
 
+    let global_modules = ctx.services.registry.global_module_names();
     let modules = db::guild_modules(&ctx.services.db, guild.id).await?;
     let available: Vec<String> = ctx
         .services
@@ -71,8 +72,9 @@ pub(crate) async fn modules(ctx: CommandContext) -> Result<(), Error> {
     responses::info(
         &ctx,
         &format!(
-            "**Enabled: {}**\nAvailable: {}",
+            "**Enabled: {}**\nAlways Enabled: {}\nAvailable: {}",
             modules.join(", "),
+            global_modules.join(", "),
             available.join(", ")
         ),
     )
