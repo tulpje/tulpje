@@ -1,3 +1,4 @@
+use pluralkit_rs::models::SystemRef;
 use tulpje_framework::Error;
 use twilight_model::{
     channel::{
@@ -20,7 +21,6 @@ use crate::{
         db::get_fronter_category,
         shared::{GetSystemFrontersError, get_system_fronters, update_fronter_channels},
     },
-    util::SystemRef,
 };
 use tulpje_lib::{
     ConfirmationDialog,
@@ -85,7 +85,7 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
         return Ok(());
     }
 
-    let system_ref = SystemRef::Uuid(guild_settings.system_uuid);
+    let system_ref = SystemRef::Uuid(guild_settings.system_uuid.into());
 
     tracing::debug!("/pk fronters setup, fetching system {system_ref}");
     let Some(system) = get_system(&ctx.services.db, &system_ref)
@@ -94,7 +94,7 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
     else {
         return Err("system {system_ref} missing from database".into());
     };
-    let display_name = system.name.unwrap_or(system.id);
+    let display_name = system.name.unwrap_or(system.id.to_string());
 
     // TODO: Fix horrible deduplication between this and `update_system_fronters`
     let members = match get_system_fronters(&ctx.services.pk, system.uuid).await {

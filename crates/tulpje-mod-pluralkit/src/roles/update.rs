@@ -1,8 +1,9 @@
 use std::collections::{HashMap, HashSet};
 
-use pkrs_fork::client::PluralKitError;
-use pkrs_fork::model::Member;
-use pkrs_fork::{client::PkClient, model::PkId};
+use pluralkit_rs::{
+    PluralKit,
+    models::{Member, PluralKitError, PluralKitUuid, SystemRef, marker::MemberMarker},
+};
 use tulpje_cache::Cache;
 use tulpje_lib::ConfirmationDialog as _;
 use twilight_http::Client;
@@ -12,14 +13,13 @@ use twilight_model::id::marker::{GuildMarker, RoleMarker, UserMarker};
 
 use tulpje_framework::Error;
 use tulpje_lib::{context::CommandContext, responses};
-use uuid::Uuid;
 
 use crate::roles::constants::{DISCORD_ROLE_LIMIT, REMAINING_ROLE_WARNING};
 use crate::roles::prompts::{ConfirmUpdatePrompt, NearRoleLimitWarningPrompt, role_change_message};
 use crate::roles::update_stats::{UpdateCounts, UpdateStats};
 use crate::{
     db::get_guild_settings_for_id,
-    util::{SystemRef, get_member_name, pk_color_to_discord},
+    util::{get_member_name, pk_color_to_discord},
 };
 
 fn role_limit_message(member_count: usize, existing_role_count: usize) -> String {
@@ -77,16 +77,12 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
         .await?;
         return Ok(());
     };
-    let system_ref = SystemRef::Uuid(gs.system_uuid);
+    let system_ref = SystemRef::Uuid(gs.system_uuid.into());
     let token = ctx.get_arg_string_optional("token")?;
 
     // fetch members from PluralKit
-    let Some(members) = handle_get_system_members(
-        &ctx,
-        &ctx.services.pk.with_token(token.unwrap_or_default()),
-        system_ref,
-    )
-    .await?
+    let Some(members) =
+        handle_get_system_members(&ctx, &ctx.services.pk, token, system_ref).await?
     else {
         return Ok(());
     };
@@ -277,19 +273,29 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
 
 async fn handle_get_system_members(
     ctx: &CommandContext,
-    client: &PkClient,
+    client: &PluralKit,
+    token: Option<String>,
     system_ref: SystemRef,
 ) -> Result<Option<Vec<Member>>, Error> {
-    match client
-        .get_system_members(&PkId(system_ref.clone().into()))
-        .await
-    {
-        Ok(members) => Ok(Some(members)),
-        // private member list
-        Err(PluralKitError::Pk(_, message))
-            // 30001 = unauthorized to view member list
-            if message.code == 30001 =>
-        {
+    let mut req = client.get_system_members(&system_ref);
+    if let Some(token) = token {
+        req = match req.token(token) {
+            Ok(req) => req,
+            Err(_) => {
+                responses::error(
+                    ctx,
+                    &format!("### Error\nToken contains invalid characters"),
+                )
+                .await?;
+                return Ok(None);
+            }
+        }
+    }
+
+    match req.await {
+        Ok(response) => Ok(Some(response.model().await?)),
+        // private member list, 30001 = unauthorized to view member list
+        Err(PluralKitError::PluralKit { code: 30001, .. }) => {
             // TODO: Try to fetch system name?
             responses::error(
                 ctx,
@@ -298,16 +304,13 @@ async fn handle_get_system_members(
             .await?;
             Ok(None)
         }
-        // missing system
-        Err(PluralKitError::Pk(_, message))
-            // 20001 = missing system
-            if message.code == 20001 =>
-        {
+        // missing system, 20001 = missing system
+        Err(PluralKitError::PluralKit { code: 20001, .. }) => {
             responses::error(
-                    ctx,
-                    &format!("### Error\nPluralKit can't find this system, does `{system_ref}` exist?"),
-                )
-                .await?;
+                ctx,
+                &format!("### Error\nPluralKit can't find this system, does `{system_ref}` exist?"),
+            )
+            .await?;
             Ok(None)
         }
         // miscellaneous errors
@@ -318,7 +321,7 @@ async fn handle_get_system_members(
 #[derive(Debug, Hash, Eq, PartialEq)]
 struct MemberRole {
     role_id: Option<Id<RoleMarker>>,
-    uuid: Option<Uuid>,
+    uuid: Option<PluralKitUuid<MemberMarker>>,
     name: String,
     color: u32,
     mentionable: bool,
@@ -333,7 +336,7 @@ impl MemberRole {
 enum ChangeOperation {
     Create {
         name: String,
-        uuid: Uuid,
+        uuid: PluralKitUuid<MemberMarker>,
         color: u32,
     },
     Delete {
@@ -464,7 +467,8 @@ fn get_role_ops(
                 // Create
                 (None, Some(desired)) => Some(ChangeOperation::Create {
                     name: desired.name.clone(),
-                    uuid: desired.uuid.unwrap_or_default(),
+                    // TODO: Enforce stricter typing for these
+                    uuid: desired.uuid.expect("`desired.uuid` should never be `None`"),
                     color: desired.color,
                 }),
                 // Delete

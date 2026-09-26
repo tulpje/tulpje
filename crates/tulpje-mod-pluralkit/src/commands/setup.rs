@@ -1,4 +1,4 @@
-use pkrs_fork::{client::PluralKitError, model::PkId};
+use pluralkit_rs::models::PluralKitError;
 use tulpje_framework::Error;
 use twilight_model::channel::message::{
     Component,
@@ -30,17 +30,10 @@ pub async fn handle(ctx: CommandContext) -> Result<(), Error> {
         return Ok(());
     };
 
-    let system: ModPkSystem = match ctx
-        .services
-        .pk
-        .get_system(&PkId(system_ref.clone().into()))
-        .await
-    {
-        Ok(system) => system.into(),
-        Err(PluralKitError::Pk(_, error))
-            // 20001 = System not found
-            if error.code == 20001 =>
-        {
+    let system: ModPkSystem = match ctx.services.pk.get_system(&system_ref).await {
+        Ok(response) => response.model().await?.into(),
+        // 20001 = System not found
+        Err(PluralKitError::PluralKit { code: 20001, .. }) => {
             responses::error(
                 &ctx,
                 &format!("### Error\nCouldn't find system `{system_ref}`"),
