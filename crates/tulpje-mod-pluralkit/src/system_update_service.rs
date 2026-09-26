@@ -1,9 +1,6 @@
 use std::time::Duration;
 
-use pkrs_fork::{
-    client::{PkClient, PluralKitError},
-    model::PkId,
-};
+use pluralkit_rs::{PluralKit, models::PluralKitError};
 use tokio::time::MissedTickBehavior;
 use tokio_util::sync::CancellationToken;
 use tulpje_framework::Error;
@@ -13,15 +10,15 @@ use crate::db::{self, ModPkSystem};
 
 async fn process_system(
     db: &sqlx::PgPool,
-    pk: &PkClient,
+    pk: &PluralKit,
     system: &ModPkSystem,
 ) -> Result<(), Error> {
-    match pk.get_system(&PkId(system.uuid.to_string())).await {
-        Ok(system) => {
-            db::update_system(db, &system.into()).await?;
+    match pk.get_system(&system.uuid.into()).await {
+        Ok(response) => {
+            db::update_system(db, &response.model().await?.into()).await?;
         }
         // 20001 = system not found
-        Err(PluralKitError::Pk(_, error)) if error.code == 20001 => {
+        Err(PluralKitError::PluralKit { code: 20001, .. }) => {
             db::touch_system(db, system.uuid).await?;
         }
         Err(err) => return Err(err.into()),
