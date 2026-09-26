@@ -59,8 +59,10 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
     let system = get_system(&ctx.services.db, &gs.system_uuid.into())
         .await
         .map_err(|err| format!("error fetching system {}: {}", gs.system_uuid, err))?;
-    let display_name =
-        system.map_or_else(|| gs.system_uuid.to_string(), |s| s.name.unwrap_or(s.id));
+    let display_name = system.map_or_else(
+        || gs.system_uuid.to_string(),
+        |s| s.name.unwrap_or(s.id.to_string()),
+    );
 
     // TODO: Fix horrible deduplication between this and `update_system_fronters`
     let members = match get_system_fronters(&ctx.services.pk, gs.system_uuid).await {

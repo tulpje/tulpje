@@ -12,7 +12,7 @@ edition.workspace = true
 
 [dependencies]
 async-trait = { workspace = true }
-pkrs-fork = { workspace = true }
+pluralkit-rs = { workspace = true }
 redis = { workspace = true }
 serde = { workspace = true }
 sqlx = { workspace = true }

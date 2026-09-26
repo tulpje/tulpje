@@ -14,8 +14,9 @@ edition.workspace = true
 [dependencies]
 async-trait = { workspace = true }
 chrono = { workspace = true }
+jiff-chrono-conversions = "0.1.1"
 metrics = { workspace = true }
-pkrs-fork = { workspace = true }
+pluralkit-rs = { workspace = true }
 reqwest = { workspace = true, features = ["rustls", "charset", "http2"] }
 serde_either = "0.2.1"
 sqlx = { workspace = true }

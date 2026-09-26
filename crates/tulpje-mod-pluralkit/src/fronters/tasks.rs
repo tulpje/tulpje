@@ -1,6 +1,6 @@
 use std::{slice, sync::Arc};
 
-use pkrs_fork::{client::PkClient, model::Member};
+use pluralkit_rs::{PluralKit, models::Member};
 use tracing::instrument;
 use tulpje_lib::util::{ERROR_UNKNOWN_CHANNEL, get_json_error_code, warning_message};
 use twilight_http::Client;
@@ -367,10 +367,10 @@ async fn notify_front_change(
     Ok(())
 }
 
-#[instrument("process-system", skip_all, fields(system=?system.uuid))]
+#[instrument("process-system", skip_all, fields(system=%system.uuid))]
 pub(crate) async fn process_system(
     db: &sqlx::PgPool,
-    pk_client: &PkClient,
+    pk_client: &PluralKit,
     discord_client: &Arc<Client>,
     system: &ModPkSystem,
 ) -> Result<(), Error> {

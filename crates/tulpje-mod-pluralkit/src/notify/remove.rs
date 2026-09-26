@@ -35,8 +35,7 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
         resolve_system_from_reference(&system_ref, &ctx.services.pk, &ctx.services.db).await?
     else {
         responses::error(&ctx, &format!(
-            "Couldn't find system `{}`, are you sure you're following them and that you spelled it correctly?",
-            String::from(system_ref),
+            "Couldn't find system `{system_ref}`, are you sure you're following them and that you spelled it correctly?",
         ))
         .await?;
         return Ok(());
@@ -50,7 +49,10 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
     if !db::does_guild_follow(&ctx.services.db, guild.id, system.uuid).await? {
         responses::info(
             &ctx,
-            &format!("You don't follow `{}`", system.name.unwrap_or(system.id)),
+            &format!(
+                "You don't follow `{}`",
+                system.name.unwrap_or(system.id.to_string())
+            ),
         )
         .await?;
 
@@ -63,7 +65,7 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
         &ctx,
         &format!(
             "{} removed from notification list",
-            system.name.unwrap_or(system.id),
+            system.name.unwrap_or(system.id.to_string()),
         ),
     )
     .await?;

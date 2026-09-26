@@ -1,4 +1,8 @@
 use chrono::Utc;
+use pluralkit_rs::models::{
+    PluralKitId, PluralKitUuid,
+    marker::{MemberMarker, SystemMarker},
+};
 use sqlx::prelude::FromRow;
 use twilight_model::id::{
     Id,
@@ -7,7 +11,6 @@ use twilight_model::id::{
 
 use tulpje_framework::Error;
 use tulpje_lib::db::DbId;
-use uuid::Uuid;
 
 use crate::db::ModPkSystem;
 
@@ -36,7 +39,7 @@ pub(crate) async fn get_fronter_categories(
 
 pub(crate) async fn get_fronter_categories_for_system(
     db: &sqlx::PgPool,
-    system_uuid: Uuid,
+    system_uuid: PluralKitUuid<SystemMarker>,
 ) -> Result<Vec<ModPkFrontersRow>, Error> {
     Ok(sqlx::query_as!(
         ModPkFrontersRow,
@@ -51,7 +54,7 @@ pub(crate) async fn get_fronter_categories_for_system(
             WHERE
                 system_uuid = $1
         "#,
-        system_uuid
+        *system_uuid
     )
     .fetch_all(db)
     .await?)
@@ -152,43 +155,42 @@ pub(crate) async fn get_system_count(db: &sqlx::PgPool) -> Result<usize, Error> 
 #[derive(Debug, FromRow)]
 #[expect(dead_code, reason = "reflects db structure, keep intact")]
 pub(crate) struct ModPkSystemFronters {
-    pub(crate) system_uuid: Uuid,
-    pub(crate) fronters: sqlx::types::Json<Vec<Uuid>>,
+    pub(crate) system_uuid: PluralKitUuid<SystemMarker>,
+    pub(crate) fronters: sqlx::types::Json<Vec<PluralKitUuid<MemberMarker>>>,
     pub(crate) updated_at: chrono::NaiveDateTime,
 }
 
 pub(crate) async fn did_fronters_change(
     db: &sqlx::PgPool,
-    system_uuid: Uuid,
-    new_fronters: &[Uuid],
+    system_uuid: PluralKitUuid<SystemMarker>,
+    new_fronters: &[PluralKitUuid<MemberMarker>],
 ) -> Result<bool, Error> {
     let Some(saved_front) = get_fronters(db, system_uuid).await? else {
         return Ok(true);
     };
 
-    let saved_fronters: Vec<&Uuid> = saved_front.fronters.iter().collect();
-    let new_fronters: Vec<&Uuid> = new_fronters.iter().collect();
+    let saved_fronters = saved_front.fronters.0;
 
     Ok(saved_fronters != new_fronters)
 }
 
 pub(crate) async fn get_fronters(
     db: &sqlx::PgPool,
-    system_uuid: Uuid,
+    system_uuid: PluralKitUuid<SystemMarker>,
 ) -> Result<Option<ModPkSystemFronters>, Error> {
     Ok(sqlx::query_as!(
         ModPkSystemFronters,
         r#"
             SELECT
                 system_uuid,
-                fronters AS "fronters: sqlx::types::Json<Vec<Uuid>>",
+                fronters AS "fronters: sqlx::types::Json<Vec<PluralKitUuid<MemberMarker>>>",
                 updated_at
             FROM
                 pk_system_fronters
             WHERE
                 system_uuid = $1
         "#,
-        system_uuid
+        *system_uuid
     )
     .fetch_optional(db)
     .await?)
@@ -196,7 +198,7 @@ pub(crate) async fn get_fronters(
 
 pub(crate) async fn update_fronters_timestamp(
     db: &sqlx::PgPool,
-    system_uuid: Uuid,
+    system_uuid: PluralKitUuid<SystemMarker>,
 ) -> Result<(), Error> {
     sqlx::query!(
         r#"
@@ -208,7 +210,7 @@ pub(crate) async fn update_fronters_timestamp(
             DO UPDATE SET
                 updated_at = NOW()
         "#,
-        system_uuid,
+        *system_uuid,
     )
     .execute(db)
     .await
@@ -221,8 +223,8 @@ pub(crate) async fn update_fronters_timestamp(
 
 pub(crate) async fn update_fronters(
     db: &sqlx::PgPool,
-    system_uuid: Uuid,
-    fronters: &[Uuid],
+    system_uuid: PluralKitUuid<SystemMarker>,
+    fronters: &[PluralKitUuid<MemberMarker>],
 ) -> Result<(), Error> {
     sqlx::query!(
         r#"
@@ -235,7 +237,7 @@ pub(crate) async fn update_fronters(
                 fronters = $2,
                 updated_at = $3
         "#,
-        system_uuid,
+        *system_uuid,
         sqlx::types::Json(fronters) as _,
         chrono::Utc::now().naive_utc(),
     )
@@ -246,7 +248,10 @@ pub(crate) async fn update_fronters(
 }
 
 #[expect(dead_code, reason = "useful utility function")]
-pub(crate) async fn delete_fronters(db: &sqlx::PgPool, system_uuid: Uuid) -> Result<(), Error> {
+pub(crate) async fn delete_fronters(
+    db: &sqlx::PgPool,
+    system_uuid: PluralKitUuid<SystemMarker>,
+) -> Result<(), Error> {
     sqlx::query!(
         r#"
             DELETE FROM
@@ -254,7 +259,7 @@ pub(crate) async fn delete_fronters(db: &sqlx::PgPool, system_uuid: Uuid) -> Res
             WHERE
                 system_uuid = $1
         "#,
-        system_uuid
+        *system_uuid
     )
     .execute(db)
     .await?;
@@ -298,7 +303,7 @@ pub(crate) async fn get_systems_to_update(db: &sqlx::PgPool) -> Result<Vec<ModPk
         r#"
             SELECT
                 pk_systems.uuid,
-                pk_systems.id,
+                pk_systems.id AS "id: PluralKitId<SystemMarker>",
                 pk_systems.name,
                 pk_systems.avatar,
                 pk_systems.created_at,

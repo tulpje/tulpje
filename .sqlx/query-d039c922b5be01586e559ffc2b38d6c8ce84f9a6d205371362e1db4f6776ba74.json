@@ -1,11 +1,11 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT\n                id,\n                uuid,\n                name,\n                avatar,\n                created_at,\n                updated_at\n            FROM\n                pk_systems\n        ",
+  "query": "\n            SELECT\n                pk_systems.id AS \"id: PluralKitId<SystemMarker>\",\n                pk_systems.uuid,\n                pk_systems.name,\n                pk_systems.avatar,\n                pk_systems.created_at,\n                pk_systems.updated_at\n            FROM\n                pk_guilds\n            INNER JOIN\n                pk_systems\n            ON\n                pk_systems.uuid = pk_guilds.system_uuid\n            WHERE\n                guild_id = $1\n        ",
   "describe": {
     "columns": [
       {
         "ordinal": 0,
-        "name": "id",
+        "name": "id: PluralKitId<SystemMarker>",
         "type_info": "Varchar"
       },
       {
@@ -35,7 +35,9 @@
       }
     ],
     "parameters": {
-      "Left": []
+      "Left": [
+        "Int8"
+      ]
     },
     "nullable": [
       false,
@@ -46,5 +48,5 @@
       false
     ]
   },
-  "hash": "f2a8dacceac68db797f17bf51dfb9e12e486c5a31cabd22a508ce399b7ba9eb9"
+  "hash": "d039c922b5be01586e559ffc2b38d6c8ce84f9a6d205371362e1db4f6776ba74"
 }

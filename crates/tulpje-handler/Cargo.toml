@@ -29,7 +29,7 @@ twilight-gateway = { workspace = true }
 twilight-http = { workspace = true, features = ["decompression", "rustls-webpki-roots"] }
 serde = { workspace = true }
 sqlx = { workspace = true, features = ["migrate"] }
-pkrs-fork = { workspace = true }
+pluralkit-rs = { workspace = true }
 metrics = { workspace = true }
 metrics-exporter-prometheus = { workspace = true }
 redis = { workspace = true }

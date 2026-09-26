@@ -1,4 +1,4 @@
-use pkrs_fork::model::System;
+use pluralkit_rs::models::{PluralKitId, PluralKitUuid, System, SystemRef, marker::SystemMarker};
 use sqlx::prelude::FromRow;
 use twilight_model::id::{
     Id,
@@ -6,28 +6,25 @@ use twilight_model::id::{
 };
 
 use tulpje_framework::Error;
-use uuid::Uuid;
-
-use super::util::SystemRef;
 use tulpje_lib::db::DbId;
 
 #[derive(Debug)]
 pub(crate) struct ModPkGuildRow {
     pub(crate) guild_id: DbId<GuildMarker>,
     pub(crate) user_id: DbId<UserMarker>,
-    pub(crate) system_uuid: Uuid,
+    pub(crate) system_uuid: PluralKitUuid<SystemMarker>,
 }
 pub(crate) async fn save_guild_settings(
     db: &sqlx::PgPool,
     guild_id: Id<GuildMarker>,
     user_id: Id<UserMarker>,
-    system_uuid: Uuid,
+    system_uuid: PluralKitUuid<SystemMarker>,
 ) -> Result<(), Error> {
     sqlx::query!(
         "INSERT INTO pk_guilds (guild_id, user_id, system_uuid) VALUES ($1, $2, $3) ON CONFLICT (guild_id) DO UPDATE SET system_uuid = $3",
         i64::from(DbId(guild_id)),
         i64::from(DbId(user_id)),
-        system_uuid,
+        *system_uuid,
     )
     .execute(db)
     .await?;
@@ -38,12 +35,12 @@ pub(crate) async fn save_guild_settings(
 #[expect(dead_code, reason = "useful utility function")]
 pub(crate) async fn get_guild_settings_for_system(
     db: &sqlx::PgPool,
-    system_uuid: Uuid,
+    system_uuid: PluralKitUuid<SystemMarker>,
 ) -> Result<Option<ModPkGuildRow>, Error> {
     Ok(sqlx::query_as!(
         ModPkGuildRow,
         "SELECT guild_id, user_id, system_uuid FROM pk_guilds WHERE system_uuid = $1",
-        system_uuid
+        *system_uuid
     )
     .fetch_optional(db)
     .await?)
@@ -75,8 +72,9 @@ pub(crate) async fn get_guild_settings(db: &sqlx::PgPool) -> Result<Vec<ModPkGui
 #[derive(Debug, FromRow)]
 #[expect(dead_code, reason = "reflects database structure")]
 pub(crate) struct ModPkSystem {
-    pub(crate) id: String,
-    pub(crate) uuid: Uuid,
+    #[sqlx(try_from = "String")]
+    pub(crate) id: PluralKitId<SystemMarker>,
+    pub(crate) uuid: PluralKitUuid<SystemMarker>,
     pub(crate) name: Option<String>,
     pub(crate) avatar: Option<String>,
     pub(crate) created_at: chrono::NaiveDateTime,
@@ -86,7 +84,7 @@ pub(crate) struct ModPkSystem {
 impl From<System> for ModPkSystem {
     fn from(value: System) -> Self {
         Self {
-            id: value.id.0,
+            id: value.id,
             uuid: value.uuid,
             name: value.name,
             avatar: value.avatar_url.map(|url| url.to_string()),
@@ -102,7 +100,7 @@ pub(crate) async fn get_all_systems(db: &sqlx::PgPool) -> Result<Vec<ModPkSystem
         ModPkSystem,
         r#"
             SELECT
-                id,
+                id AS "id: PluralKitId<SystemMarker>",
                 uuid,
                 name,
                 avatar,
@@ -117,13 +115,13 @@ pub(crate) async fn get_all_systems(db: &sqlx::PgPool) -> Result<Vec<ModPkSystem
 }
 pub(crate) async fn get_systems(
     db: &sqlx::PgPool,
-    uuids: Vec<Uuid>,
+    uuids: Vec<PluralKitUuid<SystemMarker>>,
 ) -> Result<Vec<ModPkSystem>, Error> {
     Ok(sqlx::query_as!(
         ModPkSystem,
         r#"
             SELECT
-                id,
+                id AS "id: PluralKitId<SystemMarker>",
                 uuid,
                 name,
                 avatar,
@@ -134,7 +132,7 @@ pub(crate) async fn get_systems(
             WHERE
                 uuid = ANY($1)
         "#,
-        &uuids[..],
+        &uuids[..] as _
     )
     .fetch_all(db)
     .await?)
@@ -149,7 +147,7 @@ pub(crate) async fn get_system(
             ModPkSystem,
             r#"
                 SELECT
-                    id,
+                    id AS "id: PluralKitId<SystemMarker>",
                     uuid,
                     name,
                     avatar,
@@ -168,7 +166,7 @@ pub(crate) async fn get_system(
             ModPkSystem,
             r#"
                 SELECT
-                    id,
+                    id AS "id: PluralKitId<SystemMarker>",
                     uuid,
                     name,
                     avatar,
@@ -179,11 +177,12 @@ pub(crate) async fn get_system(
                 WHERE
                     uuid = $1
             "#,
-            uuid
+            **uuid
         )
         .fetch_optional(db)
         .await?),
-        SystemRef::DiscordId(_) => Err("Deleting by discord ID is unsupported".into()),
+        SystemRef::Snowflake(_) => Err("Deleting by discord ID is unsupported".into()),
+        SystemRef::Me => Err("Deleting using @me is unsupported".into()),
     }
 }
 
@@ -195,7 +194,7 @@ pub(crate) async fn get_system_for_guild(
         ModPkSystem,
         r#"
             SELECT
-                pk_systems.id,
+                pk_systems.id AS "id: PluralKitId<SystemMarker>",
                 pk_systems.uuid,
                 pk_systems.name,
                 pk_systems.avatar,
@@ -231,8 +230,8 @@ pub(crate) async fn update_system(db: &sqlx::PgPool, system: &ModPkSystem) -> Re
                 avatar = $4,
                 updated_at = NOW()
         "#,
-        system.id,
-        system.uuid,
+        &system.id,
+        *system.uuid,
         system.name,
         system.avatar,
     )
@@ -242,7 +241,10 @@ pub(crate) async fn update_system(db: &sqlx::PgPool, system: &ModPkSystem) -> Re
     Ok(())
 }
 
-pub(crate) async fn touch_system(db: &sqlx::PgPool, uuid: Uuid) -> Result<(), Error> {
+pub(crate) async fn touch_system(
+    db: &sqlx::PgPool,
+    uuid: PluralKitUuid<SystemMarker>,
+) -> Result<(), Error> {
     sqlx::query!(
         r#"
             UPDATE
@@ -252,7 +254,7 @@ pub(crate) async fn touch_system(db: &sqlx::PgPool, uuid: Uuid) -> Result<(), Er
             WHERE
                 uuid = $1
         "#,
-        uuid
+        *uuid
     )
     .execute(db)
     .await
@@ -265,18 +267,19 @@ pub(crate) async fn touch_system(db: &sqlx::PgPool, uuid: Uuid) -> Result<(), Er
 pub(crate) async fn delete_system(db: &sqlx::PgPool, system_ref: SystemRef) -> Result<(), Error> {
     match system_ref {
         SystemRef::Uuid(uuid) => {
-            sqlx::query!("DELETE FROM pk_systems WHERE uuid = $1", uuid)
+            sqlx::query!("DELETE FROM pk_systems WHERE uuid = $1", *uuid)
                 .execute(db)
                 .await?;
             Ok(())
         }
         SystemRef::Id(id) => {
-            sqlx::query!("DELETE FROM pk_systems WHERE id = $1", id,)
+            sqlx::query!("DELETE FROM pk_systems WHERE id = $1", *id)
                 .execute(db)
                 .await?;
             Ok(())
         }
-        SystemRef::DiscordId(_) => Err("Deleting by discord ID is unsupported".into()),
+        SystemRef::Snowflake(_) => Err("Deleting by discord ID is unsupported".into()),
+        SystemRef::Me => Err("Deleting using @me is unsupported".into()),
     }
 }
 
@@ -308,7 +311,7 @@ pub(crate) async fn get_systems_to_update(db: &sqlx::PgPool) -> Result<Vec<ModPk
         r#"
             SELECT
                 pk_systems.uuid,
-                pk_systems.id,
+                pk_systems.id AS "id: PluralKitId<SystemMarker>",
                 pk_systems.name,
                 pk_systems.avatar,
                 pk_systems.created_at,

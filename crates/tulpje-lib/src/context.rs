@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use pkrs_fork::client::PkClient;
+use pluralkit_rs::PluralKit;
 use redis::aio::ConnectionManager as RedisConnectionManager;
 
 use tulpje_cache::Cache;
@@ -10,7 +10,7 @@ use tulpje_framework::{Registry, context};
 pub struct Services {
     pub handler_id: u32,
 
-    pub pk: Arc<PkClient>,
+    pub pk: Arc<PluralKit>,
     pub cache: Arc<Cache>,
     // NOTE: Internally uses an Arc, "cheap" to clone
     pub redis: RedisConnectionManager,
