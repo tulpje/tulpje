@@ -40,8 +40,7 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
         resolve_system_from_reference(&system_ref, &ctx.services.pk, &ctx.services.db).await?
     else {
         responses::error(&ctx, &format!(
-            "Couldn't find system `{}`, are you sure you're following them and that you spelled it correctly?",
-            String::from(system_ref),
+            "Couldn't find system `{system_ref}`, are you sure you're following them and that you spelled it correctly?",
         ))
         .await?;
 
@@ -54,7 +53,7 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
             &ctx,
             &format!(
                 "You're already following `{}`",
-                system.name.unwrap_or(system.id)
+                system.name.unwrap_or(system.id.to_string())
             ),
         )
         .await?;
@@ -76,10 +75,10 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
     // inform user if the system they're trying to follow has a private front
     if handle_private_front(
         &ctx,
-        system_ref.clone(),
+        &system_ref,
         &format!(
             "Front for system `{}` is private",
-            system.name.clone().unwrap_or_else(|| system.id.clone())
+            system.name.clone().unwrap_or_else(|| system.id.to_string())
         ),
     )
     .await?
@@ -95,7 +94,7 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
         &ctx,
         &format!(
             "`{}` added to notification list",
-            system.name.unwrap_or(system.id),
+            system.name.unwrap_or(system.id.to_string()),
         ),
     )
     .await?;

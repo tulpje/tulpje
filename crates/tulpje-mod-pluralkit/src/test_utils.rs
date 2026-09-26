@@ -1,3 +1,4 @@
+use pluralkit_rs::models::{PluralKitId, PluralKitUuid, marker::SystemMarker};
 use tulpje_lib::db::guild::touch;
 use twilight_model::id::{Id, marker::GuildMarker};
 use uuid::Uuid;
@@ -12,7 +13,7 @@ pub(crate) async fn create_n_systems(
     db: &sqlx::PgPool,
     n: u16,
     updated_at: chrono::NaiveDateTime,
-) -> Result<Vec<Uuid>, tulpje_framework::Error> {
+) -> Result<Vec<PluralKitUuid<SystemMarker>>, tulpje_framework::Error> {
     let guild_id = Id::<GuildMarker>::new(1);
     touch(db, guild_id).await?;
 
@@ -20,11 +21,12 @@ pub(crate) async fn create_n_systems(
     let offset = get_system_count(db).await?;
     let mut uuids = Vec::new();
     for i in offset + 1..=offset + (n as usize) {
-        let uuid = Uuid::now_v7();
+        let uuid: PluralKitUuid<SystemMarker> = Uuid::now_v7().into();
         update_system(
             db,
             &ModPkSystem {
-                id: format!("sys{:03}", i),
+                id: PluralKitId::try_from(format!("sys{:03}", i))
+                    .expect("couldn't create PluralKitId"),
                 uuid,
                 name: None,
                 avatar: None,
