@@ -1,12 +1,13 @@
 use std::collections::{HashMap, HashSet};
 
-use chrono::DateTime;
 use chrono::NaiveDateTime;
-use pkrs_fork::client::PkClient;
-use pkrs_fork::client::PluralKitError;
-use pkrs_fork::model::Member;
-use pkrs_fork::model::PkId;
-use serde_either::StringOrStruct;
+use jiff_chrono_conversions::ToChrono;
+use pluralkit_rs::models::PluralKitUuid;
+use pluralkit_rs::models::marker::SystemMarker;
+use pluralkit_rs::{
+    PluralKit,
+    models::{Member, PluralKitError, SystemRef},
+};
 use tracing::Level;
 use twilight_http::Client;
 use twilight_model::channel::{Channel, ChannelType};
@@ -15,11 +16,9 @@ use twilight_model::id::Id;
 use twilight_model::id::marker::{ChannelMarker, GuildMarker};
 
 use tulpje_framework::Error;
-use uuid::Uuid;
 
 use super::db;
 use crate::db::ModPkSystem;
-use crate::util::SystemRef;
 use crate::util::get_member_name;
 use tulpje_lib::{context::CommandContext, responses};
 
@@ -203,18 +202,18 @@ pub(super) async fn update_fronter_channels(
 // the calling functions early returns after
 pub(crate) async fn handle_private_front(
     ctx: &CommandContext,
-    system_ref: SystemRef,
+    system_ref: &SystemRef,
     message: &str,
 ) -> Result<bool, Error> {
     match ctx
         .services
         .pk
-        .get_system_fronters(&PkId(system_ref.into()))
+        .get_current_system_fronters(&system_ref)
         .await
     {
         Ok(_) => Ok(false),
         // 30004 = private front
-        Err(PluralKitError::Pk(_, error)) if error.code == 30004 => {
+        Err(PluralKitError::PluralKit { code: 30004, .. }) => {
             responses::error(ctx, message).await?;
             Ok(true)
         }
@@ -225,9 +224,9 @@ pub(crate) async fn handle_private_front(
 #[derive(thiserror::Error, Debug)]
 pub(crate) enum GetSystemFrontersError {
     #[error("fronters for system {0} are private")]
-    Private(Uuid),
+    Private(PluralKitUuid<SystemMarker>),
     #[error("system {0} not found")]
-    NotFound(Uuid),
+    NotFound(PluralKitUuid<SystemMarker>),
     #[error(transparent)]
     Other(#[from] Error),
 }
@@ -238,58 +237,36 @@ pub(crate) struct Fronters {
 }
 
 pub(crate) async fn get_system_fronters(
-    client: &PkClient,
-    system_uuid: Uuid,
+    client: &PluralKit,
+    system_uuid: PluralKitUuid<SystemMarker>,
 ) -> Result<Option<Fronters>, GetSystemFrontersError> {
     let switch = match client
-        .get_system_fronters(&PkId(system_uuid.to_string()))
+        .get_current_system_fronters(&system_uuid.into())
         .await
     {
-        Ok(front) => Ok::<_, GetSystemFrontersError>(front),
+        Ok(response) => Ok::<_, GetSystemFrontersError>(
+            response
+                .model()
+                .await
+                .map_err(|err| GetSystemFrontersError::Other(err.into()))?,
+        ),
         // handle private fronters
-        Err(PluralKitError::Pk(_, error))
-            // 30004 = private fronters
-            if error.code == 30004 =>
-        {
+        // 30004 = private fronters
+        Err(PluralKitError::PluralKit { code: 30004, .. }) => {
             Err(GetSystemFrontersError::Private(system_uuid))
         }
-        Err(PluralKitError::Pk(_, error))
-            // 20001 = system not found
-            if error.code == 20001 =>
-        {
+        // 20001 = system not found
+        Err(PluralKitError::PluralKit { code: 20001, .. }) => {
             Err(GetSystemFrontersError::NotFound(system_uuid))
         }
         // directly return any other errors
         Err(err) => Err(GetSystemFrontersError::Other(err.into())),
     }?;
 
-    let Some(switch) = switch else {
-        return Ok(None);
-    };
-
-    let mut members = Vec::<Member>::new();
-    for member in switch.members {
-        match member {
-            StringOrStruct::String(_) => Err(GetSystemFrontersError::Other(
-                format!("system {system_uuid} returned uuids instead of member structs",).into(),
-            ))?,
-            StringOrStruct::Struct(member) => members.push(member),
-        };
-    }
-
-    let timestamp = DateTime::from_timestamp(switch.timestamp.to_utc().unix_timestamp(), 0)
-        .ok_or_else(|| {
-            GetSystemFrontersError::Other(
-                format!(
-                    "timestamp out of range: {}",
-                    switch.timestamp.to_utc().unix_timestamp()
-                )
-                .into(),
-            )
-        })?
-        .naive_utc();
-
-    Ok(Some(Fronters { members, timestamp }))
+    Ok(Some(Fronters {
+        members: switch.members,
+        timestamp: NaiveDateTime::from(switch.timestamp.to_chrono()),
+    }))
 }
 
 pub(crate) enum FrontChange {
@@ -305,7 +282,7 @@ pub(crate) struct Switch {
 pub(crate) async fn update_system_fronters(
     db: &sqlx::PgPool,
     system: &ModPkSystem,
-    client: &PkClient,
+    client: &PluralKit,
 ) -> Result<FrontChange, GetSystemFrontersError> {
     let fronters: Option<Fronters> = match get_system_fronters(client, system.uuid).await {
         Ok(fronters) => Ok(fronters),

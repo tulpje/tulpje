@@ -1,11 +1,11 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT\n                id,\n                uuid,\n                name,\n                avatar,\n                created_at,\n                updated_at\n            FROM\n                pk_systems\n            WHERE\n                uuid = ANY($1)\n        ",
+  "query": "\n                SELECT\n                    id AS \"id: PluralKitId<SystemMarker>\",\n                    uuid,\n                    name,\n                    avatar,\n                    created_at,\n                    updated_at\n                FROM\n                    pk_systems\n                WHERE\n                    id = $1\n            ",
   "describe": {
     "columns": [
       {
         "ordinal": 0,
-        "name": "id",
+        "name": "id: PluralKitId<SystemMarker>",
         "type_info": "Varchar"
       },
       {
@@ -36,7 +36,7 @@
     ],
     "parameters": {
       "Left": [
-        "UuidArray"
+        "Text"
       ]
     },
     "nullable": [
@@ -48,5 +48,5 @@
       false
     ]
   },
-  "hash": "a48f528da34e3c638fa18b86806656a068b822b687dccdbb40c6dc276dfa743f"
+  "hash": "51ca78206f6188f1f59fca81cfd449ff18a9115d5f13b8423e06030ab780efd7"
 }

@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT\n                pk_systems.uuid,\n                pk_systems.id,\n                pk_systems.name,\n                pk_systems.avatar,\n                pk_systems.created_at,\n                pk_systems.updated_at\n            FROM\n                pk_systems\n            WHERE\n                pk_systems.updated_at <= NOW() - interval '24 hours'\n            AND\n                uuid IN (SELECT uuid FROM pk_tracked_systems)\n            ORDER BY\n                updated_at\n            ASC\n            LIMIT 5\n        ",
+  "query": "\n            SELECT\n                pk_systems.uuid,\n                pk_systems.id AS \"id: PluralKitId<SystemMarker>\",\n                pk_systems.name,\n                pk_systems.avatar,\n                pk_systems.created_at,\n                pk_systems.updated_at\n            FROM\n                pk_systems\n            WHERE\n                pk_systems.updated_at <= NOW() - interval '24 hours'\n            AND\n                uuid IN (SELECT uuid FROM pk_tracked_systems)\n            ORDER BY\n                updated_at\n            ASC\n            LIMIT 5\n        ",
   "describe": {
     "columns": [
       {
@@ -10,7 +10,7 @@
       },
       {
         "ordinal": 1,
-        "name": "id",
+        "name": "id: PluralKitId<SystemMarker>",
         "type_info": "Varchar"
       },
       {
@@ -46,5 +46,5 @@
       false
     ]
   },
-  "hash": "9246f71dea107ce3e7ea9ed14ecd193e26fd97bd16094dee598ace5f1c0d2fd1"
+  "hash": "312ea70d4713d4ce9d6b46c0d2f85ab3dd36b1bd970166d9700447556c88e6aa"
 }

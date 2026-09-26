@@ -1,9 +1,9 @@
+use pluralkit_rs::models::{PluralKitUuid, marker::SystemMarker};
 use tulpje_framework::Error;
 use twilight_model::id::{
     Id,
     marker::{ChannelMarker, GuildMarker},
 };
-use uuid::Uuid;
 
 use tulpje_lib::db::DbId;
 
@@ -78,12 +78,12 @@ pub(crate) async fn delete_notify_systems(
 pub(crate) async fn add_notify_system(
     db: &sqlx::PgPool,
     guild_id: Id<GuildMarker>,
-    system_uuid: Uuid,
+    system_uuid: PluralKitUuid<SystemMarker>,
 ) -> Result<(), Error> {
     sqlx::query!(
         "INSERT INTO pk_notify_systems (guild_id, system_uuid) VALUES ($1, $2) ON CONFLICT (guild_id, system_uuid) DO UPDATE SET system_uuid = $2",
         i64::from(DbId(guild_id)),
-        system_uuid,
+        *system_uuid,
     )
     .execute(db)
     .await?;
@@ -94,12 +94,12 @@ pub(crate) async fn add_notify_system(
 pub(crate) async fn remove_notify_system(
     db: &sqlx::PgPool,
     guild_id: Id<GuildMarker>,
-    system_uuid: Uuid,
+    system_uuid: PluralKitUuid<SystemMarker>,
 ) -> Result<(), Error> {
     sqlx::query!(
         "DELETE FROM pk_notify_systems WHERE guild_id = $1 AND system_uuid = $2",
         i64::from(DbId(guild_id)),
-        system_uuid,
+        *system_uuid,
     )
     .execute(db)
     .await?;
@@ -109,13 +109,13 @@ pub(crate) async fn remove_notify_system(
 
 pub(crate) async fn remove_notify_system_from_guilds(
     db: &sqlx::PgPool,
-    system_uuid: Uuid,
+    system_uuid: PluralKitUuid<SystemMarker>,
     guilds: Vec<Id<GuildMarker>>,
 ) -> Result<(), Error> {
     let guild_ids: Vec<_> = guilds.into_iter().map(|id| i64::from(DbId(id))).collect();
     sqlx::query!(
         "DELETE FROM pk_notify_systems WHERE system_uuid = $1 AND guild_id = ANY($2)",
-        system_uuid,
+        *system_uuid,
         &guild_ids
     )
     .execute(db)
@@ -127,11 +127,11 @@ pub(crate) async fn remove_notify_system_from_guilds(
 pub(crate) async fn get_notify_systems(
     db: &sqlx::PgPool,
     guild_id: Id<GuildMarker>,
-) -> Result<Vec<Uuid>, Error> {
+) -> Result<Vec<PluralKitUuid<SystemMarker>>, Error> {
     Ok(sqlx::query_scalar!(
         r#"
             SELECT
-                system_uuid
+                system_uuid AS "system_uuid: PluralKitUuid<SystemMarker>"
             FROM
                 pk_notify_systems
             INNER JOIN
@@ -152,7 +152,7 @@ pub(crate) async fn get_notify_systems(
 pub(crate) async fn does_guild_follow(
     db: &sqlx::PgPool,
     guild_id: Id<GuildMarker>,
-    system_uuid: Uuid,
+    system_uuid: PluralKitUuid<SystemMarker>,
 ) -> Result<bool, Error> {
     Ok(sqlx::query_scalar!(
         r#"
@@ -164,7 +164,7 @@ pub(crate) async fn does_guild_follow(
                 guild_id = $1 AND system_uuid = $2
         "#,
         i64::from(DbId(guild_id)),
-        system_uuid,
+        *system_uuid,
     )
     .fetch_one(db)
     .await?
@@ -192,11 +192,11 @@ pub(crate) async fn get_guild_follow_count(
 
 pub(crate) async fn get_notify_guilds_for_system(
     db: &sqlx::PgPool,
-    system: Uuid,
+    system_uuid: PluralKitUuid<SystemMarker>,
 ) -> Result<Vec<Id<GuildMarker>>, Error> {
     Ok(sqlx::query_scalar!(
         "SELECT guild_id FROM pk_notify_systems WHERE system_uuid = $1",
-        system
+        *system_uuid
     )
     .fetch_all(db)
     .await?

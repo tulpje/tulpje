@@ -3,7 +3,7 @@ mod metrics;
 
 use std::{sync::Arc, time::Duration};
 
-use pkrs_fork::client::PkClient;
+use pluralkit_rs::PluralKit;
 use redis::aio::ConnectionManagerConfig;
 use sqlx::{
     ConnectOptions as _,
@@ -139,10 +139,12 @@ async fn main() {
     let services = Arc::new(context::Services {
         handler_id: config.handler_id,
 
-        pk: Arc::new(PkClient {
-            user_agent: format!("Tulpje {}", version!()),
-            ..Default::default()
-        }),
+        pk: Arc::new(
+            PluralKit::builder()
+                .user_agent(format!("tulpje/{}", version!()))
+                .build()
+                .expect("failed to create PluralKit client"),
+        ),
         cache: Arc::clone(&cache),
         redis,
         db,

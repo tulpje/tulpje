@@ -1,0 +1,50 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                pk_systems.uuid,\n                pk_systems.id AS \"id: PluralKitId<SystemMarker>\",\n                pk_systems.name,\n                pk_systems.avatar,\n                pk_systems.created_at,\n                pk_systems.updated_at\n            FROM\n                pk_systems\n            LEFT JOIN\n                pk_system_fronters\n            ON pk_systems.uuid = pk_system_fronters.system_uuid\n            WHERE\n                (\n                    pk_system_fronters.updated_at IS NULL\n                    OR pk_system_fronters.updated_at <= NOW() - interval '1 minutes'\n                )\n                AND uuid IN (\n                    SELECT\n                        uuid\n                    FROM\n                        pk_tracked_systems\n                )\n            ORDER BY\n                pk_system_fronters.updated_at\n            ASC NULLS FIRST\n            LIMIT 5\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "uuid",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "id: PluralKitId<SystemMarker>",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "avatar",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "created_at",
+        "type_info": "Timestamp"
+      },
+      {
+        "ordinal": 5,
+        "name": "updated_at",
+        "type_info": "Timestamp"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false,
+      false,
+      true,
+      true,
+      false,
+      false
+    ]
+  },
+  "hash": "adbbbb038738ad5001de057db772b07fad76a07343402903994dc2a2230a52c0"
+}
