@@ -21,7 +21,7 @@ impl<T: Clone + Send + Sync> ServiceManager<T> {
         }
     }
 
-    pub(crate) fn start(&mut self, ctx: &Context<T>) -> Result<(), crate::Error> {
+    pub(crate) fn start(&mut self, ctx: &Context<T>) {
         for (name, func) in &self.services {
             tracing::info!("Starting service {name} ...");
 
@@ -38,10 +38,9 @@ impl<T: Clone + Send + Sync> ServiceManager<T> {
 
             self.handles.insert(name.clone(), handle);
         }
-        Ok(())
     }
 
-    pub(crate) fn shutdown(&mut self) {
+    pub(crate) fn shutdown(&self) {
         tracing::info!("shutting down service manager ...");
         self.shutdown.cancel();
     }

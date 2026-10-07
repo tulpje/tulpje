@@ -27,7 +27,7 @@ impl UpdateCache for ReactionAdd {
                 reaction.me = true;
             }
 
-            reaction.count += 1;
+            reaction.count = reaction.count.saturating_add(1);
         } else {
             let me = cache
                 .current_user
@@ -73,7 +73,7 @@ impl UpdateCache for ReactionRemove {
             }
 
             if reaction.count > 1 {
-                reaction.count -= 1;
+                reaction.count = reaction.count.saturating_sub(1);
             } else {
                 message
                     .reactions

@@ -140,7 +140,7 @@ enum State {
 impl State {
     async fn run(self, shared: &mut AmqpSharedData) -> Self {
         match self {
-            Self::Disconnected(inner) => inner.run().await,
+            Self::Disconnected(inner) => inner.run(),
             Self::Connecting(inner) => inner.run(shared).await,
             Self::Reconnecting(inner) => inner.run(shared).await,
             Self::OpeningChannel(inner) => inner.run(shared).await,
@@ -149,7 +149,7 @@ impl State {
             Self::Connected(inner) => inner.run(shared).await,
             Self::ClosingChannel(inner) => inner.run().await,
             Self::ClosingConnection(inner) => inner.run().await,
-            Self::ClosedConnection(inner) => inner.run(shared).await,
+            Self::ClosedConnection(inner) => inner.run(shared),
             Self::Finished(reason) => Self::Finished(reason),
         }
     }
@@ -185,7 +185,11 @@ state_transition!(ReopeningChannel => OpeningChannel);
 struct Disconnected {}
 
 impl Disconnected {
-    async fn run(self) -> State {
+    #[expect(
+        clippy::unused_self,
+        reason = "consistency with other state machine structs"
+    )]
+    fn run(self) -> State {
         State::Connecting(Self::into_state(Connecting {}))
     }
 }
@@ -240,7 +244,7 @@ impl Connecting {
                 conn,
                 CloseReason::Other,
             )));
-        };
+        }
 
         State::OpeningChannel(Self::into_state(OpeningChannel {
             conn,
@@ -467,7 +471,7 @@ impl Connected {
 
     async fn run(mut self, shared: &mut AmqpSharedData) -> State {
         if let Some(start_tx) = shared.start_tx.take()
-            && let Err(None) = start_tx.send(None)
+            && start_tx.send(None).is_err()
         {
             tracing::warn!("start_tx::send couldn't send succesful start result");
         }
@@ -494,7 +498,7 @@ impl Connected {
                                 tracing::warn!("couldn't route message, triggering reconnect and requeuing message");
                                 if let Err(err) = shared.send_tx.send(data) {
                                     tracing::error!("failed to requeue message: {err}");
-                                };
+                                }
                                 return self.close_channel(CloseReason::PublishNoRoute);
                             }
                         }
@@ -616,7 +620,7 @@ impl ClosingConnection {
         // NOTE: Can unwrap safely, we consume self, and ClosingChannel::new enforces Some(chan)
         if let Err(err) = self.conn.take().unwrap().close().await {
             tracing::warn!("error closing amqp conn: {err}");
-        };
+        }
 
         State::ClosedConnection(Self::into_state(ClosedConnection {
             reason: self.reason,
@@ -633,47 +637,47 @@ impl ClosedConnection {
         State::Finished(self.reason)
     }
 
-    fn finished_with_reason(self, reason: CloseReason) -> State {
+    fn finished_with_reason(reason: CloseReason) -> State {
         State::Finished(reason)
     }
 
-    fn reconnect(self) -> State {
+    fn reconnect() -> State {
         State::Reconnecting(Self::into_state(Reconnecting {}))
     }
 
-    async fn run(mut self, shared: &mut AmqpSharedData) -> State {
+    fn run(mut self, shared: &mut AmqpSharedData) -> State {
         match self.reason {
             CloseReason::ChannelClosed
             | CloseReason::PublishNoRoute
             | CloseReason::ConnectionClosed
-            | CloseReason::Other => self.reconnect(),
+            | CloseReason::Other => Self::reconnect(),
             CloseReason::Fatal(_) | CloseReason::Shutdown => self.finished(),
             CloseReason::StartError(ref mut err) => {
                 let Some(start_tx) = shared.start_tx.take() else {
                     let Some(err) = err.take() else {
-                        return self.finished_with_reason(CloseReason::Fatal(
-                            String::from("start_tx already consumed, and inner error is None, neither should happen")
-                        ));
+                        return Self::finished_with_reason(CloseReason::Fatal(String::from(
+                            "start_tx already consumed, and inner error is None, neither should happen",
+                        )));
                     };
 
-                    return self.finished_with_reason(CloseReason::Fatal(format!(
+                    return Self::finished_with_reason(CloseReason::Fatal(format!(
                         "start_tx already consumed, shouldn't happen, inner error: {err}"
                     )));
                 };
 
                 let Some(err) = err.take() else {
-                    return self.finished_with_reason(CloseReason::Fatal(String::from(
+                    return Self::finished_with_reason(CloseReason::Fatal(String::from(
                         "inner error is None, this shouldn't happen",
                     )));
                 };
 
                 if let Err(Some(err)) = start_tx.send(Some(err)) {
-                    return self.finished_with_reason(CloseReason::Fatal(format!(
+                    return Self::finished_with_reason(CloseReason::Fatal(format!(
                         "couldn't send error back to user: {err}"
                     )));
-                };
+                }
 
-                self.finished_with_reason(CloseReason::Fatal("error while starting".into()))
+                Self::finished_with_reason(CloseReason::Fatal("error while starting".into()))
             }
         }
     }

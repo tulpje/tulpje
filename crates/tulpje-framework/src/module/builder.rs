@@ -77,7 +77,7 @@ impl<T: Clone + Send + Sync> ModuleBuilder<T> {
                 let command_name = format!("{} {} {}", command.name, group.name, subcommand.name);
                 let func = subcommand
                     .func
-                    .unwrap_or_else(|| panic!("command '/{}' has no handler", command_name));
+                    .unwrap_or_else(|| panic!("command '/{command_name}' has no handler"));
 
                 self.commands.insert(
                     command_name.clone(),
@@ -93,7 +93,7 @@ impl<T: Clone + Send + Sync> ModuleBuilder<T> {
             let command_name = format!("{} {}", command.name, subcommand.name);
             let func = subcommand
                 .func
-                .unwrap_or_else(|| panic!("command /{} has no handler", command_name));
+                .unwrap_or_else(|| panic!("command /{command_name} has no handler"));
 
             self.commands.insert(
                 command_name.clone(),

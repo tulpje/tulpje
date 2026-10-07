@@ -10,7 +10,7 @@ pub(crate) async fn enable(ctx: CommandContext) -> Result<(), Error> {
 
     let module = ctx.get_arg_string("module")?;
     if !ctx.services.registry.guild_module_names().contains(&module) {
-        ctx.reply(format!("invalid module {}", module)).await?;
+        ctx.reply(format!("invalid module {module}")).await?;
         return Ok(());
     }
 
@@ -24,19 +24,19 @@ pub(crate) async fn enable(ctx: CommandContext) -> Result<(), Error> {
     )
     .await?;
 
-    ctx.reply(format!("{} enabled", module)).await?;
+    ctx.reply(format!("{module} enabled")).await?;
 
     Ok(())
 }
 
-pub(crate) async fn disable(ctx: CommandContext) -> Result<(), Error> {
+pub async fn disable(ctx: CommandContext) -> Result<(), Error> {
     let Some(guild) = ctx.guild().await? else {
         unreachable!("command is guild_only");
     };
 
     let module = ctx.get_arg_string("module")?;
     if !ctx.services.registry.guild_module_names().contains(&module) {
-        ctx.reply(format!("invalid module {}", module)).await?;
+        ctx.reply(format!("invalid module {module}")).await?;
         return Ok(());
     }
 
@@ -49,7 +49,7 @@ pub(crate) async fn disable(ctx: CommandContext) -> Result<(), Error> {
     )
     .await?;
 
-    ctx.reply(format!("{} disabled", module)).await?;
+    ctx.reply(format!("{module} disabled")).await?;
 
     Ok(())
 }

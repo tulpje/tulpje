@@ -153,11 +153,10 @@ pub(crate) async fn get_emoji_stats(
             FROM emoji_uses
             WHERE guild_id = $1
             GROUP BY emoji_id
-            ORDER BY {}
+            ORDER BY {order_by_clause}
             OFFSET $2
             LIMIT $3
-        ",
-        order_by_clause
+        "
     ))
     .bind(DbId(guild_id))
     .bind(i32::from(offset))

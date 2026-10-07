@@ -77,7 +77,7 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
         .await?;
         return Ok(());
     };
-    let system_ref = SystemRef::Uuid(gs.system_uuid.into());
+    let system_ref = SystemRef::Uuid(gs.system_uuid);
     let token = ctx.get_arg_string_optional("token")?;
 
     // fetch members from PluralKit
@@ -230,7 +230,7 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
                 update_stats.done.delete += 1;
                 tracing::debug!("deleted role {} in {}", id, guild.id);
             }
-        };
+        }
 
         // update user progress every 10 actions
         if idx % 10 == 0 {
@@ -279,16 +279,11 @@ async fn handle_get_system_members(
 ) -> Result<Option<Vec<Member>>, Error> {
     let mut req = client.get_system_members(&system_ref);
     if let Some(token) = token {
-        req = match req.token(token) {
-            Ok(req) => req,
-            Err(_) => {
-                responses::error(
-                    ctx,
-                    &format!("### Error\nToken contains invalid characters"),
-                )
-                .await?;
-                return Ok(None);
-            }
+        req = if let Ok(req) = req.token(token) {
+            req
+        } else {
+            responses::error(ctx, "### Error\nToken contains invalid characters").await?;
+            return Ok(None);
         }
     }
 

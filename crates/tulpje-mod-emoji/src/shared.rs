@@ -47,7 +47,7 @@ impl StatsSort {
             "count_asc" => Ok(Self::CountAsc),
             "date_desc" => Ok(Self::DateDesc),
             "date_asc" => Ok(Self::DateAsc),
-            _ => Err(format!("unknown sort {}", string).into()),
+            _ => Err(format!("unknown sort {string}").into()),
         }
     }
 }

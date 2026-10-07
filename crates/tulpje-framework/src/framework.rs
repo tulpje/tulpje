@@ -78,21 +78,19 @@ impl<T: Clone + Send + Sync + 'static> Framework<T> {
         if let Some(setup_fn) = self.setup_fn.take() {
             (setup_fn)(self.ctx.clone())
                 .await
-                .map_err(|err| format!("error running setup function: {}", err))?;
+                .map_err(|err| format!("error running setup function: {err}"))?;
         }
 
         if self.enable_tasks {
             self.scheduler
                 .start()
-                .map_err(|err| format!("error starting scheduled tasks: {}", err))?;
+                .map_err(|err| format!("error starting scheduled tasks: {err}"))?;
         } else {
             tracing::info!("scheduled tasks are disabled, not starting task scheduler");
         }
 
         if self.enable_services {
-            self.service_manager
-                .start(&self.ctx)
-                .map_err(|err| format!("error starting services: {err}"))?;
+            self.service_manager.start(&self.ctx);
         } else {
             tracing::info!("services are disabled, not starting service manager");
         }
@@ -129,7 +127,7 @@ impl<T: Clone + Send + Sync + 'static> Framework<T> {
         self.dispatcher.send(meta, event, span)
     }
 
-    pub async fn shutdown(&mut self) {
+    pub fn shutdown(&mut self) {
         self.scheduler.shutdown();
         self.dispatcher.shutdown();
         self.service_manager.shutdown();
@@ -165,7 +163,7 @@ impl DispatchHandle {
     }
 
     fn send(
-        &mut self,
+        &self,
         meta: Metadata,
         event: Event,
         span: Option<Span>,
@@ -173,7 +171,7 @@ impl DispatchHandle {
         Ok(self.sender.send((meta, event, span))?)
     }
 
-    fn shutdown(&mut self) {
+    fn shutdown(&self) {
         self.shutdown.cancel();
     }
 
@@ -222,7 +220,7 @@ impl<T: Clone + Send + Sync + 'static> Dispatch<T> {
                     let ctx = self.ctx.clone();
 
                     self.tracker.spawn(async move {
-                        crate::handle(meta, ctx, &registry, event).instrument(span.unwrap_or(Span::none())).await;
+                        Box::pin(crate::handle(meta, ctx, &registry, event).instrument(span.unwrap_or(Span::none()))).await;
                     });
                 },
                 () = self.shutdown.cancelled() => break,
@@ -234,7 +232,7 @@ impl<T: Clone + Send + Sync + 'static> Dispatch<T> {
 
         if let Err(err) = tokio::time::timeout(Duration::from_secs(5), self.tracker.wait()).await {
             tracing::warn!("waiting for dispatch tasks timed out: {err}");
-        };
+        }
     }
 }
 

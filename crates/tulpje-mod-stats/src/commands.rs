@@ -190,7 +190,9 @@ pub async fn shards(ctx: CommandContext) -> Result<(), Error> {
     shard_stats.sort_by_key(|s| s.shard_id);
 
     let mut embed = EmbedBuilder::new().title("Tulpje Discord Bot").build();
-    if !shard_stats.is_empty() {
+    if shard_stats.is_empty() {
+        embed.description = Some(String::from("No data available"));
+    } else {
         for shard in shard_stats {
             embed.fields.push(
                 EmbedFieldBuilder::new(
@@ -219,8 +221,6 @@ pub async fn shards(ctx: CommandContext) -> Result<(), Error> {
                 .into(),
             );
         }
-    } else {
-        embed.description = Some(String::from("No data available"));
     }
 
     let response = InteractionResponseDataBuilder::new()
@@ -253,7 +253,9 @@ pub async fn processes(ctx: CommandContext) -> Result<(), Error> {
 
     let mut embed = EmbedBuilder::new().title("Tulpje Discord Bot").build();
 
-    if !process_stats.is_empty() {
+    if process_stats.is_empty() {
+        embed.description = Some(String::from("No data available"));
+    } else {
         for process in process_stats {
             embed.fields.push(
                 EmbedFieldBuilder::new(
@@ -275,8 +277,6 @@ pub async fn processes(ctx: CommandContext) -> Result<(), Error> {
                 .into(),
             );
         }
-    } else {
-        embed.description = Some(String::from("No data available"));
     }
 
     let response = InteractionResponseDataBuilder::new()

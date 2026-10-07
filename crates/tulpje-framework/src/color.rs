@@ -26,7 +26,7 @@ impl FromStr for Color {
     type Err = ParseIntError;
 
     fn from_str(s: &str) -> Result<Self, ParseIntError> {
-        Ok(Self(u32::from_str_radix(s.trim_start_matches("#"), 16)?))
+        Ok(Self(u32::from_str_radix(s.trim_start_matches('#'), 16)?))
     }
 }
 
@@ -42,6 +42,10 @@ impl From<u32> for Color {
     }
 }
 
+#[expect(
+    clippy::unreadable_literal,
+    reason = "mainly hex color codes, expected to be 6 characters long"
+)]
 pub mod roles {
     use super::Color;
 
@@ -74,16 +78,16 @@ mod tests {
 
     #[test]
     fn test_from_str() {
-        assert_eq!(Color::from_str("#EEEEEE").unwrap(), Color(15658734));
+        assert_eq!(Color::from_str("#EEEEEE").unwrap(), Color(0xEEEEEE));
     }
 
     #[test]
     fn test_from_u32() {
-        assert_eq!(Color::from(15658734u32), Color(15658734));
+        assert_eq!(Color::from(0xEEEEEE), Color(0xEEEEEE));
     }
 
     #[test]
     fn test_to_string() {
-        assert_eq!(Color(15658734).to_string(), "#EEEEEE");
+        assert_eq!(Color(0xEEEEEE).to_string(), "#EEEEEE");
     }
 }

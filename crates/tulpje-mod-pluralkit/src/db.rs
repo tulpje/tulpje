@@ -87,7 +87,7 @@ impl From<System> for ModPkSystem {
             id: value.id,
             uuid: value.uuid,
             name: value.name,
-            avatar: value.avatar_url.map(|url| url.to_string()),
+            avatar: value.avatar_url,
             created_at: chrono::Utc::now().naive_utc(),
             updated_at: chrono::Utc::now().naive_utc(),
         }

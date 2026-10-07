@@ -16,7 +16,9 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
     let systems_is_empty = systems.is_empty();
     let systems_len = systems.len();
 
-    let followed_systems_text = if !systems_is_empty {
+    let followed_systems_text = if systems_is_empty {
+        "Not Following Anyone".to_string()
+    } else {
         systems
             .into_iter()
             .map(|system| {
@@ -28,8 +30,6 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
             })
             .collect::<Vec<String>>()
             .join("\n")
-    } else {
-        "Not Following Anyone".to_string()
     };
 
     let mut builder = EmbedBuilder::new()
@@ -40,7 +40,7 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
         let footer_text = if systems_len == 1 {
             "Following 1 system".to_string()
         } else {
-            format!("Following {} systems", systems_len)
+            format!("Following {systems_len} systems")
         };
         builder = builder.footer(EmbedFooterBuilder::new(footer_text));
     }

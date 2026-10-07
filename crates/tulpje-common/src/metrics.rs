@@ -108,7 +108,7 @@ impl FromRedisValue for Metrics {
                 Ok(rv) => Ok(rv),
                 Err(err) => Err(format!("error deserializing json: {err}").into()),
             },
-            _ => Err(format!("invalid response type for json: {:?}", v).into()),
+            _ => Err(format!("invalid response type for json: {v:?}").into()),
         }
     }
 }

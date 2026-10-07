@@ -44,7 +44,7 @@ pub async fn handle_message(ctx: EventContext) -> Result<(), Error> {
             && let Err(err) = db::save_emoji_use(&ctx.services.db, &emote, timestamp).await
         {
             error!(err, guild_id = guild_id.get(), "db::save_emoji_use");
-        };
+        }
     }
 
     Ok(())
@@ -124,7 +124,7 @@ pub async fn message_update(ctx: EventContext) -> Result<(), Error> {
                 emote = ?emote,
                 "db::save_emoji_use"
             );
-        };
+        }
     }
     Ok(())
 }
@@ -150,7 +150,7 @@ pub async fn reaction_add(ctx: EventContext) -> Result<(), Error> {
 
             if let Err(err) = db::save_emoji_use(&ctx.services.db, &emote, now).await {
                 error!(err, "db::save_emoji_use");
-            };
+            }
         }
         EmojiReactionType::Unicode { .. } => {
             // NOTE: We ignore unicode emojis, we're tracking emoji use to see which

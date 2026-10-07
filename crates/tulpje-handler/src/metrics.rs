@@ -12,7 +12,7 @@ pub(crate) fn install(
         PrometheusBuilder::new(),
         listen_addr,
         redis,
-        format!("handler-{}", handler_id),
+        format!("handler-{handler_id}"),
         version!(),
     )?;
 

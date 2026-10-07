@@ -84,7 +84,7 @@ impl AmqpHandle {
         }
     }
 
-    /// create a new AmqpConnection from a string address
+    /// create a new `AmqpConnection` from a string address
     pub fn try_from_str(
         addr: &str,
         opts: ConnectionArguments,

@@ -139,7 +139,7 @@ impl<T: Clone + Send + Sync> CommandContext<T> {
         };
 
         let CommandOptionValue::String(value) = value else {
-            return Err(format!("option '{}' not a string option", name).into());
+            return Err(format!("option '{name}' not a string option").into());
         };
 
         Ok(Some(value.clone()))
@@ -147,6 +147,6 @@ impl<T: Clone + Send + Sync> CommandContext<T> {
 
     pub fn get_arg_string(&self, name: &str) -> Result<String, Error> {
         self.get_arg_string_optional(name)?
-            .ok_or_else(|| format!("couldn't find command argument {}", name).into())
+            .ok_or_else(|| format!("couldn't find command argument {name}").into())
     }
 }

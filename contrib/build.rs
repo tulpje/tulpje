@@ -10,8 +10,7 @@ fn check_output(prog: &str, args: &[&str]) -> Result<String, Box<dyn std::error:
             result
                 .status
                 .code()
-                .map(|code| code.to_string())
-                .unwrap_or_else(|| "??".to_string()),
+                .map_or_else(|| "??".to_string(), |code| code.to_string())
         )
         .into());
     }

@@ -18,7 +18,7 @@ pub struct Repository<K: Hash, V: Serialize + DeserializeOwned> {
 impl<K: Hash, V: Serialize + DeserializeOwned> Repository<K, V> {
     pub(crate) fn new(name: &str, wanted: bool, redis: RedisConnectionManager) -> Self {
         Self {
-            name: format!("cache:{}", name),
+            name: format!("cache:{name}"),
             wanted,
 
             redis,
@@ -96,7 +96,7 @@ pub struct SetRepository<T: Serialize + DeserializeOwned + Eq + Hash> {
 impl<T: Serialize + DeserializeOwned + Eq + Hash> SetRepository<T> {
     pub(crate) fn new(name: &str, wanted: bool, redis: RedisConnectionManager) -> Self {
         Self {
-            name: format!("cache:{}", name),
+            name: format!("cache:{name}"),
             wanted,
 
             redis,
@@ -274,7 +274,7 @@ pub struct SingleRepository<T: Serialize + DeserializeOwned> {
 impl<T: Serialize + DeserializeOwned> SingleRepository<T> {
     pub(crate) fn new(name: &str, wanted: bool, redis: RedisConnectionManager) -> Self {
         Self {
-            name: format!("cache:{}", name),
+            name: format!("cache:{name}"),
             wanted,
 
             redis,

@@ -82,8 +82,8 @@ pub async fn handle_interaction<T: Clone + Send + Sync + 'static>(
                 .into());
             }
         }
-        Err(err) => return Err(format!("error handling interaction: {}", err).into()),
-    };
+        Err(err) => return Err(format!("error handling interaction: {err}").into()),
+    }
 
     Ok(())
 }
@@ -97,7 +97,14 @@ pub async fn handle<T: Clone + Send + Sync + 'static>(
     let processed = ctx.standby.process(&event);
 
     if let twilight_gateway::Event::InteractionCreate(event) = event.clone()
-        && let Err(err) = handle_interaction(*event, ctx.clone(), &meta, registry, processed).await
+        && let Err(err) = Box::pin(handle_interaction(
+            *event,
+            ctx.clone(),
+            &meta,
+            registry,
+            processed,
+        ))
+        .await
     {
         tracing::warn!(err);
     }

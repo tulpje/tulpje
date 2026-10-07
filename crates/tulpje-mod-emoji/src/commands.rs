@@ -122,7 +122,9 @@ async fn create_emoji_stats_embed(
         EMOJIS_PER_PAGE,
     )
     .await?;
-    let emoji_str = if !emoji_stats.is_empty() {
+    let emoji_str = if emoji_stats.is_empty() {
+        "No Data".to_string()
+    } else {
         emoji_stats
             .into_iter()
             .map(|emoji_stats| {
@@ -135,8 +137,6 @@ async fn create_emoji_stats_embed(
             })
             .collect::<Vec<String>>()
             .join("\n")
-    } else {
-        "No Data".to_string()
     };
 
     let degraded_warn = if std::env::var("TULPJE_MESSAGE_CONTENT")
@@ -154,7 +154,7 @@ async fn create_emoji_stats_embed(
 
     if total_pages > 0 {
         builder = builder.footer(
-            EmbedFooterBuilder::new(format!("Page {} of {}", current_page, total_pages)).build(),
+            EmbedFooterBuilder::new(format!("Page {current_page} of {total_pages}")).build(),
         );
     }
 
@@ -237,11 +237,9 @@ pub async fn handle_emoji_pagination(ctx: ComponentInteractionContext) -> Result
         "emoji_stats_next_page" => min(page + 1, total_pages),
         "emoji_stats_last_page" => total_pages,
         other => {
-            return Err(format!(
-                "unknown interaction id for handle_emoji_pagination: {}",
-                other
-            )
-            .into());
+            return Err(
+                format!("unknown interaction id for handle_emoji_pagination: {other}").into(),
+            );
         }
     };
 
@@ -362,7 +360,7 @@ pub async fn cmd_emoji_maintenance(ctx: CommandContext) -> Result<(), Error> {
     let count =
         db::delete_emojis_not_in_list_for_guild(&ctx.services.db, guild.id, emoji_ids).await?;
 
-    ctx.update(format!("cleaned up {} deleted emotes", count))
+    ctx.update(format!("cleaned up {count} deleted emotes"))
         .await?;
 
     Ok(())

@@ -186,7 +186,7 @@ async fn download_emoji(id: Id<EmojiMarker>, animated: bool) -> Result<String, r
         .await
         .map(|b| {
             // convert to a data uri
-            format!("data:image/webp;base64,{}", BASE64_STANDARD.encode(b),)
+            format!("data:image/webp;base64,{}", BASE64_STANDARD.encode(b))
         })
 }
 

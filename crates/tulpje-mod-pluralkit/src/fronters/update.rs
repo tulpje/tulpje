@@ -54,7 +54,7 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
     };
 
     cat.guild_id
-        .ok_or_else(|| format!("channel {} isn't a guild channel", cat_id))?;
+        .ok_or_else(|| format!("channel {cat_id} isn't a guild channel"))?;
 
     let system = get_system(&ctx.services.db, &gs.system_uuid.into())
         .await

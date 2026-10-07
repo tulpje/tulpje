@@ -138,14 +138,14 @@ pub async fn handle_permissions(
         .expect("missing_permissions isn't empty so shouldn't fail");
 
     // format the permission string
-    let permissions_string = if !permission_names.is_empty() {
+    let permissions_string = if permission_names.is_empty() {
+        format!("{last_permission} permission")
+    } else {
         format!(
             "{} and {} permissions",
             permission_names.join(", "),
             last_permission
         )
-    } else {
-        format!("{} permission", last_permission)
     };
 
     // inform the user
@@ -226,7 +226,7 @@ pub fn parse_channel_ref(channel_ref: &str) -> Option<Id<ChannelMarker>> {
     channel_ref
         .trim()
         .trim_start_matches("<#")
-        .trim_end_matches(">")
+        .trim_end_matches('>')
         .parse()
         .ok()
 }
@@ -246,13 +246,13 @@ pub fn format_significant_duration(total_secs: u64) -> String {
     let secs = total_secs % SECS_IN_MIN;
 
     if days > 0 {
-        format!("{}d {}h", days, hours)
+        format!("{days}d {hours}h")
     } else if hours > 0 {
-        format!("{}h {}m", hours, mins)
+        format!("{hours}h {mins}m")
     } else if mins > 0 {
-        format!("{}m {}s", mins, secs)
+        format!("{mins}m {secs}s")
     } else {
-        format!("{}s", secs)
+        format!("{secs}s")
     }
 }
 

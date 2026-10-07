@@ -1,4 +1,4 @@
-use std::str::FromStr;
+use std::str::FromStr as _;
 
 use pluralkit_rs::models::{Member, SystemRef};
 use tulpje_framework::{Error, color};
@@ -18,18 +18,17 @@ pub(crate) async fn handle_system_ref(
     ctx: &CommandContext,
     system_ref: &str,
 ) -> Result<Option<SystemRef>, Error> {
-    match system_ref.parse() {
-        Ok(system_ref) => Ok(Some(system_ref)),
-        Err(_) => {
-            responses::error(
-                ctx,
-                &format!(
-                    "Invalid system reference `{system_ref}`, are you sure you entered it correctly?",
-                ),
-            )
-            .await?;
-            Ok(None)
-        }
+    if let Ok(system_ref) = system_ref.parse() {
+        Ok(Some(system_ref))
+    } else {
+        responses::error(
+            ctx,
+            &format!(
+                "Invalid system reference `{system_ref}`, are you sure you entered it correctly?",
+            ),
+        )
+        .await?;
+        Ok(None)
     }
 }
 

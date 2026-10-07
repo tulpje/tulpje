@@ -22,7 +22,7 @@ async fn process_system(
             db::touch_system(db, system.uuid).await?;
         }
         Err(err) => return Err(err.into()),
-    };
+    }
 
     Ok(())
 }

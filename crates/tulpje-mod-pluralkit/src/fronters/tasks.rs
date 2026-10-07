@@ -188,7 +188,7 @@ fn create_front_change_embed(system: &ModPkSystem, switch: &Switch) -> Result<Em
         match ImageSource::url(url) {
             Ok(image_source) => builder = builder.thumbnail(image_source),
             Err(err) => tracing::warn!("error parsing system avatar as url: {err}"),
-        };
+        }
     }
 
     let mut embed_parts = Vec::new();
@@ -246,7 +246,7 @@ async fn notify_guilds_for_system(
                 err
             );
             continue;
-        };
+        }
 
         guilds_successfully_notified.push(guild_id);
     }

@@ -85,12 +85,12 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
         return Ok(());
     }
 
-    let system_ref = SystemRef::Uuid(guild_settings.system_uuid.into());
+    let system_ref = SystemRef::Uuid(guild_settings.system_uuid);
 
     tracing::debug!("/pk fronters setup, fetching system {system_ref}");
     let Some(system) = get_system(&ctx.services.db, &system_ref)
         .await
-        .map_err(|err| format!("error fetching system {}: {}", system_ref, err))?
+        .map_err(|err| format!("error fetching system {system_ref}: {err}"))?
     else {
         return Err("system {system_ref} missing from database".into());
     };

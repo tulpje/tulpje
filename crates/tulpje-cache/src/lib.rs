@@ -236,6 +236,10 @@ impl Cache {
 impl UpdateCache for Event {
     async fn update(&self, cache: &Cache) -> Result<(), Error> {
         #[expect(clippy::use_self, reason = "it's clearer to refer to Event")]
+        #[expect(
+            clippy::explicit_deref_methods,
+            reason = "it's a lot cleaner than `&**` everywhere"
+        )]
         match self {
             Event::ChannelCreate(v) => cache.update(v.deref()).await,
             Event::ChannelDelete(v) => cache.update(v.deref()).await,

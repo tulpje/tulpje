@@ -1,7 +1,7 @@
 use std::collections::{HashMap, HashSet};
 
 use chrono::NaiveDateTime;
-use jiff_chrono_conversions::ToChrono;
+use jiff_chrono_conversions::ToChrono as _;
 use pluralkit_rs::models::PluralKitUuid;
 use pluralkit_rs::models::marker::SystemMarker;
 use pluralkit_rs::{
@@ -208,7 +208,7 @@ pub(crate) async fn handle_private_front(
     match ctx
         .services
         .pk
-        .get_current_system_fronters(&system_ref)
+        .get_current_system_fronters(system_ref)
         .await
     {
         Ok(_) => Ok(false),
@@ -265,7 +265,7 @@ pub(crate) async fn get_system_fronters(
 
     Ok(Some(Fronters {
         members: switch.members,
-        timestamp: NaiveDateTime::from(switch.timestamp.to_chrono()),
+        timestamp: switch.timestamp.to_chrono(),
     }))
 }
 
@@ -286,8 +286,9 @@ pub(crate) async fn update_system_fronters(
 ) -> Result<FrontChange, GetSystemFrontersError> {
     let fronters: Option<Fronters> = match get_system_fronters(client, system.uuid).await {
         Ok(fronters) => Ok(fronters),
-        Err(err @ GetSystemFrontersError::Private(uuid))
-        | Err(err @ GetSystemFrontersError::NotFound(uuid)) => {
+        Err(
+            err @ (GetSystemFrontersError::Private(uuid) | GetSystemFrontersError::NotFound(uuid)),
+        ) => {
             // NOTE: if the fronters are private or the system deleted we still want to update the last_updated
             //       timestamp to avoid getting stuck on trying to update private fronts
             db::update_fronters_timestamp(db, uuid).await?;

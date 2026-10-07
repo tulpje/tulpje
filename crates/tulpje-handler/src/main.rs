@@ -169,7 +169,7 @@ async fn main() {
                 ctx.interaction()
                     .set_global_commands(&ctx.services.registry.global_commands())
                     .await
-                    .map_err(|err| format!(".set_global_commands() error: {}", err))?;
+                    .map_err(|err| format!(".set_global_commands() error: {err}"))?;
 
                 Ok(())
             })
@@ -217,7 +217,7 @@ async fn main() {
         tracing::error!("error joining main_handle: {err}");
     }
 
-    framework.shutdown().await;
+    framework.shutdown();
     tracing::trace!("waiting for framework to exit...");
     if let Err(err) = framework.join().await {
         tracing::error!("error joining framework: {err}");
@@ -236,7 +236,7 @@ async fn handle_message(cache: &Cache, sender: &Sender, meta: Metadata, event: E
 
     if let Err(err) = sender.with_span(meta, event, Span::current()) {
         tracing::error!("error queueing event: {err}");
-    };
+    }
 }
 
 fn parse_delivery(message: Vec<u8>) -> Result<(Metadata, Event), Box<dyn std::error::Error>> {

@@ -27,10 +27,10 @@ pub(crate) fn role_change_message(counts: &UpdateCounts, infix: &str) -> String 
         parts.push((counts.assign, "assigned"));
     }
 
-    let infix = if !infix.is_empty() {
-        &format!("{} ", infix.trim())
-    } else {
+    let infix = if infix.is_empty() {
         infix
+    } else {
+        &format!("{} ", infix.trim())
     };
 
     parts

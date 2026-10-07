@@ -39,13 +39,11 @@ impl<T: Clone + Send + Sync + 'static> SchedulerHandle<T> {
         }
     }
 
-    pub(crate) fn shutdown(&mut self) {
+    pub(crate) fn shutdown(&self) {
         self.shutdown.cancel();
     }
 
-    pub(crate) fn start(
-        &mut self,
-    ) -> Result<(), Box<mpsc::error::SendError<SchedulerTaskMessage<T>>>> {
+    pub(crate) fn start(&self) -> Result<(), Box<mpsc::error::SendError<SchedulerTaskMessage<T>>>> {
         Ok(self
             .sender
             .send(SchedulerTaskMessage::Start(self.tasks.clone()))?)
@@ -78,7 +76,7 @@ impl<T: Clone + Send + Sync + 'static> SchedulerHandle<T> {
 
 struct Scheduler<T: Clone + Send + Sync> {
     job_map: HashMap<String, JobId>,
-    scheduler: Option<CronScheduler<Utc>>,
+    inner: Option<CronScheduler<Utc>>,
     handle: Option<JoinHandle<()>>,
 
     ctx: Context<T>,
@@ -100,7 +98,7 @@ impl<T: Clone + Send + Sync + 'static> Scheduler<T> {
             shutdown,
 
             job_map: HashMap::new(),
-            scheduler: Some(scheduler),
+            inner: Some(scheduler),
             handle: Some(tokio::spawn(service)),
         }
     }
@@ -111,7 +109,7 @@ impl<T: Clone + Send + Sync + 'static> Scheduler<T> {
         let job = Job::<Utc>::cron_schedule(handler.cron.clone());
         let job_name = handler.name.clone();
         let job_id = self
-            .scheduler
+            .inner
             .as_mut()
             .unwrap()
             .insert(job, move |_id| {
@@ -121,7 +119,7 @@ impl<T: Clone + Send + Sync + 'static> Scheduler<T> {
                 tokio::spawn(async move {
                     if let Err(err) = job_handler.run(TaskContext::from_context(job_ctx)).await {
                         tracing::error!("error running task {}: {}", job_handler.name, err);
-                    };
+                    }
                 });
             })
             .await;
@@ -134,7 +132,7 @@ impl<T: Clone + Send + Sync + 'static> Scheduler<T> {
             return;
         };
 
-        self.scheduler.as_mut().unwrap().remove(job_id).await;
+        self.inner.as_mut().unwrap().remove(job_id).await;
     }
 
     async fn run(&mut self) {
@@ -161,7 +159,7 @@ impl<T: Clone + Send + Sync + 'static> Scheduler<T> {
         //
         // NOTE: Separate scope so we drop correctly after removing jobs
         {
-            let Some(mut scheduler) = self.scheduler.take() else {
+            let Some(mut scheduler) = self.inner.take() else {
                 tracing::warn!("Scheduler already removed");
                 return;
             };
