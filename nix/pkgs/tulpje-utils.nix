@@ -2,8 +2,6 @@
   inputs,
   lib,
   craneLib,
-  clang,
-  wild,
 }:
 let
   crateName = "tulpje-utils";
@@ -21,10 +19,6 @@ let
     inherit src;
     strictDeps = true;
     cargoExtraArgs = "-p ${crateName}";
-    nativeBuildInputs = [
-      clang
-      wild
-    ];
   };
   cargoArtifacts = craneLib.buildDepsOnly commonArgs // {
     pname = "${crateName}-deps";
