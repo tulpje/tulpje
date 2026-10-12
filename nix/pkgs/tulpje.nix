@@ -3,8 +3,6 @@
   lib,
   craneLib,
   name,
-  clang,
-  wild,
 }:
 let
   unfilteredRoot = ../..;
@@ -21,10 +19,6 @@ let
   commonArgs = {
     inherit src;
     strictDeps = true;
-    nativeBuildInputs = [
-      clang
-      wild
-    ];
   };
   cargoArtifacts = craneLib.buildDepsOnly commonArgs // {
     pname = "tulpje-deps";
