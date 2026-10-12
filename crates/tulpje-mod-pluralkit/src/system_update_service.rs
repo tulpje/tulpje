@@ -1,4 +1,4 @@
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 use pluralkit_rs::{PluralKit, models::PluralKitError};
 use tokio::time::MissedTickBehavior;
@@ -34,10 +34,23 @@ async fn tick(ctx: &TaskContext) -> Result<(), Error> {
     metrics::counter!("pk:outdated-systems").absolute(outdated_systems as u64);
 
     for system in &systems_to_update {
+        // used for metrics
+        let before_instant = Instant::now();
+        let prev_updated_at = system.updated_at.and_utc();
+
         tracing::info!("updating system {}", system.uuid);
         if let Err(err) = process_system(&ctx.services.db, &ctx.services.pk, system).await {
             tracing::warn!("error updating system {}: {}", system.uuid, err);
         }
+
+        // record metrics
+        metrics::histogram!("pk:system-update-duration")
+            .record(before_instant.elapsed().as_secs_f64());
+        metrics::histogram!("pk:system-update-frequency").record(
+            chrono::Utc::now()
+                .signed_duration_since(prev_updated_at)
+                .as_seconds_f64(),
+        );
     }
 
     Ok(())

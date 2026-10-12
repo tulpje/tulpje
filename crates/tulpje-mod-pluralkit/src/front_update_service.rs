@@ -1,11 +1,14 @@
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 use tokio::time::MissedTickBehavior;
 use tokio_util::sync::CancellationToken;
 use tulpje_framework::Error;
 use tulpje_lib::context::TaskContext;
 
-use crate::fronters::{db, tasks::process_system};
+use crate::fronters::{
+    db::{self, get_fronters},
+    tasks::process_system,
+};
 
 async fn tick(ctx: &TaskContext) -> Result<(), Error> {
     let tracked_system_count = db::get_tracked_system_count(&ctx.services.db).await?;
@@ -20,10 +23,28 @@ async fn tick(ctx: &TaskContext) -> Result<(), Error> {
     let systems_to_update = db::get_systems_to_update(&ctx.services.db).await?;
 
     for system in &systems_to_update {
+        // used for metrics
+        let before_instant = Instant::now();
+        let prev_updated_at = get_fronters(&ctx.services.db, system.uuid)
+            .await?
+            .map(|f| f.updated_at.and_utc());
+
         if let Err(err) =
             process_system(&ctx.services.db, &ctx.services.pk, &ctx.client, system).await
         {
             tracing::warn!("error updating system {}: {}", system.uuid, err);
+        }
+
+        // record metrics
+        metrics::histogram!("pk:front-update-duration")
+            .record(before_instant.elapsed().as_secs_f64());
+        // if we dont have a record of these fronters dont track the frequency
+        if let Some(prev_updated_at) = prev_updated_at {
+            metrics::histogram!("pk:front-update-frequency").record(
+                chrono::Utc::now()
+                    .signed_duration_since(prev_updated_at)
+                    .as_seconds_f64(),
+            );
         }
     }
 
