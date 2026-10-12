@@ -77,10 +77,6 @@
               cargo-semver-checks
 
               sqlx-cli
-
-              # linker
-              clang
-              wild
             ];
           };
 
