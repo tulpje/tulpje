@@ -6,6 +6,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.26.1-rc.5] - 2026-10-12
+
+### Added
+
+ - Add metrics for system and fronter update duration
+
+### Changed
+
+ - `wild` is logging a lot of warnings, let's just use the default linker
+ - Replace `pkrs-fork` with `pluralkit-rs`
+
+### Commit Details
+
+<details><summary>view details</summary>
+
+ * chore(build): `wild` is logging a lot of warnings, let's just use the default linker ([`cdb582a`](https://github.com///commit/cdb582a21da206527f8e39b5308d03d5a0d540e0))
+ * feat(tulpje-mod-pluralkit): add metrics for system and fronter update duration ([`40d8602`](https://github.com///commit/40d860290ba2ca6ecd168b06198ef412a8ac16d9))
+ * refactor: replace `pkrs-fork` with `pluralkit-rs` ([`1ce9ee7`](https://github.com///commit/1ce9ee73472b881de6f921a45de6efa4aa85c0af))
+</details>
+
 ## [0.26.1-rc.4] - 2026-10-04
 
 ### Added

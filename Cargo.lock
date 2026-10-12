@@ -3304,7 +3304,7 @@ dependencies = [
 
 [[package]]
 name = "tulpje-common"
-version = "0.26.1-rc.4"
+version = "0.26.1-rc.5"
 dependencies = [
  "metrics",
  "metrics-exporter-prometheus",
@@ -3339,7 +3339,7 @@ dependencies = [
 
 [[package]]
 name = "tulpje-gateway"
-version = "0.26.1-rc.4"
+version = "0.26.1-rc.5"
 dependencies = [
  "figment",
  "figment_file_provider_adapter",
@@ -3364,7 +3364,7 @@ dependencies = [
 
 [[package]]
 name = "tulpje-handler"
-version = "0.26.1-rc.4"
+version = "0.26.1-rc.5"
 dependencies = [
  "figment",
  "figment_file_provider_adapter",
@@ -3394,7 +3394,7 @@ dependencies = [
 
 [[package]]
 name = "tulpje-lib"
-version = "0.26.1-rc.4"
+version = "0.26.1-rc.5"
 dependencies = [
  "async-trait",
  "pluralkit-rs",
@@ -3410,7 +3410,7 @@ dependencies = [
 
 [[package]]
 name = "tulpje-mod-core"
-version = "0.26.1-rc.4"
+version = "0.26.1-rc.5"
 dependencies = [
  "chrono",
  "sqlx",
@@ -3425,7 +3425,7 @@ dependencies = [
 
 [[package]]
 name = "tulpje-mod-emoji"
-version = "0.26.1-rc.4"
+version = "0.26.1-rc.5"
 dependencies = [
  "base64 0.22.1",
  "chrono",
@@ -3446,7 +3446,7 @@ dependencies = [
 
 [[package]]
 name = "tulpje-mod-pluralkit"
-version = "0.26.1-rc.4"
+version = "0.26.1-rc.5"
 dependencies = [
  "async-trait",
  "chrono",
@@ -3471,7 +3471,7 @@ dependencies = [
 
 [[package]]
 name = "tulpje-mod-stats"
-version = "0.26.1-rc.4"
+version = "0.26.1-rc.5"
 dependencies = [
  "chrono",
  "num-format",
@@ -3486,7 +3486,7 @@ dependencies = [
 
 [[package]]
 name = "tulpje-utils"
-version = "0.26.1-rc.4"
+version = "0.26.1-rc.5"
 dependencies = [
  "reqwest",
 ]
