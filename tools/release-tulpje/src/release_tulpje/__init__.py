@@ -28,13 +28,32 @@ log = logging.getLogger(__name__)
 
 def argparser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
+    parser.add_argument("--execute", action="store_true")
+    parser.add_argument("--prerelease")
+
+    subparsers = parser.add_subparsers()
+
+    cmd_analyse = subparsers.add_parser(
+        "analyze",
+        description="analyze codebase for the next release and save the results",
+    )
     parser.add_argument(
         "--skip-slow",
         action="store_true",
-        help="Skip `cargo semver-checks` and `git-cliff` to speed up runs",
+        help="Skip `cargo semver-checks` to speed up runs",
     )
-    parser.add_argument("--execute", action="store_true")
-    parser.add_argument("--prerelease")
+
+    cmd_bump = subparsers.add_parser("bump", description="bump crate version numbers")
+    cmd_changelog = subparsers.add_parser("changelog", description="update changelogs")
+    cmd_commit = subparsers.add_parser(
+        "commit", description="create commit for new version"
+    )
+    cmd_tag = subparsers.add_parser("tag", description="tag commit for new version")
+    cmd_push = subparsers.add_parser("push", description="push branch and tags")
+    cmd_release = subparsers.add_parser("release", description="create github releases")
+    cmd_all = subparsers.add_parser(
+        "all", description="perform the entire release process"
+    )
 
     return parser
 
