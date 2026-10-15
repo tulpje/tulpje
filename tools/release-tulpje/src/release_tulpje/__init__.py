@@ -1,5 +1,5 @@
 from collections import defaultdict
-from pathlib import PurePath
+from pathlib import Path, PurePath
 import subprocess
 import argparse
 import sys
@@ -27,35 +27,124 @@ log = logging.getLogger(__name__)
 
 
 def argparser() -> argparse.ArgumentParser:
+    def add_skip_slow(parser: argparse.ArgumentParser):
+        parser.add_argument(
+            "--skip-slow",
+            action="store_true",
+            help="Skip `cargo semver-checks` to speed up runs",
+        )
+
+    def add_prerelease(parser: argparse.ArgumentParser):
+        parser.add_argument("--prerelease")
+
     parser = argparse.ArgumentParser()
-    parser.add_argument("--execute", action="store_true")
-    parser.add_argument("--prerelease")
-
-    subparsers = parser.add_subparsers()
-
-    cmd_analyse = subparsers.add_parser(
-        "analyze",
-        description="analyze codebase for the next release and save the results",
-    )
+    parser.add_argument("--execute", action="store_true", help="disable dry-run")
     parser.add_argument(
-        "--skip-slow",
-        action="store_true",
-        help="Skip `cargo semver-checks` to speed up runs",
+        "--analysis-path", "-a", default=".release-analysis.json", type=Path
     )
 
-    cmd_bump = subparsers.add_parser("bump", description="bump crate version numbers")
-    cmd_changelog = subparsers.add_parser("changelog", description="update changelogs")
-    cmd_commit = subparsers.add_parser(
-        "commit", description="create commit for new version"
+    subparsers = parser.add_subparsers(required=True)
+
+    parser_analyse = subparsers.add_parser(
+        "analyze",
+        help="analyze codebase for the next release and save the results",
     )
-    cmd_tag = subparsers.add_parser("tag", description="tag commit for new version")
-    cmd_push = subparsers.add_parser("push", description="push branch and tags")
-    cmd_release = subparsers.add_parser("release", description="create github releases")
-    cmd_all = subparsers.add_parser(
-        "all", description="perform the entire release process"
+    parser_analyse.set_defaults(func=cmd_analyse)
+    add_skip_slow(parser_analyse)
+    add_prerelease(parser_analyse)
+
+    parser_bump = subparsers.add_parser("bump", help="bump crate version numbers")
+    parser_bump.set_defaults(func=cmd_bump)
+
+    parser_changelog = subparsers.add_parser("changelog", help="update changelogs")
+    parser_changelog.set_defaults(func=cmd_changelog)
+
+    parser_commit = subparsers.add_parser(
+        "commit", help="create commit for new version"
     )
+    parser_commit.set_defaults(func=cmd_commit)
+
+    parser_tag = subparsers.add_parser("tag", help="tag commit for new version")
+    parser_tag.set_defaults(func=cmd_tag)
+
+    parser_push = subparsers.add_parser("push", help="push branch and tags")
+    parser_push.set_defaults(func=cmd_push)
+
+    parser_release = subparsers.add_parser("release", help="create github releases")
+    parser_release.set_defaults(func=cmd_release)
+
+    parser_all = subparsers.add_parser("all", help="perform the entire release process")
+    parser_all.set_defaults(func=cmd_all)
+    add_skip_slow(parser_all)
+    add_prerelease(parser_all)
 
     return parser
+
+
+def verify_args(args):
+    command_name = args.func.__name__
+    if command_name in {"cmd_analyze", "cmd_all"}:
+        # NOTE: These don't have an analysis file so need to parse values from args
+        ...
+    else:
+        # TODO: load args from analysis file
+        ...
+
+
+def cmd_analyse(args):
+    return 0
+
+
+def cmd_bump(args):
+    return 0
+
+
+def cmd_changelog(args):
+    return 0
+
+
+def cmd_commit(args):
+    return 0
+
+
+def cmd_tag(args):
+    return 0
+
+
+def cmd_push(args):
+    return 0
+
+
+def cmd_release(args) -> int:
+    return 0
+
+
+def cmd_all(args) -> int:
+    retval = cmd_analyse(args)
+    if retval > 0:
+        return retval
+
+    retval = cmd_bump(args)
+    if retval > 0:
+        return retval
+
+    retval = cmd_changelog(args)
+    if retval > 0:
+        return retval
+
+    retval = cmd_commit(args)
+    if retval > 0:
+        return retval
+
+    retval = cmd_tag(args)
+    if retval > 0:
+        return retval
+
+    retval = cmd_push(args)
+    if retval > 0:
+        return retval
+
+    return cmd_release(args)
 
 
 # TODO: Enforce independent crates not depending on workspace crates
@@ -192,6 +281,8 @@ def main(args: argparse.Namespace) -> int:
     handler.setFormatter(RustishFormatter())
     log.addHandler(handler)
     log.setLevel(logging.DEBUG)
+
+    return args.func(args)
 
     if args.skip_slow and args.execute:
         print(" [!] combining --skip-slow with --execute is disallowed")
