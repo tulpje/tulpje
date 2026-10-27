@@ -1,7 +1,7 @@
 use std::collections::{HashMap, HashSet};
 
 use chrono::NaiveDateTime;
-use jiff_chrono_conversions::ToChrono;
+use jiff_chrono_conversions::ToChrono as _;
 use pluralkit_rs::models::PluralKitUuid;
 use pluralkit_rs::models::marker::SystemMarker;
 use pluralkit_rs::{
@@ -10,6 +10,7 @@ use pluralkit_rs::{
 };
 use tracing::Level;
 use twilight_http::Client;
+use twilight_http::response::StatusCode;
 use twilight_model::channel::{Channel, ChannelType};
 use twilight_model::guild::Guild;
 use twilight_model::id::Id;
@@ -244,12 +245,18 @@ pub(crate) async fn get_system_fronters(
         .get_current_system_fronters(&system_uuid.into())
         .await
     {
-        Ok(response) => Ok::<_, GetSystemFrontersError>(
-            response
-                .model()
-                .await
-                .map_err(|err| GetSystemFrontersError::Other(err.into()))?,
-        ),
+        Ok(response) => {
+            if response.response().status().as_u16() == StatusCode::NO_CONTENT {
+                return Ok(None);
+            }
+
+            Ok::<_, GetSystemFrontersError>(
+                response
+                    .model()
+                    .await
+                    .map_err(|err| GetSystemFrontersError::Other(err.into()))?,
+            )
+        }
         // handle private fronters
         // 30004 = private fronters
         Err(PluralKitError::PluralKit { code: 30004, .. }) => {
@@ -265,7 +272,7 @@ pub(crate) async fn get_system_fronters(
 
     Ok(Some(Fronters {
         members: switch.members,
-        timestamp: NaiveDateTime::from(switch.timestamp.to_chrono()),
+        timestamp: switch.timestamp.to_chrono(),
     }))
 }
 
