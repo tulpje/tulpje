@@ -5,16 +5,16 @@
 
 let
   src = fetchFromGitHub {
-    owner = "tulpje";
+    owner = "twilight-rs";
     repo = "gateway-queue";
-    rev = "543aae35bca748cdefaa46d0ffa570b5a8c1c4bf";
-    hash = "sha256-xXl2wU5wF0iQAvW+0+crshXp3jpm9k5c+uWGowahAQs=";
+    rev = "c0433e5c8d91998f44524bab2265369b43a1ce1e";
+    hash = "sha256-oyaH/Gz0wtFS0qrYka0f4D4Lyxjv8I0+9Kd8CDth3O8=";
   };
   commonArgs = {
     inherit src;
 
     pname = "twilight-gateway-queue";
-    version = "unstable-2025-11-15";
+    version = "unstable-2026-04-27";
     strictDeps = true;
   };
   cargoArtifacts = craneLib.buildDepsOnly commonArgs;
