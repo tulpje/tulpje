@@ -21,7 +21,8 @@ byteorder = { version = "1", default-features = false, features = ["std"] }
 chrono = { version = "0.4" }
 crossbeam-utils = { version = "0.8" }
 crypto-common = { version = "0.1", default-features = false, features = ["std"] }
-digest = { version = "0.10", features = ["std"] }
+digest-93f6ce9d446188ac = { package = "digest", version = "0.10", features = ["std"] }
+digest-a6292c17cd707f01 = { package = "digest", version = "0.11", features = ["alloc", "mac"] }
 fastrand = { version = "2", default-features = false, features = ["std"] }
 form_urlencoded = { version = "1" }
 futures-channel = { version = "0.3", features = ["sink"] }
@@ -49,7 +50,7 @@ serde_json = { version = "1", features = ["raw_value"] }
 sha2 = { version = "0.10" }
 slab = { version = "0.4" }
 smallvec = { version = "1", default-features = false, features = ["const_new", "serde"] }
-sqlx-core = { version = "0.9", features = ["_rt-tokio", "any", "chrono", "json", "migrate", "offline", "uuid"] }
+sqlx = { version = "0.9", features = ["chrono", "mysql", "postgres", "runtime-tokio", "sqlite", "uuid"] }
 sqlx-mysql = { version = "0.9", default-features = false, features = ["any", "chrono", "json", "migrate", "offline", "uuid"] }
 sqlx-postgres = { version = "0.9", default-features = false, features = ["any", "chrono", "migrate", "offline", "uuid"] }
 sqlx-sqlite = { version = "0.9", default-features = false, features = ["any", "bundled", "chrono", "deserialize", "json", "load-extension", "migrate", "offline", "unlock-notify", "uuid"] }
@@ -72,7 +73,8 @@ cc = { version = "1", default-features = false, features = ["parallel"] }
 chrono = { version = "0.4" }
 crossbeam-utils = { version = "0.8" }
 crypto-common = { version = "0.1", default-features = false, features = ["std"] }
-digest = { version = "0.10", features = ["std"] }
+digest-93f6ce9d446188ac = { package = "digest", version = "0.10", features = ["std"] }
+digest-a6292c17cd707f01 = { package = "digest", version = "0.11", features = ["alloc", "mac"] }
 form_urlencoded = { version = "1" }
 futures-channel = { version = "0.3", features = ["sink"] }
 futures-core = { version = "0.3" }
@@ -92,7 +94,8 @@ serde_json = { version = "1", features = ["raw_value"] }
 sha2 = { version = "0.10" }
 slab = { version = "0.4" }
 smallvec = { version = "1", default-features = false, features = ["const_new", "serde"] }
-sqlx-core = { version = "0.9", features = ["_rt-tokio", "any", "chrono", "json", "migrate", "offline", "uuid"] }
+sqlx-macros = { version = "0.9", features = ["_rt-tokio", "chrono", "derive", "json", "macros", "migrate", "mysql", "postgres", "sqlite", "sqlite-load-extension", "uuid"] }
+sqlx-macros-core = { version = "0.9", features = ["_rt-tokio", "chrono", "derive", "json", "macros", "migrate", "mysql", "postgres", "sqlite", "sqlite-load-extension", "uuid"] }
 sqlx-mysql = { version = "0.9", default-features = false, features = ["any", "chrono", "json", "migrate", "offline", "uuid"] }
 sqlx-postgres = { version = "0.9", default-features = false, features = ["any", "chrono", "migrate", "offline", "uuid"] }
 sqlx-sqlite = { version = "0.9", default-features = false, features = ["any", "bundled", "chrono", "deserialize", "json", "load-extension", "migrate", "offline", "unlock-notify", "uuid"] }
