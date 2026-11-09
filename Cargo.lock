@@ -1336,6 +1336,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "jiff-sqlx"
+version = "0.2.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a6639870bba69eee8eb23555a5fe8c554f7731c5692c1a4abf834eba77414491"
+dependencies = [
+ "jiff",
+ "sqlx",
+]
+
+[[package]]
 name = "jiff-static"
 version = "0.2.41"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3332,8 +3342,12 @@ name = "tulpje-work-queue"
 version = "0.26.1-rc.5"
 dependencies = [
  "jiff",
- "jiff-chrono-conversions",
+ "jiff-sqlx",
+ "serde",
+ "serde_json",
  "sqlx",
+ "tulpje-framework",
+ "uuid",
 ]
 
 [[package]]

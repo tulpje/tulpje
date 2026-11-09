@@ -1,0 +1,64 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE jobs\nSET\n\tstatus = 'busy',\n\tattempts_remaining = attempts_remaining - 1,\n\tlast_retrieved_at = NOW()\nWHERE uuid IN (\n\tSELECT\n\t\tuuid\n\tFROM\n\t\tjobs\n\tWHERE\n\t\tstatus = 'pending'\n\t\tAND\tattempts_remaining > 0\n\t\tAND\tqueue = $1\n\tORDER BY\n\t\tpriority DESC\n\tLIMIT 1\n\tFOR UPDATE SKIP LOCKED\n)\nRETURNING\n\tuuid,\n  name,\n\tdata,\n\tattempts_remaining AS \"attempts_remaining: i8\";\n",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "uuid",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "uuid"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "name"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "data",
+        "type_info": "Jsonb",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "data"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "attempts_remaining: i8",
+        "type_info": "Int2",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "attempts_remaining"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "98f51d4ac1aa275db6c417df6e0c3da10d0da88068009d19ab2dde5e3d6632c2"
+}

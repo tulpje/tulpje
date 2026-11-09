@@ -1,0 +1,31 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO job_results (\n  job_uuid,\n  success,\n  duration,\n  additional_info\n) VALUES (\n  $1, $2, $3, $4\n)\nRETURNING\n  uuid\n;\n",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "uuid",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "job_results",
+            "name": "uuid"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Bool",
+        "Int4",
+        "Text"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "a4437485cb98b78c9024797e68f07bb576ecc20f1d08997d6586169d48377479"
+}

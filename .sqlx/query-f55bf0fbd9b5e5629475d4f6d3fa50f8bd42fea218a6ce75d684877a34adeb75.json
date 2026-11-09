@@ -1,0 +1,160 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT\n  uuid,\n  queue,\n  name,\n  data AS \"data: Json<T>\",\n  hash,\n  status AS \"status: JobStatus\",\n  priority AS \"priority: i8\",\n  attempts_remaining AS \"attempts_remaining: i8\",\n  created_at AS \"created_at: jiff_sqlx::DateTime\",\n  last_retrieved_at AS \"last_retrieved_at: jiff_sqlx::DateTime\",\n  finished_at AS \"finished_at: jiff_sqlx::DateTime\"\nFROM\n  jobs\nWHERE\n  uuid = $1\n",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "uuid",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "uuid"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "queue",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "queue"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "name",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "name"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "data: Json<T>",
+        "type_info": "Jsonb",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "data"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "hash",
+        "type_info": "Int8",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "hash"
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "status: JobStatus",
+        "type_info": {
+          "Custom": {
+            "name": "job_status",
+            "kind": {
+              "Enum": [
+                "pending",
+                "busy",
+                "dead",
+                "processed"
+              ]
+            }
+          }
+        },
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "status"
+          }
+        }
+      },
+      {
+        "ordinal": 6,
+        "name": "priority: i8",
+        "type_info": "Int2",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "priority"
+          }
+        }
+      },
+      {
+        "ordinal": 7,
+        "name": "attempts_remaining: i8",
+        "type_info": "Int2",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "attempts_remaining"
+          }
+        }
+      },
+      {
+        "ordinal": 8,
+        "name": "created_at: jiff_sqlx::DateTime",
+        "type_info": "Timestamp",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "created_at"
+          }
+        }
+      },
+      {
+        "ordinal": 9,
+        "name": "last_retrieved_at: jiff_sqlx::DateTime",
+        "type_info": "Timestamp",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "last_retrieved_at"
+          }
+        }
+      },
+      {
+        "ordinal": 10,
+        "name": "finished_at: jiff_sqlx::DateTime",
+        "type_info": "Timestamp",
+        "origin": {
+          "Table": {
+            "table": "jobs",
+            "name": "finished_at"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true
+    ]
+  },
+  "hash": "f55bf0fbd9b5e5629475d4f6d3fa50f8bd42fea218a6ce75d684877a34adeb75"
+}

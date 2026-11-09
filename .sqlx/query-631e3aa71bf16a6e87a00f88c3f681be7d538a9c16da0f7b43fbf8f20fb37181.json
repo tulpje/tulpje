@@ -1,0 +1,27 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE jobs\nSET\n\tstatus = $2\nWHERE\n\tuuid = $1;\n",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        {
+          "Custom": {
+            "name": "job_status",
+            "kind": {
+              "Enum": [
+                "pending",
+                "busy",
+                "dead",
+                "processed"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "631e3aa71bf16a6e87a00f88c3f681be7d538a9c16da0f7b43fbf8f20fb37181"
+}
