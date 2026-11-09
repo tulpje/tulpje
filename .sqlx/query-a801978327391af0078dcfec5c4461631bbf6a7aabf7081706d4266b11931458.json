@@ -6,12 +6,24 @@
       {
         "ordinal": 0,
         "name": "guild_id",
-        "type_info": "Int8"
+        "type_info": "Int8",
+        "origin": {
+          "Table": {
+            "table": "pk_fronters",
+            "name": "guild_id"
+          }
+        }
       },
       {
         "ordinal": 1,
         "name": "category_id",
-        "type_info": "Int8"
+        "type_info": "Int8",
+        "origin": {
+          "Table": {
+            "table": "pk_fronters",
+            "name": "category_id"
+          }
+        }
       }
     ],
     "parameters": {

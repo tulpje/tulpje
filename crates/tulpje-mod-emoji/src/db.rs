@@ -1,4 +1,4 @@
-use sqlx::types::chrono;
+use sqlx::{AssertSqlSafe, types::chrono};
 
 use tulpje_framework::Error;
 use twilight_model::id::{
@@ -141,8 +141,8 @@ pub(crate) async fn get_emoji_stats(
         StatsSort::DateAsc => "last_used_at ASC",
     };
 
-    // NOTE: Wish we could use query_as! but we're using a dynamic SORT BY clause
-    let result: Vec<EmojiStats> = sqlx::query_as(&format!(
+    // NOTE: Wish we could use query_as! but we're using a dynamic ORDER BY clause
+    let result: Vec<EmojiStats> = sqlx::query_as(AssertSqlSafe(format!(
         "
             SELECT
                 emoji_id, MAX(name) as name,
@@ -158,7 +158,7 @@ pub(crate) async fn get_emoji_stats(
             LIMIT $3
         ",
         order_by_clause
-    ))
+    )))
     .bind(DbId(guild_id))
     .bind(i32::from(offset))
     .bind(i32::from(limit))

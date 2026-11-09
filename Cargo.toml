@@ -24,13 +24,13 @@ async-trait = { version = "0.1.89" }
 chrono = { version = "0.4.42", features = ["alloc", "clock", "std"], default-features = false }
 metrics = { version = "0.24.3" }
 metrics-exporter-prometheus = { version = "0.18.1", default-features = false }
-pluralkit-rs = { version = "0.1.0", git = "https://github.com/tulpje/pluralkit-rs.git", rev = "505b45741a70bc4cee5bc8bbc045f8f59a96debf", features = ["sqlx", "metrics"] }
+pluralkit-rs = { version = "0.1.0", git = "https://github.com/tulpje/pluralkit-rs.git", rev = "852c7720202b0156b9bbb3e57d2aed3ab76220e1", features = ["sqlx", "metrics"] }
 redis = { version = "1.0.1", default-features = false, features = ["tokio-comp", "connection-manager"] }
 reqwest = { version = "0.13.1", default-features = false }
 rustls = { version = "0.23.35", default-features = false, features = ["aws-lc-rs"] }
 serde = { version = "1.0.228", features = ["derive"] }
 serde_json = { version = "1.0.149" }
-sqlx = { version = "0.8.6", features = ["runtime-tokio", "postgres", "chrono", "json", "macros", "uuid"] }
+sqlx = { version = "0.9.0", features = ["runtime-tokio", "postgres", "chrono", "json", "macros", "uuid"] }
 thiserror = { version = "2.0.18" }
 tokio = { version = "1.48.0" }
 tokio-util = { version = "0.7.17" }
