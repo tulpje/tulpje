@@ -1,4 +1,4 @@
-use std::str::FromStr;
+use std::str::FromStr as _;
 
 use pluralkit_rs::models::{Member, SystemRef};
 use tulpje_framework::{Error, color};

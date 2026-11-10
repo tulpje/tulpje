@@ -77,7 +77,7 @@ pub(crate) async fn handle(ctx: CommandContext) -> Result<(), Error> {
         .await?;
         return Ok(());
     };
-    let system_ref = SystemRef::Uuid(gs.system_uuid.into());
+    let system_ref = SystemRef::Uuid(gs.system_uuid);
     let token = ctx.get_arg_string_optional("token")?;
 
     // fetch members from PluralKit
@@ -282,11 +282,7 @@ async fn handle_get_system_members(
         req = match req.token(token) {
             Ok(req) => req,
             Err(_) => {
-                responses::error(
-                    ctx,
-                    &format!("### Error\nToken contains invalid characters"),
-                )
-                .await?;
+                responses::error(ctx, "### Error\nToken contains invalid characters").await?;
                 return Ok(None);
             }
         }
