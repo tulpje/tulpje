@@ -12,7 +12,7 @@ handler:
     contrib/run-local.py cargo run -p tulpje-handler
 
 test:
-  contrib/run-local.py cargo test -- --no-capture --include-ignored
+  contrib/run-local.py cargo nextest run -- --include-ignored
 
 release *args:
   uv --project tools/release-tulpje run release-tulpje {{ args }}

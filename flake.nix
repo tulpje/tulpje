@@ -69,6 +69,7 @@
               skopeo
               toolchain
               cargo-edit
+              cargo-nextest
               cargo-hakari
               cargo-machete
               cargo-outdated
